@@ -1,0 +1,2 @@
+/home/imran-mohammed/Desktop/mobile/exam_app/android/app/.cxx/Debug/37172h13/x86/CMakeFiles/edit_cache.dir
+/home/imran-mohammed/Desktop/mobile/exam_app/android/app/.cxx/Debug/37172h13/x86/CMakeFiles/rebuild_cache.dir
