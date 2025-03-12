@@ -206,7 +206,7 @@ const textLight = Color(0xFF636E72);
 
 // Text Styles
 TextStyle displayStyle = const TextStyle(
-  fontSize: 28,
+  fontSize: 24,
   fontWeight: FontWeight.w800,
   color: textDark,
   letterSpacing: -0.5,

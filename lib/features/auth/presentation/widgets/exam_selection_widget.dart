@@ -296,4 +296,4 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
       ],
     );
   }
-} 
+}

@@ -238,7 +238,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     return BlocConsumer<RegistrationBloc, RegistrationState>(
       listener: (context, state) {
         if (state.status && state.currentStep == RegistrationStep.finish) {
-          context.go(RoutePaths.subjects);
+          context.go(RoutePaths.home);
         }
       },
       builder: (context, state) {
@@ -253,9 +253,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
             ),
             onPressed: state.status
                 ? () {
-                  context.read<RegistrationBloc>().add(
-                      RegistrationFormSubmitted(),
-                    );
+                  context.go(RoutePaths.home);
                   }
                 : null,
             child: state.isLoading

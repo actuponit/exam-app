@@ -89,11 +89,11 @@ class _InstitutionInfoForm extends StatelessWidget {
                 ),
                 onPressed: state.status
                     ? () {
-                      bloc.add(
-                          const RegistrationStepChanged(
-                            RegistrationStep.otpVerification,
-                          ),
-                        );
+                      // bloc.add(
+                      //     const RegistrationStepChanged(
+                      //       RegistrationStep.otpVerification,
+                      //     ),
+                      //   );
                       context.push(RoutePaths.otp);
                     }
                     : null,
@@ -168,13 +168,14 @@ class _InstitutionInfoForm extends StatelessWidget {
           vertical: 18,
         ),
       ),
-      onChanged: (value) => context.read<RegistrationBloc>().add(
-            RegistrationFormFieldUpdated(
-              step: RegistrationStep.institutionInfo,
-              field: field,
-              value: value,
-            ),
-          ),
+      controller: TextEditingController(),
+      // onChanged: (value) => context.read<RegistrationBloc>().add(
+      //       RegistrationFormFieldUpdated(
+      //         step: RegistrationStep.institutionInfo,
+      //         field: field,
+      //         value: value,
+      //       ),
+      //     ),
     );
   }
 }

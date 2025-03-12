@@ -59,15 +59,12 @@ class SubjectSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Choose Subject', style: displayStyle.copyWith(color: Colors.white)),
-        actions: [IconButton(icon: Icon(Icons.person), onPressed: () {})],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
         child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             childAspectRatio: 0.9,
             mainAxisSpacing: 16,
@@ -76,7 +73,7 @@ class SubjectSelectionScreen extends StatelessWidget {
           itemCount: subjects.length,
           itemBuilder: (context, index) => SubjectCard(subject: subjects[index]),
         ),
-      ),
+
     );
   }
 }
@@ -127,8 +124,15 @@ class SubjectCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(subject.name, style: titleStyle),
-                Spacer(),
+                Flexible(
+                  child: Text(
+                    subject.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: titleStyle.copyWith(
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: LinearProgressIndicator(

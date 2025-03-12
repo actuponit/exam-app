@@ -46,6 +46,7 @@ dependencies:
   flutter_bloc: ^9.0.0
   formz: ^0.8.0
   animations: ^2.0.11
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

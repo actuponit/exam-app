@@ -1,3 +1,4 @@
+import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/core/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -89,7 +90,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 onPressed: () {
                   // Handle Google login
-                  context.go('/subjects');
+                  context.go(RoutePaths.home);
                 },
               ),
               const SizedBox(height: 20),
@@ -98,7 +99,7 @@ class LoginScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
-                    context.go('/subjects');
+                    context.go(RoutePaths.subjects) ;
                   }
                 },
                 child: const Text('Login'),
@@ -113,7 +114,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      context.go('/signup');
+                      context.go(RoutePaths.home);
                     },
                     child: const Text('Sign up'),
                   ),

@@ -49,96 +49,145 @@ class PersonalInfoScreen extends StatelessWidget {
   }
 }
 
-class _PersonalInfoForm extends StatelessWidget {
+class _PersonalInfoForm extends StatefulWidget {
+  @override
+  State<_PersonalInfoForm> createState() => _PersonalInfoFormState();
+}
+
+class _PersonalInfoFormState extends State<_PersonalInfoForm> {
   final TextEditingController firstNameController = TextEditingController();
+
   final TextEditingController lastNameController = TextEditingController();
+
   final TextEditingController phoneController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
+
   final TextEditingController confirmPasswordController = TextEditingController();
+
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
         final bloc = context.read<RegistrationBloc>();
-        final theme = Theme.of(context);
         
-        return AutofillGroup(
-          child: Column(
-            children: [
-              _buildTextField(
-                context: context,
-                label: 'First Name',
-                field: 'firstName',
-                errorText: state.personalInfo.firstName.displayError,
-                autofillHints: const [AutofillHints.givenName],
-                controller: firstNameController,
-              ),
-              _buildTextField(
-                context: context,
-                label: 'Last Name',
-                field: 'lastName',
-                errorText: state.personalInfo.lastName.displayError,
-                autofillHints: const [AutofillHints.familyName],
-                controller: lastNameController,
-              ),
-              _buildTextField(
-                context: context,
-                label: 'Phone Number',
-                field: 'phone',
-                errorText: state.personalInfo.phone.displayError,
-                keyboardType: TextInputType.phone,
-                autofillHints: const [AutofillHints.telephoneNumber],
-                controller: phoneController,
-              ),
-              _buildTextField(
-                context: context,
-                label: 'Email',
-                field: 'email',
-                initialValue: state.personalInfo.email.value,
-                errorText: state.personalInfo.email.displayError,
-                keyboardType: TextInputType.emailAddress,
-                autofillHints: const [AutofillHints.email],
-                controller: emailController,
-              ),
-              _buildTextField(
-                context: context,
-                label: 'Password',
-                field: 'password',
-                errorText: state.personalInfo.password.displayError,
-                obscureText: true,
-                autofillHints: const [AutofillHints.newPassword],
-                controller: passwordController,
-              ),
-              _buildTextField(
-                context: context,
-                label: 'Confirm Password',
-                field: 'confirmPassword',
-                errorText: state.personalInfo.confirmPassword.displayError,
-                obscureText: true,
-                autofillHints: const [AutofillHints.newPassword],
-                controller: confirmPasswordController,
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+        return Column(
+          children: [
+            _buildTextField(
+              context: context,
+              label: 'First Name',
+              field: 'firstName',
+              errorText: state.personalInfo.firstName.displayError,
+              autofillHints: const [AutofillHints.givenName],
+              controller: firstNameController,
+            ),
+            _buildTextField(
+              context: context,
+              label: 'Last Name',
+              field: 'lastName',
+              errorText: state.personalInfo.lastName.displayError,
+              autofillHints: const [AutofillHints.familyName],
+              controller: lastNameController,
+            ),
+            _buildTextField(
+              context: context,
+              label: 'Phone Number',
+              field: 'phone',
+              errorText: state.personalInfo.phone.displayError,
+              keyboardType: TextInputType.phone,
+              autofillHints: const [AutofillHints.telephoneNumber],
+              controller: phoneController,
+            ),
+            _buildTextField(
+              context: context,
+              label: 'Email',
+              field: 'email',
+              initialValue: state.personalInfo.email.value,
+              errorText: state.personalInfo.email.displayError,
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              controller: emailController,
+            ),
+            _buildTextField(
+              context: context,
+              label: 'Password',
+              field: 'password',
+              errorText: state.personalInfo.password.displayError,
+              obscureText: !_isPasswordVisible,
+              autofillHints: const [AutofillHints.newPassword],
+              controller: passwordController,
+              isPassword: true,
+              onPressed: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
+            ),
+            _buildTextField(
+              context: context,
+              label: 'Confirm Password',
+              field: 'confirmPassword',
+              errorText: state.personalInfo.confirmPassword.displayError,
+              obscureText: !_isConfirmPasswordVisible,
+              autofillHints: const [AutofillHints.newPassword],
+              controller: confirmPasswordController,
+              isPassword: true,
+              onPressed: () {
+                setState(() {
+                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                });
+              },
+            ),
+            const SizedBox(height: 30),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Already have an account?",
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  onPressed: state.status
-                      ? () => bloc.add(const RegistrationStepChanged(
-                            RegistrationStep.institutionInfo))
-                      : null,
-                  child: const Text('Continue'),
-                ),
+                  TextButton(
+                    onPressed: () {
+                      context.go(RoutePaths.login);
+                    },
+                    child: const Text('Login'),
+                  ),
+                ],
               ),
-            ],
-          ),
+              const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: state.status
+                    ? () => bloc.add(const RegistrationStepChanged(
+                          RegistrationStep.institutionInfo))
+                    : null,
+                child: const Text('Continue'),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -154,6 +203,8 @@ class _PersonalInfoForm extends StatelessWidget {
     bool obscureText = false,
     List<String>? autofillHints,
     TextEditingController? controller,
+    bool isPassword = false,
+    VoidCallback? onPressed,
   }) {
     final theme = Theme.of(context);
     
@@ -175,6 +226,15 @@ class _PersonalInfoForm extends StatelessWidget {
             horizontal: 16,
             vertical: 18,
           ),
+          suffixIcon: field == 'password' || field == 'confirmPassword'
+              ? IconButton(
+                  icon: Icon(
+                    obscureText ? Icons.visibility : Icons.visibility_off,
+                    color: theme.colorScheme.primary,
+                  ),
+                  onPressed: onPressed,
+                )
+              : null,
         ),
         onChanged: (value) => context.read<RegistrationBloc>().add(
               RegistrationFormFieldUpdated(
