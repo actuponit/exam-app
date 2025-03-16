@@ -3,6 +3,7 @@ import 'package:exam_app/features/auth/presentation/screens/institution_info_scr
 import 'package:exam_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/otp_verification_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/signup_screen.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
 import 'package:exam_app/features/quiz/presentation/screens/question_screen.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:exam_app/features/quiz/presentation/screens/year_selection_screen.dart';
@@ -76,7 +77,18 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.questions,
         name: 'Questions',
-        builder: (context, state) => const QuestionScreen(),
+        builder: (context, state) {
+          final chapter = state.pathParameters['chapter'] ?? '';
+          final year = int.tryParse(state.pathParameters['year'] ?? '');
+          final mode = state.pathParameters['mode'] == 'practice' 
+              ? QuestionMode.practice 
+              : QuestionMode.quiz;
+          return QuestionScreen(
+            chapter: chapter.isNotEmpty ? chapter : null,
+            year: year,
+            mode: mode,
+          );
+        },
       ),
       GoRoute(
         path: RoutePaths.profile,
@@ -115,12 +127,6 @@ class AppRouter {
         path: RoutePaths.transactionVerification,
         name: 'TransactionVerification',
         builder: (context, state) => const TransactionVerificationScreen(),
-      ),
-      // Deep link route
-      GoRoute(
-        path: RoutePaths.deepLinkQuestions,
-        name: 'DeepLinkQuestions',
-        builder: (context, state) => const QuestionScreen(),
       ),
     ],
     initialLocation: RoutePaths.login,

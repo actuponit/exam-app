@@ -99,7 +99,7 @@ class LoginScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
-                    context.go(RoutePaths.subjects) ;
+                    context.go(RoutePaths.home) ;
                   }
                 },
                 child: const Text('Login'),
@@ -114,7 +114,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      context.go(RoutePaths.home);
+                      context.go(RoutePaths.signUp);
                     },
                     child: const Text('Sign up'),
                   ),
