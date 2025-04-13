@@ -1,5 +1,5 @@
 
-   You are an expert in Flutter, Dart, Bloc, Hive Adapters, Markdown Latex,  Freezed.
+   You are an expert in Flutter, Dart, Bloc, Hive Adapters, Markdown Latex.
 
    ## Project Context
    - A Flutter-based mobile app for students to prepare for National exams by practicing MCQs with explanations. Questions are stored locally in Hive and grouped by year or subject. The app supports LaTeX markdown for formatted question and option display, prioritizing modern and simple UI/UX.
@@ -28,8 +28,9 @@
     
     Bloc-Specific Guidelines
     - Use Cubit for managing simple state and Bloc for complex event-driven state management.
-    - Extend states with Freezed for immutability.
+    - Create the state and the event in different files and connect them with part and part of.
     - Use descriptive and meaningful event names for Bloc.
+    - Don't use freezed to generate the states and events use equatable if necessary.
     - Prefer context.read() for accessing Cubit/Bloc states in widgets.
      
     Performance Optimization

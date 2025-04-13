@@ -9,20 +9,19 @@ import 'question_event.dart';
 import 'question_state.dart';
 
 class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
-  final QuestionRepository repository;
+  final QuestionRepository _repository;
+  static const int questionsPerPage = 3;
+  static const int quizDurationMinutes = 30;
   Timer? _timer;
 
-  final int questionsPerPage = 3;
-
   QuestionBloc({
-    required this.repository,
-  }) : super(const QuestionState(mode: QuestionMode.practice)) {
+    required QuestionRepository repository,
+  })  : _repository = repository,
+        super(const QuestionState()) {
     on<QuestionStarted>(_onQuestionStarted);
     on<QuestionPageChanged>(_onQuestionPageChanged);
     on<QuestionAnswered>(_onQuestionAnswered);
     on<QuizSubmitted>(_onQuizSubmitted);
-    on<AnswerRevealed>(_onAnswerRevealed);
-    on<LoadMoreRequested>(_onLoadMoreRequested);
   }
 
   Future<void> _onQuestionStarted(
@@ -33,41 +32,51 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
       status: QuestionStatus.loading,
       chapter: event.chapter,
       year: event.year,
-      mode: event.mode,
+      isQuizMode: event.isQuizMode,
       answers: const {},
-      pageController: PageController(),
-      startTime: DateTime.now(),
+      currentPage: 0,
+      isSubmitted: false,
+      scoreResult: null,
+      timeRemaining: event.isQuizMode ? quizDurationMinutes * 60 : null,
+      startTime: event.isQuizMode ? DateTime.now() : null,
     ));
 
     try {
-      final questions = await repository.getQuestions(
+      final questions = await _repository.getQuestions(
         chapter: event.chapter,
         year: event.year,
       );
 
-      if (questions.isEmpty) {
-        emit(state.copyWith(
-          status: QuestionStatus.error,
-          error: 'No questions available',
-        ));
-        return;
-      }
+      emit(state.copyWith(
+        status: QuestionStatus.success,
+        questions: questions,
+      ));
 
-      if (event.mode == QuestionMode.quiz) {
+      if (event.isQuizMode) {
         _startTimer(emit);
       }
-
-      emit(state.copyWith(
-        status: QuestionStatus.loaded,
-        questions: questions,
-        error: null,
-      ));
     } catch (e) {
       emit(state.copyWith(
         status: QuestionStatus.error,
         error: e.toString(),
       ));
     }
+  }
+
+  void _startTimer(Emitter<QuestionState> emit) {
+    _timer?.cancel();
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        final remaining = state.timeRemaining;
+        if (remaining == null || remaining <= 1) {
+          timer.cancel();
+          add(const QuizSubmitted());
+        } else {
+          emit(state.copyWith(timeRemaining: remaining - 1));
+        }
+      },
+    );
   }
 
   void _onQuestionPageChanged(
@@ -77,107 +86,49 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     emit(state.copyWith(currentPage: event.page));
   }
 
-  Future<void> _onQuestionAnswered(
+  void _onQuestionAnswered(
     QuestionAnswered event,
     Emitter<QuestionState> emit,
-  ) async {
-    final answer = models.Answer(
-      questionId: event.questionId,
-      selectedOption: event.selectedOption,
-      answeredAt: DateTime.now(),
-    );
+  ) {
+    final newAnswers = Map<String, String>.from(state.answers)
+      ..[event.questionId] = event.selectedOption;
 
-    try {
-      await repository.saveAnswer(answer);
+    emit(state.copyWith(answers: newAnswers));
 
-      final answers = Map<String, models.Answer>.from(state.answers)
-        ..[event.questionId] = answer;
-
-      emit(state.copyWith(answers: answers));
-
-      if (state.mode == QuestionMode.practice) {
-        // Move to next question after a delay in practice mode
-        await Future.delayed(const Duration(seconds: 2));
-        if (state.currentPage < state.questions.length - 1) {
-          state.pageController?.nextPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        }
-      }
-    } catch (e) {
-      emit(state.copyWith(
-        status: QuestionStatus.error,
-        error: 'Failed to save answer: ${e.toString()}',
-      ));
+    // In practice mode, calculate score after each answer
+    if (!state.isQuizMode) {
+      final scoreResult = ScoreCalculator.calculateScore(
+        state.questions,
+        newAnswers,
+      );
+      emit(state.copyWith(scoreResult: scoreResult));
     }
   }
 
-  Future<void> _onQuizSubmitted(
+  void _onQuizSubmitted(
     QuizSubmitted event,
     Emitter<QuestionState> emit,
-  ) async {
+  ) {
+    if (!state.canSubmit && !state.hasTimeExpired) return;
+
     _timer?.cancel();
+
+    final scoreResult = ScoreCalculator.calculateScore(
+      state.questions,
+      state.answers,
+    );
+
     emit(state.copyWith(
       status: QuestionStatus.submitted,
+      isSubmitted: true,
+      scoreResult: scoreResult,
       timeRemaining: 0,
     ));
-  }
-
-  void _onAnswerRevealed(
-    AnswerRevealed event,
-    Emitter<QuestionState> emit,
-  ) {
-    // In practice mode, we might want to track which answers were revealed
-    // For now, we'll just keep it simple
-  }
-
-  Future<void> _onLoadMoreRequested(
-    LoadMoreRequested event,
-    Emitter<QuestionState> emit,
-  ) async {
-    try {
-      final nextPage = (state.questions.length ~/ questionsPerPage);
-      final moreQuestions = await repository.getQuestions(
-        chapter: state.questions.first.chapter,
-        year: state.questions.first.year,
-        page: nextPage,
-        pageSize: questionsPerPage,
-      );
-
-      if (moreQuestions.isNotEmpty) {
-        emit(state.copyWith(
-          questions: [...state.questions, ...moreQuestions],
-        ));
-      }
-    } catch (e) {
-      // Handle error silently or show a notification
-    }
-  }
-
-  void _startTimer(Emitter<QuestionState> emit) {
-    const quizDuration = 30; // 30 minutes
-    emit(state.copyWith(timeRemaining: quizDuration));
-
-    _timer?.cancel();
-    _timer = Timer.periodic(
-      const Duration(minutes: 1),
-      (timer) {
-        final remaining = state.timeRemaining ?? 0;
-        if (remaining <= 1) {
-          add(const QuizSubmitted());
-          timer.cancel();
-        } else {
-          emit(state.copyWith(timeRemaining: remaining - 1));
-        }
-      },
-    );
   }
 
   @override
   Future<void> close() {
     _timer?.cancel();
-    state.pageController?.dispose();
     return super.close();
   }
 } 

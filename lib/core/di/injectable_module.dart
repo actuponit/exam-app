@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
-import '../services/hive_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @module
 abstract class InjectableModule {
-  // Remove any HiveService registration if it exists here
-  // Only register third-party services that can't be annotated with @injectable
+  @preResolve
+  Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
 } 

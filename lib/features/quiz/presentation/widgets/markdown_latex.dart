@@ -5,14 +5,14 @@ import 'package:markdown/markdown.dart' as md;
 
 class MarkdownLatex extends StatelessWidget {
   final String data;
-  final bool selectable;
   final TextStyle? style;
+  final bool selectable;
 
   const MarkdownLatex({
     super.key,
     required this.data,
-    this.selectable = false,
     this.style,
+    this.selectable = false,
   });
 
   @override

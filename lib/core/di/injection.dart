@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'injection.config.dart';
 
 final getIt = GetIt.instance;
 
@@ -9,6 +10,5 @@ final getIt = GetIt.instance;
   asExtension: false, // default
 )
 Future<void> configureDependencies() async {
-  // This will be implemented by build_runner
-  // await init(getIt);
+  await init(getIt);
 }

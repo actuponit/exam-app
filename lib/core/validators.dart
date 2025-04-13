@@ -1,35 +1,5 @@
 import 'package:formz/formz.dart';
 
-enum InstitutionType {
-  school,
-  university,
-  postGrad,
-  other;
-
-  static InstitutionType? fromString(String value) {
-    try {
-      return values.firstWhere(
-        (type) => type.name.toLowerCase() == value.toLowerCase(),
-      );
-    } catch (_) {
-      return null;
-    }
-  }
-
-  String get displayName {
-    switch (this) {
-      case InstitutionType.school:
-        return 'School';
-      case InstitutionType.university:
-        return 'University';
-      case InstitutionType.postGrad:
-        return 'Post Graduate';
-      case InstitutionType.other:
-        return 'Other Institution';
-    }
-  }
-}
-
 class FirstName extends FormzInput<String, String> {
   const FirstName.pure([super.value = '']) : super.pure();
   const FirstName.dirty([super.value = '']) : super.dirty();

@@ -2,19 +2,17 @@ import '../models/question.dart';
 import '../models/answer.dart' as models;
 
 class ScoreResult {
-  final String grade;
-  final double percentage;
-  final int correctAnswers;
   final int totalQuestions;
-  final Duration? timeSpent;
+  final int correctAnswers;
+  final double percentage;
+  final String grade;
   final String message;
 
   const ScoreResult({
-    required this.grade,
-    required this.percentage,
-    required this.correctAnswers,
     required this.totalQuestions,
-    this.timeSpent,
+    required this.correctAnswers,
+    required this.percentage,
+    required this.grade,
     required this.message,
   });
 }
@@ -22,56 +20,42 @@ class ScoreResult {
 class ScoreCalculator {
   static ScoreResult calculateScore(
     List<Question> questions,
-    Map<String, models.Answer> answers, {
-    DateTime? startTime,
-  }) {
+    Map<String, String> answers,
+  ) {
     final totalQuestions = questions.length;
-    final answeredQuestions = answers.length;
     final correctAnswers = questions.where((q) {
       final answer = answers[q.id];
-      return answer != null && answer.selectedOption == q.correctOption;
+      return answer != null && answer == q.correctOption;
     }).length;
 
-    final percentage = correctAnswers / totalQuestions;
-    final grade = _calculateGrade(percentage);
-    final message = _getMotivationalMessage(percentage);
-    final timeSpent = startTime != null ? DateTime.now().difference(startTime) : null;
+    final percentage = (correctAnswers / totalQuestions) * 100;
+
+    String grade;
+    String message;
+
+    if (percentage >= 90) {
+      grade = 'A';
+      message = 'Excellent! You\'ve mastered this topic!';
+    } else if (percentage >= 80) {
+      grade = 'B';
+      message = 'Great job! Keep up the good work!';
+    } else if (percentage >= 70) {
+      grade = 'C';
+      message = 'Good effort! A bit more practice will help.';
+    } else if (percentage >= 60) {
+      grade = 'D';
+      message = 'You\'re getting there. Keep practicing!';
+    } else {
+      grade = 'F';
+      message = 'Don\'t give up! Review and try again.';
+    }
 
     return ScoreResult(
-      grade: grade,
-      percentage: percentage,
-      correctAnswers: correctAnswers,
       totalQuestions: totalQuestions,
-      timeSpent: timeSpent,
+      correctAnswers: correctAnswers,
+      percentage: percentage,
+      grade: grade,
       message: message,
     );
-  }
-
-  static String _calculateGrade(double percentage) {
-    if (percentage >= 0.9) return 'A+';
-    if (percentage >= 0.8) return 'A';
-    if (percentage >= 0.7) return 'B';
-    if (percentage >= 0.6) return 'C';
-    if (percentage >= 0.5) return 'D';
-    return 'F';
-  }
-
-  static String _getMotivationalMessage(double percentage) {
-    if (percentage >= 0.9) {
-      return 'Outstanding! You\'ve mastered this topic! 🌟';
-    }
-    if (percentage >= 0.8) {
-      return 'Excellent work! Keep up the great performance! 🎉';
-    }
-    if (percentage >= 0.7) {
-      return 'Good job! You\'re making solid progress! 👍';
-    }
-    if (percentage >= 0.6) {
-      return 'Not bad! A little more practice will help you improve! 💪';
-    }
-    if (percentage >= 0.5) {
-      return 'You\'re getting there! Keep practicing and you\'ll see better results! 📚';
-    }
-    return 'Don\'t give up! Every attempt is a step toward mastery! 🎯';
   }
 }

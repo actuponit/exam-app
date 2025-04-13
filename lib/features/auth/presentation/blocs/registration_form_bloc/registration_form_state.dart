@@ -1,22 +1,22 @@
 part of 'registration_form_bloc.dart';
 
-enum RegistrationStep { personalInfo, institutionInfo, otpVerification, finish }
+enum RegistrationStep { personalInfo, institutionInfo, finish }
 
 class RegistrationState extends Equatable {
   final RegistrationStep currentStep;
   final PersonalInfoForm personalInfo;
   final InstitutionInfoForm institutionInfo;
-  final OtpInput? otp;
   final bool status;
   final bool isLoading;
+  final int currentPage;
 
   const RegistrationState({
     this.currentStep = RegistrationStep.personalInfo,
     this.personalInfo = const PersonalInfoForm(),
     this.institutionInfo = const InstitutionInfoForm(),
-    this.otp,
     this.status = false,
     this.isLoading = false,
+    this.currentPage = 0,
   });
 
   @override
@@ -24,101 +24,88 @@ class RegistrationState extends Equatable {
     currentStep,
     personalInfo,
     institutionInfo,
-    otp,
     status,
     isLoading,
+    currentPage,
   ];
 
-  // CopyWith and props methods...
   RegistrationState copyWith({
     RegistrationStep? currentStep,
     PersonalInfoForm? personalInfo,
     InstitutionInfoForm? institutionInfo,
-    OtpInput? otp,
     bool? status,
     bool? isLoading,
+    int? currentPage,
   }) {
     return RegistrationState(
       currentStep: currentStep ?? this.currentStep,
       personalInfo: personalInfo ?? this.personalInfo,
       institutionInfo: institutionInfo ?? this.institutionInfo,
-      otp: otp ?? this.otp,
       status: status ?? this.status,
       isLoading: isLoading ?? this.isLoading,
+      currentPage: currentPage ?? this.currentPage,
     );
   }
 }
 
 class PersonalInfoForm extends Equatable {
-  final FirstName firstName;
-  final LastName lastName;
-  final PhoneNumber phone;
-  final Email email;
-  final Password password;
-  final ConfirmPassword confirmPassword;
+  final String firstName;
+  final String lastName;
+  final String phone;
+  final String email;
 
   const PersonalInfoForm({
-    this.firstName = const FirstName.pure(),
-    this.lastName = const LastName.pure(),
-    this.phone = const PhoneNumber.pure(),
-    this.email = const Email.pure(),
-    this.password = const Password.pure(),
-    this.confirmPassword = const ConfirmPassword.pure(),
+    this.firstName = '',
+    this.lastName = '',
+    this.phone = '',
+    this.email = '',
   });
 
   @override
-  List<Object?> get props => [
-    firstName,
-    lastName,
-    phone,
-    email,
-    password,
-    confirmPassword,
-  ];
+  List<Object?> get props => [firstName, lastName, phone, email];
 
-  // CopyWith and props methods...
   PersonalInfoForm copyWith({
-    FirstName? firstName,
-    LastName? lastName,
-    PhoneNumber? phone,
-    Email? email,
-    Password? password,
-    ConfirmPassword? confirmPassword,
+    String? firstName,
+    String? lastName,
+    String? phone,
+    String? email,
   }) {
     return PersonalInfoForm(
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       phone: phone ?? this.phone,
       email: email ?? this.email,
-      password: password ?? this.password,
-      confirmPassword: confirmPassword ?? this.confirmPassword,
     );
   }
 }
 
 class InstitutionInfoForm extends Equatable {
   final InstitutionType institutionType;
-  final InstitutionName institutionName;
+  final String institutionName;
   final String examType;
+  final String referralCode;
+
   const InstitutionInfoForm({
-    this.institutionType = InstitutionType.school,
-    this.institutionName = const InstitutionName.pure(),
+    this.institutionType = InstitutionType.elementary,
+    this.institutionName = '',
     this.examType = '',
+    this.referralCode = '',
   });
 
   @override
-  List<Object?> get props => [institutionType, institutionName, examType];
+  List<Object?> get props => [institutionType, institutionName, examType, referralCode];
 
-  // CopyWith and props methods...
   InstitutionInfoForm copyWith({
     InstitutionType? institutionType,
-    InstitutionName? institutionName,
+    String? institutionName,
     String? examType,
+    String? referralCode,
   }) {
     return InstitutionInfoForm(
       institutionType: institutionType ?? this.institutionType,
       institutionName: institutionName ?? this.institutionName,
       examType: examType ?? this.examType,
+      referralCode: referralCode ?? this.referralCode,
     );
   }
 }

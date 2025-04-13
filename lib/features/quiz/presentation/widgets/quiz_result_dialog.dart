@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import '../../domain/services/score_calculator.dart';
 
 class ResultDialog extends StatelessWidget {
-  final ScoreResult result;
-  final VoidCallback onRetry;
-  final VoidCallback onBackToSelection;
+  final ScoreResult scoreResult;
+  final VoidCallback onClose;
 
   const ResultDialog({
     super.key,
-    required this.result,
-    required this.onRetry,
-    required this.onBackToSelection,
+    required this.scoreResult,
+    required this.onClose,
   });
 
   @override
@@ -27,7 +25,7 @@ class ResultDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            result.grade,
+            scoreResult.grade,
             style: theme.textTheme.displayMedium?.copyWith(
               color: colorScheme.primary,
               fontWeight: FontWeight.bold,
@@ -35,20 +33,20 @@ class ResultDialog extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '${(result.percentage * 100).toStringAsFixed(1)}%',
+            '${scoreResult.percentage.toStringAsFixed(1)}%',
             style: theme.textTheme.titleLarge?.copyWith(
               color: colorScheme.secondary,
             ),
           ),
           const SizedBox(height: 16),
           Text(
-            'Correct Answers: ${result.correctAnswers}/${result.totalQuestions}',
+            'Correct Answers: ${scoreResult.correctAnswers}/${scoreResult.totalQuestions}',
             style: theme.textTheme.titleMedium,
           ),
           
           const SizedBox(height: 24),
           Text(
-            result.message,
+            scoreResult.message,
             style: theme.textTheme.bodyLarge?.copyWith(
               fontStyle: FontStyle.italic,
             ),
@@ -57,15 +55,11 @@ class ResultDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: onBackToSelection,
-          child: const Text('Back to Selection'),
-        ),
         FilledButton(
-          onPressed: onRetry,
-          child: const Text('Try Again'),
+          onPressed: onClose,
+          child: const Text('Close'),
         ),
       ],
     );
   }
-}
+} 

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:exam_app/features/auth/blocs/registration_form_bloc/registration_form_bloc.dart';
+import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
+import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
+import 'package:exam_app/features/auth/data/models/exam_type.dart';
+import 'package:exam_app/core/widgets/shimmer_effect.dart';
 
 class ExamSelectionWidget extends StatefulWidget {
   const ExamSelectionWidget({super.key});
@@ -10,42 +13,17 @@ class ExamSelectionWidget extends StatefulWidget {
 }
 
 class _ExamSelectionWidgetState extends State<ExamSelectionWidget> {
-  final List<ExamType> _examTypes = const [
-    ExamType(
-      title: 'EUEE',
-      subtitle: 'Ethiopian University Entrance Exam',
-      subjects: 6,
-      price: 149,
-      features: ['All Subjects', '5 Year Papers', 'Natural Science', 'Social Science', 'Up to 30 sample questions per subject'],
-    ),
-    ExamType(
-      title: 'Exit Exam',
-      subtitle: 'University Graduation Exam',
-      subjects: 8,
-      price: 199,
-      features: ['Department Specific', 'Practical Tests', 'Explanation'],
-    ),
-    ExamType(
-      title: 'GAT',
-      subtitle: 'Graduate Admission Test',
-      subjects: 4,
-      price: 299,
-      features: ['Explanation', 'Different Departments', 'Up to 10 sample questions per department'],
-    ),
-    ExamType(
-      title: 'International',
-      subtitle: 'SAT/ACT/IELTS Prep',
-      subjects: 5,
-      price: 399,
-      features: ['Global Curriculum', 'Differe years'],
-    ),
-  ];
+  String selectedExam = '';
 
-  String texam = '';
+  @override
+  void initState() {
+    super.initState();
+    context.read<AuthBloc>().add(LoadExamTypes());
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RegistrationBloc, RegistrationState>(
+    return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         return Column(
           children: [
@@ -57,31 +35,122 @@ class _ExamSelectionWidgetState extends State<ExamSelectionWidget> {
                   ),
             ),
             const SizedBox(height: 20),
-            Column(
-              children: List.generate(_examTypes.length, (index) {
-                final exam = _examTypes[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 15),
-                  child: AnimatedExamCard(
-                    exam: exam,
-                    isSelected: texam == exam.title,
-                    onTap: () {
-                      setState(() {
-                        texam = exam.title;
-                      });
-                    },
-                    // onTap: () => context.read<RegistrationBloc>().add(
-                    //   ExamTypeSelected(selectedExam == exam.title ? '' : exam.title),
-                    // ),
-                  ),
-                );
-              }),
-            ),
+            if (state.isLoading)
+              _buildShimmerList()
+            else if (state.error.isNotEmpty)
+              _buildErrorWidget(state.error)
+            else
+              _buildExamList(state.examTypes),
             const SizedBox(height: 30),
             _buildFreeTrialBanner(),
           ],
         );
       },
+    );
+  }
+
+  Widget _buildShimmerList() {
+    return Column(
+      children: List.generate(
+        2,
+        (index) => Padding(
+          padding: const EdgeInsets.only(bottom: 15),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+            ),
+            child: const Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ShimmerEffect(
+                            width: 120,
+                            height: 24,
+                            radius: 4,
+                            margin: const EdgeInsets.only(bottom: 8),
+                          ),
+                          ShimmerEffect(
+                            width: double.infinity,
+                            height: 16,
+                            radius: 4,
+                            margin: const EdgeInsets.only(bottom: 8),
+                          ),
+                          ShimmerEffect(
+                            width: 80,
+                            height: 20,
+                            radius: 4,
+                          ),
+                        ],
+                      ),
+                    ),
+                    ShimmerEffect(
+                      width: 24,
+                      height: 24,
+                      radius: 12,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget(String error) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.errorContainer,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.error_outline,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              error,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExamList(List<ExamType> examTypes) {
+    return Column(
+      children: List.generate(examTypes.length, (index) {
+        final exam = examTypes[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 15),
+          child: AnimatedExamCard(
+            exam: exam,
+            isSelected: selectedExam == exam.name,
+            onTap: () {
+              setState(() {
+                selectedExam = exam.name;
+              });
+            },
+          ),
+        );
+      }),
     );
   }
 
@@ -112,22 +181,6 @@ class _ExamSelectionWidgetState extends State<ExamSelectionWidget> {
   }
 }
 
-class ExamType {
-  final String title;
-  final String subtitle;
-  final int subjects;
-  final double price;
-  final List<String> features;
-
-  const ExamType({
-    required this.title,
-    required this.subtitle,
-    required this.subjects,
-    required this.price,
-    required this.features,
-  });
-}
-
 class AnimatedExamCard extends StatefulWidget {
   final ExamType exam;
   final bool isSelected;
@@ -149,9 +202,8 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
   Widget build(BuildContext context) {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
-        // final isSelected = state.institutionInfo.examType == widget.exam.title;
         final isSelected = widget.isSelected;
-        final isReallySelected = widget.exam.title == state.institutionInfo.examType;
+        final isReallySelected = widget.exam.name == state.institutionInfo.examType;
         final theme = Theme.of(context);
         
         return AnimatedContainer(
@@ -180,7 +232,6 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
           ),
           child: Stack(
             children: [
-              // Selection glow effect
               if (isSelected)
                 Positioned.fill(
                   child: Container(
@@ -190,8 +241,8 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
                         center: Alignment.topLeft,
                         radius: 1.5,
                         colors: [
-                          theme.colorScheme.primary.withValues(alpha: 0.05),
-                          theme.colorScheme.primary.withValues(alpha: 0.01),
+                          theme.colorScheme.primary.withAlpha(5),
+                          theme.colorScheme.primary.withAlpha(1),
                         ],
                       ),
                     ),
@@ -210,7 +261,6 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Selection indicator
                                 if (isReallySelected)
                                   Row(
                                     children: [
@@ -230,7 +280,7 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
                                     ],
                                   ),
                                 Text(
-                                  widget.exam.title,
+                                  widget.exam.name,
                                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: isSelected
@@ -239,9 +289,17 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
                                       ),
                                 ),
                                 Text(
-                                  widget.exam.subtitle,
+                                  widget.exam.description,
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  widget.exam.formattedPrice,
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                 ),
                               ],
@@ -273,22 +331,11 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
       children: [
         const Divider(),
         const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: widget.exam.features
-              .map((feature) => Chip(
-                    label: Text(feature),
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  ))
-              .toList(),
-        ),
-        const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
           child: FilledButton(
             onPressed: () => context.read<RegistrationBloc>().add(
-              ExamTypeSelected(widget.exam.title),
+              ExamTypeSelected(widget.exam.name),
             ),
             child: const Text('Select Exam'),
           ),

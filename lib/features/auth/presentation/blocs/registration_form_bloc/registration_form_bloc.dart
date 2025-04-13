@@ -3,16 +3,17 @@
 
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:exam_app/core/validators.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formz/formz.dart';
+import 'package:exam_app/features/auth/domain/models/institution_type.dart';
+import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 
 part 'registration_form_event.dart';
 part 'registration_form_state.dart';
 
-
 class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
-  RegistrationBloc() : super(const RegistrationState()) {
+  final AuthBloc? authBloc; // Optional to allow creation without auth bloc for tests
+
+  RegistrationBloc({this.authBloc}) : super(const RegistrationState()) {
     on<RegistrationStepChanged>(_onStepChanged);
     on<RegistrationFormFieldUpdated>(_onFormFieldUpdated);
     on<RegistrationFormSubmitted>(_onFormSubmitted);
@@ -35,29 +36,14 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         final personalInfo = updatePersonalInfo(state.personalInfo, event);
         emit(state.copyWith(
           personalInfo: personalInfo,
-          status: Formz.validate([
-            personalInfo.firstName,
-            personalInfo.lastName,
-            personalInfo.phone,
-            personalInfo.email,
-            personalInfo.password,
-            personalInfo.confirmPassword,
-          ]),
+          status: true,
         ));
         break;
       case RegistrationStep.institutionInfo:
         final institutionInfo = updateInstitutionInfo(state.institutionInfo, event);
         emit(state.copyWith(
           institutionInfo: institutionInfo,
-          status: Formz.validate([
-            institutionInfo.institutionName,
-          ]),
-        ));
-        break;
-      case RegistrationStep.otpVerification:
-        emit(state.copyWith(
-          otp: OtpInput.dirty(event.value),
-          status: Formz.validate([OtpInput.dirty(event.value)]),
+          status: true,
         ));
         break;
       case RegistrationStep.finish:
@@ -70,15 +56,28 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     RegistrationFormSubmitted event,
     Emitter<RegistrationState> emit,
   ) async {
-    if (state.status) {
-      emit(state.copyWith(status: false, isLoading: true, currentStep: RegistrationStep.finish));
-      try {
-        // Simulate API call
+    emit(state.copyWith(status: false, isLoading: true, currentStep: RegistrationStep.finish));
+    try {
+      // If authBloc is provided, use it to register the user
+      if (authBloc != null) {
+        authBloc!.add(RegisterUser(
+          firstName: state.personalInfo.firstName,
+          lastName: state.personalInfo.lastName,
+          phone: state.personalInfo.phone,
+          email: state.personalInfo.email,
+          institutionType: state.institutionInfo.institutionType.name,
+          institutionName: state.institutionInfo.institutionName,
+          examType: state.institutionInfo.examType,
+          referralCode: state.institutionInfo.referralCode.isNotEmpty ? state.institutionInfo.referralCode : null,
+        ));
+      } else {
+        // Simulate API call for when authBloc isn't available
         await Future.delayed(const Duration(seconds: 2));
-        emit(state.copyWith(status: true, isLoading: false));
-      } catch (_) {
-        emit(state.copyWith(status: false, isLoading: false));
       }
+      
+      emit(state.copyWith(status: true, isLoading: false));
+    } catch (_) {
+      emit(state.copyWith(status: false, isLoading: false));
     }
   }
 
@@ -97,32 +96,30 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   PersonalInfoForm updatePersonalInfo(PersonalInfoForm form, RegistrationFormFieldUpdated event) {
     switch (event.field) {
       case 'firstName':
-        return form.copyWith(firstName: FirstName.dirty(event.value));
+        return form.copyWith(firstName: event.value);
       case 'lastName':
-        return form.copyWith(lastName: LastName.dirty(event.value));
+        return form.copyWith(lastName: event.value);
       case 'phone':
-        return form.copyWith(phone: PhoneNumber.dirty(event.value));
+        return form.copyWith(phone: event.value);
       case 'email':
-        return form.copyWith(email: Email.dirty(event.value));
-      case 'password':
-        return form.copyWith(password: Password.dirty(event.value));
-      case 'confirmPassword':
-        return form.copyWith(confirmPassword: ConfirmPassword.dirty(event.value));
+        return form.copyWith(email: event.value);
       default:
         return form;
     }
   }
 
-  updateInstitutionInfo(InstitutionInfoForm institutionInfo, RegistrationFormFieldUpdated event) {
+  InstitutionInfoForm updateInstitutionInfo(InstitutionInfoForm form, RegistrationFormFieldUpdated event) {
     switch (event.field) {
       case 'institutionType':
-        return institutionInfo.copyWith(institutionType: InstitutionType.fromString(event.value));
+        return form.copyWith(institutionType: InstitutionType.values.firstWhere(
+          (type) => type.name == event.value,
+        ));
       case 'institutionName':
-        return institutionInfo.copyWith(institutionName: InstitutionName.dirty(event.value));
-      case 'examType':
-        return institutionInfo.copyWith(institutionName: InstitutionName.dirty(event.value));
+        return form.copyWith(institutionName: event.value);
+      case 'referralCode':
+        return form.copyWith(referralCode: event.value);
       default:
-        return institutionInfo;
+        return form;
     }
   }
 }

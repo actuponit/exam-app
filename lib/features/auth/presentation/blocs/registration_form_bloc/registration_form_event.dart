@@ -10,6 +10,17 @@ sealed class RegistrationEvent extends Equatable {
 class RegistrationStepChanged extends RegistrationEvent {
   final RegistrationStep step;
   const RegistrationStepChanged(this.step);
+  
+  @override
+  List<Object> get props => [step];
+}
+
+class PageChanged extends RegistrationEvent {
+  final int page;
+  const PageChanged(this.page);
+  
+  @override
+  List<Object> get props => [page];
 }
 
 class RegistrationFormFieldUpdated extends RegistrationEvent {
@@ -21,6 +32,9 @@ class RegistrationFormFieldUpdated extends RegistrationEvent {
     required this.field,
     required this.value,
   });
+  
+  @override
+  List<Object> get props => [step, field, value];
 }
 
 class RegistrationFormSubmitted extends RegistrationEvent {}

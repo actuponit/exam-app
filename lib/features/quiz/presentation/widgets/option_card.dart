@@ -4,83 +4,69 @@ import '../widgets/markdown_latex.dart';
 class OptionCard extends StatelessWidget {
   final String option;
   final bool isSelected;
-  final bool isCorrect;
-  final bool showCorrect;
+  final bool? isCorrect;
   final VoidCallback? onTap;
 
   const OptionCard({
     super.key,
     required this.option,
     required this.isSelected,
-    required this.isCorrect,
-    required this.showCorrect,
+    this.isCorrect,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    Color getBackgroundColor() {
-      if (!isSelected && !showCorrect) return theme.cardColor;
-      if (showCorrect && isCorrect) return colorScheme.primary.withOpacity(0.15);
-      if (isSelected && !isCorrect) return colorScheme.error.withOpacity(0.15);
-      return theme.cardColor;
+    
+    // Determine colors based on selection and correctness
+    Color backgroundColor;
+    Color borderColor;
+    Color textColor;
+    
+    if (isCorrect == null) {
+      // Not showing correctness yet
+      backgroundColor = isSelected 
+          ? theme.colorScheme.primaryContainer 
+          : theme.colorScheme.surface;
+      borderColor = isSelected 
+          ? theme.colorScheme.primary 
+          : theme.colorScheme.outline;
+      textColor = isSelected 
+          ? theme.colorScheme.onPrimaryContainer 
+          : theme.colorScheme.onSurface;
+    } else if (isCorrect == true) {
+      // Correct answer
+      backgroundColor = Colors.green.withOpacity(0.2);
+      borderColor = Colors.green;
+      textColor = Colors.green.shade800;
+    } else {
+      // Incorrect answer
+      backgroundColor = isSelected 
+          ? Colors.red.withOpacity(0.2) 
+          : theme.colorScheme.surface;
+      borderColor = isSelected ? Colors.red : theme.colorScheme.outline;
+      textColor = isSelected ? Colors.red.shade800 : theme.colorScheme.onSurface;
     }
 
-    Color getBorderColor() {
-      if (!isSelected && !showCorrect) return theme.dividerColor;
-      if (showCorrect && isCorrect) return colorScheme.primary;
-      if (isSelected && !isCorrect) return colorScheme.error;
-      return theme.dividerColor;
-    }
-
-    Widget? getTrailingIcon() {
-      if (!showCorrect && !isSelected) return null;
-      if (showCorrect && isCorrect) {
-        return Icon(
-          Icons.check_circle,
-          color: colorScheme.primary,
-        );
-      }
-      if (isSelected && !isCorrect) {
-        return Icon(
-          Icons.cancel,
-          color: colorScheme.error,
-        );
-      }
-      return null;
-    }
-
-    return Card(
-      elevation: isSelected ? 2 : 1,
-      color: getBackgroundColor(),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: getBorderColor(),
-          width: isSelected || (showCorrect && isCorrect) ? 2 : 1,
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: MarkdownLatex(
-                  data: option,
-                  selectable: true,
-                ),
-              ),
-              if (getTrailingIcon() != null) ...[
-                const SizedBox(width: 12),
-                getTrailingIcon()!,
-              ],
-            ],
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: borderColor),
+          ),
+          child: MarkdownLatex(
+            data: option,
+            style: TextStyle(
+              color: textColor,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
         ),
       ),

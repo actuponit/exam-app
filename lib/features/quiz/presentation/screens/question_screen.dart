@@ -1,319 +1,217 @@
-import 'package:exam_app/features/quiz/data/repositories/question_repository_impl.dart';
-import 'package:exam_app/features/quiz/domain/repositories/question_repository.dart';
+import 'package:exam_app/core/di/injection.dart';
 import 'package:flutter/material.dart';
-import 'package:confetti/confetti.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import '../../domain/repositories/question_repository.dart';
 import '../bloc/question_bloc.dart';
 import '../bloc/question_event.dart';
 import '../bloc/question_state.dart';
-import '../widgets/markdown_latex.dart';
-import '../widgets/option_card.dart';
-import '../widgets/result_dialog.dart';
+import '../widgets/question_card.dart';
+import '../widgets/quiz_result_dialog.dart';
 
 class QuestionScreen extends StatelessWidget {
   final String? chapter;
   final int? year;
-  final QuestionMode mode;
+  final bool isQuizMode;
 
   const QuestionScreen({
     super.key,
     this.chapter,
     this.year,
-    required this.mode,
+    this.isQuizMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => QuestionBloc(
-        repository: QuestionRepositoryImpl(),
-      )..add(
-          QuestionStarted(
-            chapter: chapter,
-            year: year,
-            mode: mode,
-          ),
-        ),
-      child: const QuestionView(),
+        repository: getIt<QuestionRepository>(),
+      )..add(QuestionStarted(
+          chapter: chapter,
+          year: year,
+          isQuizMode: isQuizMode,
+        )),
+      child: const QuestionScreenContent(),
     );
   }
 }
 
-class QuestionView extends StatefulWidget {
-  const QuestionView({super.key});
-
+class QuestionScreenContent extends StatefulWidget {
+  const QuestionScreenContent({super.key});
+  
   @override
-  State<QuestionView> createState() => _QuestionViewState();
+  State<QuestionScreenContent> createState() => _QuestionScreenContentState();
 }
 
-class _QuestionViewState extends State<QuestionView> {
-  late final ConfettiController _confettiController;
-
-  @override
-  void initState() {
-    super.initState();
-    _confettiController = ConfettiController(duration: const Duration(seconds: 1));
-  }
+class _QuestionScreenContentState extends State<QuestionScreenContent> {
+  final _pageController = PageController();
+  int _currentPage = 0;
 
   @override
   void dispose() {
-    _confettiController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
-  void _showResultDialog(BuildContext context, QuestionState state) {
-    if (state.scoreResult == null) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => ResultDialog(
-        result: state.scoreResult!,
-        onRetry: () {
-          context.read<QuestionBloc>().add(
-                QuestionStarted(
-                  chapter: state.chapter,
-                  year: state.year,
-                  mode: state.mode,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: BlocBuilder<QuestionBloc, QuestionState>(
+          builder: (context, state) {
+            if (!state.isQuizMode) return const Text('Practice Mode');
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+          children: [
+                const Text('Quiz Mode'),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    state.formattedTimeRemaining,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
+              ],
+            );
+          },
+        ),
+        actions: [
+          BlocBuilder<QuestionBloc, QuestionState>(
+            builder: (context, state) {
+              if (!state.isQuizMode) return const SizedBox();
+              return TextButton.icon(
+                onPressed: state.canSubmit
+                    ? () => context.read<QuestionBloc>().add(const QuizSubmitted())
+                    : null,
+                icon: const Icon(Icons.check_circle_outline),
+                label: const Text('Submit'),
               );
-          Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+      body: BlocConsumer<QuestionBloc, QuestionState>(
+        listener: (context, state) {
+          if (state.status == QuestionStatus.success && state.currentPage != _currentPage) {
+            _pageController.animateToPage(
+              state.currentPage,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+          
+          // Show result dialog when quiz is submitted
+          if (state.status == QuestionStatus.submitted && state.isQuizMode && state.scoreResult != null) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => ResultDialog(
+                scoreResult: state.scoreResult!,
+                onClose: () => Navigator.of(context).pop(),
+      ),
+    );
+  }
         },
-        onBackToSelection: () {
-          context.go('/select/${state.mode == QuestionMode.practice ? "practice" : "quiz"}');
-        },
+        builder: (context, state) {
+          if (state.status == QuestionStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state.status == QuestionStatus.error) {
+            return Center(
+      child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+                  const Text('Error loading questions'),
+          const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<QuestionBloc>().add(
+                            QuestionStarted(
+                              chapter: state.chapter,
+                              year: state.year,
+                              isQuizMode: state.isQuizMode,
+                            ),
+                          );
+                    },
+                    child: const Text('Retry'),
+            ),
+        ],
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<QuestionBloc, QuestionState>(
-      listener: (context, state) {
-        // Show confetti in practice mode when answer is correct
-        if (state.mode == QuestionMode.practice &&
-            state.answers.isNotEmpty) {
-          final lastAnswer = state.answers.values.last;
-          final question = state.questions.firstWhere(
-            (q) => q.id == lastAnswer.questionId,
-          );
-          if (lastAnswer.selectedOption == question.correctOption) {
-            _confettiController.play();
-          }
-        }
-
-        // Show result dialog when quiz is submitted
-        if (state.status == QuestionStatus.submitted) {
-          _showResultDialog(context, state);
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              state.mode == QuestionMode.practice
-                  ? 'Practice Mode'
-                  : 'Quiz Mode',
-            ),
-            actions: [
-              if (state.mode == QuestionMode.quiz)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Center(
-                    child: Text(
-                      'Time: ${state.timeRemaining ?? 0} min',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          body: Stack(
+          return Column(
             children: [
-              switch (state.status) {
-                QuestionStatus.loading => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                QuestionStatus.error => Center(
-                    child: SelectableText.rich(
-                      TextSpan(
-                        text: 'Error: ',
-                        style: const TextStyle(color: Colors.red),
-                        children: [
-                          TextSpan(
-                            text: state.error ?? 'Unknown error occurred',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ],
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (page) {
+                    setState(() => _currentPage = page);
+                    context.read<QuestionBloc>().add(QuestionPageChanged(page));
+                  },
+                  itemCount: state.totalPages,
+                  itemBuilder: (context, pageIndex) {
+                    final pageQuestions = state.questions.skip(pageIndex * 3).take(3).toList();
+                    
+                    return ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      itemCount: pageQuestions.length,
+                      itemBuilder: (context, index) {
+                        final question = pageQuestions[index];
+                        return QuestionCard(
+                          question: question,
+                          selectedAnswer: state.answers[question.id],
+                          showAnswer: !state.isQuizMode || state.isSubmitted,
+                          onAnswerSelected: (answer) {
+                            context.read<QuestionBloc>().add(
+                                  QuestionAnswered(
+                                    questionId: question.id,
+                                    selectedOption: answer,
+                                  ),
+                                );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              if (state.totalPages > 1)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      state.totalPages,
+                      (index) => Container(
+                        width: 8,
+                        height: 8,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: index == _currentPage
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey[300],
+                        ),
                       ),
                     ),
                   ),
-                _ => const QuestionContent(),
-              },
-              Align(
-                alignment: Alignment.topCenter,
-                child: ConfettiWidget(
-                  confettiController: _confettiController,
-                  blastDirectionality: BlastDirectionality.explosive,
-                  particleDrag: 0.05,
-                  emissionFrequency: 0.05,
-                  numberOfParticles: 20,
-                  gravity: 0.1,
-                  shouldLoop: false,
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.secondary,
-                    Theme.of(context).colorScheme.tertiary,
-                    Colors.pink,
-                    Colors.orange,
-                    Colors.purple,
-                  ],
                 ),
-              ),
             ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class QuestionContent extends StatelessWidget {
-  const QuestionContent({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<QuestionBloc, QuestionState>(
-      builder: (context, state) {
-        if (state.questions.isEmpty) {
-          return Center(
-            child: Text(
-              'No questions available${state.year != null ? " for year ${state.year}" : ""}${state.chapter != null ? " in chapter ${state.chapter}" : ""}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
           );
-        }
-
-        return Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: state.pageController,
-                onPageChanged: (index) {
-                  context.read<QuestionBloc>().add(
-                        QuestionPageChanged(index),
-                      );
-                },
-                itemCount: state.questions.length,
-                itemBuilder: (context, index) {
-                  final question = state.questions[index];
-                  final isAnswered = state.answers.containsKey(question.id);
-                  final selectedOption = state.answers[question.id]?.selectedOption;
-                  final showCorrect = state.mode == QuestionMode.practice && isAnswered;
-
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Question ${index + 1} of ${state.questions.length}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 16.0),
-                        MarkdownLatex(
-                          data: question.text,
-                          selectable: true,
-                        ),
-                        const SizedBox(height: 24.0),
-                        ...question.options.map((option) {
-                          final isSelected = selectedOption == option;
-                          final isCorrect = showCorrect && option == question.correctOption;
-
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: OptionCard(
-                              option: option,
-                              isSelected: isSelected,
-                              isCorrect: isCorrect,
-                              showCorrect: showCorrect,
-                              onTap: isAnswered
-                                  ? null
-                                  : () {
-                                      context.read<QuestionBloc>().add(
-                                            QuestionAnswered(
-                                              questionId: question.id,
-                                              selectedOption: option,
-                                            ),
-                                          );
-                                    },
-                            ),
-                          );
-                        }).toList(),
-                        if (showCorrect && question.explanation != null) ...[
-                          const SizedBox(height: 24.0),
-                          Text(
-                            'Explanation:',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 8.0),
-                          MarkdownLatex(
-                            data: question.explanation!,
-                            selectable: true,
-                          ),
-                        ],
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (state.currentPage > 0)
-                      ElevatedButton(
-                        onPressed: () {
-                          state.pageController?.previousPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: const Text('Previous'),
-                      )
-                    else
-                      const SizedBox.shrink(),
-                    if (state.mode == QuestionMode.quiz &&
-                        state.currentPage == state.questions.length - 1)
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<QuestionBloc>().add(
-                                const QuizSubmitted(),
-                              );
-                        },
-                        child: const Text('Submit'),
-                      )
-                    else if (state.currentPage < state.questions.length - 1)
-                      ElevatedButton(
-                        onPressed: () {
-                          state.pageController?.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: const Text('Next'),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+        },
+      ),
     );
   }
 } 

@@ -1,6 +1,6 @@
 import 'package:exam_app/core/router/app_router.dart';
-import 'package:exam_app/core/validators.dart';
-import 'package:exam_app/features/auth/blocs/registration_form_bloc/registration_form_bloc.dart';
+import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
+import 'package:exam_app/features/auth/domain/models/institution_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exam_app/features/auth/presentation/widgets/exam_selection_widget.dart';
@@ -22,24 +22,23 @@ class InstitutionInfoScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             context.pop();
-           context.read<RegistrationBloc>().add(
-                const RegistrationStepChanged(
-                  RegistrationStep.personalInfo,
-                ),
-              ); 
+            context.read<RegistrationBloc>().add(
+                  const RegistrationStepChanged(
+                    RegistrationStep.personalInfo,
+                  ),
+                );
           }
         ),
       ),
-      body:  SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              _buildProgressIndicator(context),
-              const SizedBox(height: 30),
-              _InstitutionInfoForm(),
-            ],
-          ),
-        
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            _buildProgressIndicator(context),
+            const SizedBox(height: 30),
+            _InstitutionInfoForm(),
+          ],
+        ),
       ),
     );
   }
@@ -48,7 +47,7 @@ class InstitutionInfoScreen extends StatelessWidget {
     return LinearProgressIndicator(
       value: 0.66,
       minHeight: 8,
-    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       valueColor: AlwaysStoppedAnimation<Color>(
         Theme.of(context).colorScheme.primary,
       ),
@@ -74,7 +73,6 @@ class _InstitutionInfoForm extends StatelessWidget {
               context: context,
               label: 'Institution Name',
               field: 'institutionName',
-              errorText: state.institutionInfo.institutionName.displayError,
             ),
             const ExamSelectionWidget(),
             const SizedBox(height: 30),
@@ -87,16 +85,10 @@ class _InstitutionInfoForm extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onPressed: state.status
-                    ? () {
-                      // bloc.add(
-                      //     const RegistrationStepChanged(
-                      //       RegistrationStep.otpVerification,
-                      //     ),
-                      //   );
-                      context.push(RoutePaths.otp);
-                    }
-                    : null,
+                onPressed: () {
+                  bloc.add(RegistrationFormSubmitted());
+                  context.go(RoutePaths.home);
+                },
                 child: const Text('Continue'),
               ),
             ),
@@ -130,7 +122,7 @@ class _InstitutionInfoForm extends StatelessWidget {
             (type) => DropdownMenuItem(
               value: type,
               child: Text(
-                type.name.toUpperCase(),
+                type.displayName,
                 style: theme.textTheme.bodyMedium,
               ),
             ),
@@ -154,7 +146,6 @@ class _InstitutionInfoForm extends StatelessWidget {
     required BuildContext context,
     required String label,
     required String field,
-    String? errorText,
   }) {
     return TextFormField(
       decoration: InputDecoration(
@@ -162,20 +153,18 @@ class _InstitutionInfoForm extends StatelessWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        errorText: errorText,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 18,
         ),
       ),
-      controller: TextEditingController(),
-      // onChanged: (value) => context.read<RegistrationBloc>().add(
-      //       RegistrationFormFieldUpdated(
-      //         step: RegistrationStep.institutionInfo,
-      //         field: field,
-      //         value: value,
-      //       ),
-      //     ),
+      onChanged: (value) => context.read<RegistrationBloc>().add(
+            RegistrationFormFieldUpdated(
+              step: RegistrationStep.institutionInfo,
+              field: field,
+              value: value,
+            ),
+          ),
     );
   }
 }

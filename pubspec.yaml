@@ -51,6 +51,7 @@ dependencies:
   flutter_math_fork: ^0.7.2
   shared_preferences: ^2.2.2
   markdown: ^7.2.1
+  dio: ^5.8.0+1
 
 dev_dependencies:
   flutter_test:

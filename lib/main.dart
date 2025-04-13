@@ -1,12 +1,14 @@
+import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/core/theme.dart';
-import 'package:exam_app/features/auth/blocs/registration_form_bloc/registration_form_bloc.dart';
+import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
+import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'core/di.dart';
 
-void main() {
-  setupDependencies();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await configureDependencies();
   runApp(const MainApp());
 }
 
@@ -18,7 +20,10 @@ class MainApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => RegistrationBloc(),
+          create: (context) => getIt<AuthBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => RegistrationBloc(authBloc: getIt<AuthBloc>()),
         ),
       ],
       child: MaterialApp.router(

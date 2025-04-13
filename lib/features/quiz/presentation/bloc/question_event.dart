@@ -11,16 +11,16 @@ abstract class QuestionEvent extends Equatable {
 class QuestionStarted extends QuestionEvent {
   final String? chapter;
   final int? year;
-  final QuestionMode mode;
+  final bool isQuizMode;
 
   const QuestionStarted({
     this.chapter,
     this.year,
-    required this.mode,
+    this.isQuizMode = false,
   });
 
   @override
-  List<Object?> get props => [chapter, year, mode];
+  List<Object?> get props => [chapter, year, isQuizMode];
 }
 
 class QuestionPageChanged extends QuestionEvent {

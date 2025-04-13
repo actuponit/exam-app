@@ -1,8 +1,5 @@
 import 'package:exam_app/features/auth/presentation/screens/home_screen.dart';
-import 'package:exam_app/features/auth/presentation/screens/institution_info_screen.dart';
-import 'package:exam_app/features/auth/presentation/screens/login_screen.dart';
-import 'package:exam_app/features/auth/presentation/screens/otp_verification_screen.dart';
-import 'package:exam_app/features/auth/presentation/screens/signup_screen.dart';
+import 'package:exam_app/features/auth/presentation/screens/registration_screen.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
 import 'package:exam_app/features/quiz/presentation/screens/question_screen.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
@@ -15,8 +12,6 @@ import 'package:flutter/material.dart';
 class RoutePaths {
   static const String login = '/login';
   static const String signUp = '/signup';
-  static const String institution = '/institution';
-  static const String otp = '/otp';
   static const String home = '/home';
   static const String subjects = '/subjects';
   static const String years = '/years';
@@ -40,24 +35,9 @@ class AppRouter {
         redirect: (context, state) => RoutePaths.login,
       ),
       GoRoute(
-        path: RoutePaths.login,
-        name: 'Login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
         path: RoutePaths.signUp,
         name: 'SignUp',
-        builder: (context, state) => PersonalInfoScreen(),
-      ),
-      GoRoute(
-        path: RoutePaths.institution,
-        name: 'Institution',
-        builder: (context, state) => const InstitutionInfoScreen(),
-      ),
-      GoRoute(
-        path: RoutePaths.otp,
-        name: 'OTP',
-        builder: (context, state) => const OTPVerificationScreen(),
+        builder: (context, state) => const RegistrationScreen(),
       ),
       GoRoute(
         path: RoutePaths.home,
@@ -86,7 +66,7 @@ class AppRouter {
           return QuestionScreen(
             chapter: chapter.isNotEmpty ? chapter : null,
             year: year,
-            mode: mode,
+            isQuizMode: mode == QuestionMode.quiz,
           );
         },
       ),
@@ -129,7 +109,7 @@ class AppRouter {
         builder: (context, state) => const TransactionVerificationScreen(),
       ),
     ],
-    initialLocation: RoutePaths.login,
+    initialLocation: RoutePaths.signUp,
     debugLogDiagnostics: true,
     errorPageBuilder: (context, state) => MaterialPage<void>(
       key: state.pageKey,
