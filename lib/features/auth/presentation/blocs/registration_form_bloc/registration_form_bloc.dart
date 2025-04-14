@@ -1,7 +1,6 @@
 // First, create the registration bloc
 // lib/features/auth/presentation/bloc/registration_bloc.dart
 
-import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exam_app/features/auth/domain/models/institution_type.dart';
@@ -16,7 +15,6 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   RegistrationBloc({this.authBloc}) : super(const RegistrationState()) {
     on<RegistrationStepChanged>(_onStepChanged);
     on<RegistrationFormFieldUpdated>(_onFormFieldUpdated);
-    on<RegistrationFormSubmitted>(_onFormSubmitted);
     on<ExamTypeSelected>(_onExamTypeSelected);
   }
 
@@ -49,35 +47,6 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       case RegistrationStep.finish:
         emit(state.copyWith(status: true));
         break;
-    }
-  }
-
-  Future<void> _onFormSubmitted(
-    RegistrationFormSubmitted event,
-    Emitter<RegistrationState> emit,
-  ) async {
-    emit(state.copyWith(status: false, isLoading: true, currentStep: RegistrationStep.finish));
-    try {
-      // If authBloc is provided, use it to register the user
-      if (authBloc != null) {
-        authBloc!.add(RegisterUser(
-          firstName: state.personalInfo.firstName,
-          lastName: state.personalInfo.lastName,
-          phone: state.personalInfo.phone,
-          email: state.personalInfo.email,
-          institutionType: state.institutionInfo.institutionType.name,
-          institutionName: state.institutionInfo.institutionName,
-          examType: state.institutionInfo.examType,
-          referralCode: state.institutionInfo.referralCode.isNotEmpty ? state.institutionInfo.referralCode : null,
-        ));
-      } else {
-        // Simulate API call for when authBloc isn't available
-        await Future.delayed(const Duration(seconds: 2));
-      }
-      
-      emit(state.copyWith(status: true, isLoading: false));
-    } catch (_) {
-      emit(state.copyWith(status: false, isLoading: false));
     }
   }
 

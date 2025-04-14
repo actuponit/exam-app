@@ -1,18 +1,17 @@
-import 'package:dio/dio.dart';
+import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/auth/data/models/exam_type.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final Dio _dio;
+  final AuthDataSource _remoteDataSource;
+  final LocalAuthDataSource _localDataSource;
 
-  AuthRepositoryImpl(this._dio);
+  AuthRepositoryImpl(this._remoteDataSource, this._localDataSource);
 
   @override
   Future<List<ExamType>> getExamTypes() async {
     try {
-      final response = await _dio.get('exam-type');
-      final List<dynamic> data = response.data['data'] as List<dynamic>;
-      return data.map((json) => ExamType.fromJson(json)).toList();
+      return await _remoteDataSource.getExamTypes();
     } catch (e) {
       throw Exception('Failed to fetch exam types: $e');
     }
@@ -26,21 +25,26 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String institutionType,
     required String institutionName,
-    required String examType,
+    required int examType,
     String? referralCode,
   }) async {
     try {
-      await _dio.post('/register', data: {
-        'first_name': firstName,
-        'last_name': lastName,
-        'phone': phone,
-        'email': email,
-        'institution_type': institutionType,
-        'institution_name': institutionName,
-        'exam_type': examType,
-        if (referralCode != null && referralCode.isNotEmpty)
-          'referral_code': referralCode,
-      });
+      // Register user with remote data source
+      await _remoteDataSource.register(
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        email: email,
+        institutionType: institutionType,
+        institutionName: institutionName,
+        examType: examType,
+        referralCode: referralCode,
+      );
+      
+      // If registration is successful and a referral code was provided, save it locally
+      if (referralCode != null && referralCode.isNotEmpty) {
+        await _localDataSource.saveReferralCode(referralCode);
+      }
     } catch (e) {
       throw Exception('Failed to register: $e');
     }

@@ -11,7 +11,7 @@ class RegisterUser extends AuthEvent {
   final String email;
   final String institutionType;
   final String institutionName;
-  final String examType;
+  final int examType;
   final String? referralCode;
 
   RegisterUser({

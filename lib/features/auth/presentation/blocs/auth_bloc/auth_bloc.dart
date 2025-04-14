@@ -39,7 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: ''));
+      emit(state.copyWith(isLoading: true, error: '', succssFullyRegistered: false));
       
       await _authRepository.register(
         firstName: event.firstName,
@@ -52,7 +52,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         referralCode: event.referralCode,
       );
       
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, succssFullyRegistered: true));
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/features/auth/domain/models/institution_type.dart';
+import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
 import 'package:exam_app/features/auth/presentation/widgets/exam_selection_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final PageController _pageController = PageController();
-  
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -30,11 +31,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       curve: Curves.easeInOut,
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<RegistrationBloc, RegistrationState>(
-      listenWhen: (previous, current) => previous.currentStep != current.currentStep,
+      listenWhen: (previous, current) =>
+          previous.currentStep != current.currentStep,
       listener: (context, state) {
         if (state.currentStep == RegistrationStep.personalInfo) {
           _goToPage(0);
@@ -45,7 +47,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: BlocBuilder<RegistrationBloc, RegistrationState>(
-            buildWhen: (previous, current) => previous.currentStep != current.currentStep,
+            buildWhen: (previous, current) =>
+                previous.currentStep != current.currentStep,
             builder: (context, state) {
               return Text(
                 state.currentStep == RegistrationStep.personalInfo
@@ -85,13 +88,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (page) {
                   // Update the current step based on the page
-                  final step = page == 0 
-                      ? RegistrationStep.personalInfo 
+                  final step = page == 0
+                      ? RegistrationStep.personalInfo
                       : RegistrationStep.institutionInfo;
-                  
+
                   // Only update if step is different to avoid loops
-                  if (context.read<RegistrationBloc>().state.currentStep != step) {
-                    context.read<RegistrationBloc>().add(RegistrationStepChanged(step));
+                  if (context.read<RegistrationBloc>().state.currentStep !=
+                      step) {
+                    context
+                        .read<RegistrationBloc>()
+                        .add(RegistrationStepChanged(step));
                   }
                 },
                 children: const [
@@ -108,14 +114,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Widget _buildProgressIndicator() {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
-      buildWhen: (previous, current) => previous.currentStep != current.currentStep,
+      buildWhen: (previous, current) =>
+          previous.currentStep != current.currentStep,
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
           child: LinearProgressIndicator(
             value: state.currentStep == RegistrationStep.personalInfo ? 0.5 : 1,
             minHeight: 8,
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            backgroundColor:
+                Theme.of(context).colorScheme.surfaceContainerHighest,
             valueColor: AlwaysStoppedAnimation<Color>(
               Theme.of(context).colorScheme.primary,
             ),
@@ -170,7 +178,7 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
         final bloc = context.read<RegistrationBloc>();
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -215,7 +223,7 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: _isFormValid() 
+                  onPressed: _isFormValid()
                       ? () {
                           bloc.add(const RegistrationStepChanged(
                             RegistrationStep.institutionInfo,
@@ -282,15 +290,16 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
 
 class _InstitutionInfoPage extends StatefulWidget {
   const _InstitutionInfoPage();
-  
+
   @override
   State<_InstitutionInfoPage> createState() => _InstitutionInfoPageState();
 }
 
 class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
-  final TextEditingController institutionNameController = TextEditingController();
+  final TextEditingController institutionNameController =
+      TextEditingController();
   final TextEditingController referralCodeController = TextEditingController();
-  
+
   @override
   void initState() {
     super.initState();
@@ -298,14 +307,14 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
     institutionNameController.text = state.institutionInfo.institutionName;
     referralCodeController.text = state.institutionInfo.referralCode;
   }
-  
+
   @override
   void dispose() {
     institutionNameController.dispose();
     referralCodeController.dispose();
     super.dispose();
   }
-  
+
   bool _isFormValid() {
     return institutionNameController.text.isNotEmpty;
   }
@@ -331,119 +340,130 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
   }
 
   Widget _buildReferralDialogContent(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10.0,
-            offset: const Offset(0.0, 10.0),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            'Almost Done!',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            'Do you have a referral code?',
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: referralCodeController,
-            decoration: InputDecoration(
-              labelText: 'Referral Code (Optional)',
-              hintText: 'Enter code if you have one',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              prefixIcon: const Icon(Icons.card_giftcard),
-            ),
-            onChanged: (value) {
-              context.read<RegistrationBloc>().add(
-                    RegistrationFormFieldUpdated(
-                      step: RegistrationStep.institutionInfo,
-                      field: 'referralCode',
-                      value: value,
-                    ),
-                  );
-            },
-          ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    // Clear the referral code if the user skips
-                    context.read<RegistrationBloc>().add(
-                          const RegistrationFormFieldUpdated(
-                            step: RegistrationStep.institutionInfo,
-                            field: 'referralCode',
-                            value: '',
-                          ),
-                        );
-                    Navigator.of(context).pop();
-                    _completeRegistration();
-                  },
-                  child: const Text('Skip'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _completeRegistration();
-                  },
-                  child: const Text('Confirm'),
-                ),
+    return BlocConsumer<AuthBloc, AuthState>(
+      listenWhen: (previous, current) =>
+          previous.succssFullyRegistered != current.succssFullyRegistered,
+      listener: (context, state) {
+        if (state.succssFullyRegistered) {
+          context.go(RoutePaths.home);
+        }
+      },
+      builder: (context, state) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10.0,
+                offset: Offset(0.0, 10.0),
               ),
             ],
           ),
-        ],
-      ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                'Almost Done!',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+              ),
+              const SizedBox(height: 15),
+              Text(
+                'Do you have a referral code?',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: referralCodeController,
+                decoration: InputDecoration(
+                  labelText: 'Referral Code (Optional)',
+                  hintText: 'Enter code if you have one',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  prefixIcon: const Icon(Icons.card_giftcard),
+                ),
+                onChanged: (value) {
+                  context.read<RegistrationBloc>().add(
+                        RegistrationFormFieldUpdated(
+                          step: RegistrationStep.institutionInfo,
+                          field: 'referralCode',
+                          value: value,
+                        ),
+                      );
+                },
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        // Clear the referral code if the user skips
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _completeRegistration();
+                      },
+                      child: state.isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text('Confirm'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   void _completeRegistration() {
-    final bloc = context.read<RegistrationBloc>();
-    bloc.add(RegistrationFormSubmitted());
-    context.go(RoutePaths.home);
+    final bloc = context.read<AuthBloc>();
+    final state = context.read<RegistrationBloc>().state;
+    bloc.add(RegisterUser(
+      firstName: state.personalInfo.firstName,
+      lastName: state.personalInfo.lastName,
+      phone: state.personalInfo.phone,
+      email: state.personalInfo.email,
+      institutionType: state.institutionInfo.institutionType.name,
+      institutionName: state.institutionInfo.institutionName,
+      examType: state.institutionInfo.examType,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
-        final bloc = context.read<RegistrationBloc>();
-        final theme = Theme.of(context);
         final institutionType = state.institutionInfo.institutionType;
 
         return SingleChildScrollView(
@@ -451,7 +471,8 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              _buildInstitutionTypeDropdown(context: context, currentValue: institutionType),
+              _buildInstitutionTypeDropdown(
+                  context: context, currentValue: institutionType),
               const SizedBox(height: 30),
               TextField(
                 controller: institutionNameController,
@@ -464,34 +485,39 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                 ),
                 onChanged: (value) {
                   context.read<RegistrationBloc>().add(
-                    RegistrationFormFieldUpdated(
-                      step: RegistrationStep.institutionInfo,
-                      field: 'institutionName',
-                      value: value,
-                    ),
-                  );
+                        RegistrationFormFieldUpdated(
+                          step: RegistrationStep.institutionInfo,
+                          field: 'institutionName',
+                          value: value,
+                        ),
+                      );
                   setState(() {}); // Refresh UI to update button state
                 },
               ),
               const SizedBox(height: 30),
               const ExamSelectionWidget(),
               const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, authState) {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed:
+                          _isFormValid() && state.institutionInfo.examType != -1 && !authState.isLoading
+                              ? () {
+                                  _showReferralDialog();
+                                }
+                              : null,
+                      child: const Text('Complete Registration'),
                     ),
-                  ),
-                  onPressed: _isFormValid() && state.institutionInfo.examType.isNotEmpty 
-                      ? () {
-                          _showReferralDialog();
-                        }
-                      : null,
-                  child: const Text('Complete Registration'),
-                ),
+                  );
+                },
               ),
             ],
           ),
@@ -499,7 +525,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
       },
     );
   }
-  
+
   Widget _buildInstitutionTypeDropdown({
     required BuildContext context,
     required InstitutionType currentValue,
@@ -531,4 +557,4 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
       },
     );
   }
-} 
+}

@@ -203,7 +203,7 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
         final isSelected = widget.isSelected;
-        final isReallySelected = widget.exam.name == state.institutionInfo.examType;
+        final isReallySelected = widget.exam.id == state.institutionInfo.examType;
         final theme = Theme.of(context);
         
         return AnimatedContainer(
@@ -335,7 +335,7 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
           width: double.infinity,
           child: FilledButton(
             onPressed: () => context.read<RegistrationBloc>().add(
-              ExamTypeSelected(widget.exam.name),
+              ExamTypeSelected(widget.exam.id),
             ),
             child: const Text('Select Exam'),
           ),

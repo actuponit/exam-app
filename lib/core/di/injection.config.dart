@@ -13,6 +13,7 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
+import '../../features/auth/data/datasources/auth_data_source.dart' as _i970;
 import '../../features/auth/data/repositories/auth_repository.dart' as _i573;
 import '../../features/auth/presentation/blocs/auth_bloc/auth_bloc.dart'
     as _i661;
@@ -46,9 +47,15 @@ Future<_i174.GetIt> init(
   gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository());
   gh.singleton<_i361.Dio>(() => networkModule.dio);
   gh.singleton<_i1047.HiveService>(() => _i1047.HiveService());
-  gh.singleton<_i573.AuthRepository>(
-      () => authModule.authRepository(gh<_i361.Dio>()));
-  gh.factory<_i661.AuthBloc>(
+  gh.lazySingleton<_i970.LocalAuthDataSource>(
+      () => authModule.localAuthDataSource(gh<_i460.SharedPreferences>()));
+  gh.lazySingleton<_i970.AuthDataSource>(
+      () => authModule.remoteAuthDataSource(gh<_i361.Dio>()));
+  gh.lazySingleton<_i573.AuthRepository>(() => authModule.authRepository(
+        gh<_i970.AuthDataSource>(),
+        gh<_i970.LocalAuthDataSource>(),
+      ));
+  gh.lazySingleton<_i661.AuthBloc>(
       () => authModule.authBloc(gh<_i573.AuthRepository>()));
   return getIt;
 }

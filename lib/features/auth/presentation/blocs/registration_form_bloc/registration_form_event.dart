@@ -37,10 +37,8 @@ class RegistrationFormFieldUpdated extends RegistrationEvent {
   List<Object> get props => [step, field, value];
 }
 
-class RegistrationFormSubmitted extends RegistrationEvent {}
-
 class ExamTypeSelected extends RegistrationEvent {
-  final String examType;
+  final int examType;
   
   const ExamTypeSelected(this.examType);
 
