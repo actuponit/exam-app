@@ -342,9 +342,9 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
   Widget _buildReferralDialogContent(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listenWhen: (previous, current) =>
-          previous.succssFullyRegistered != current.succssFullyRegistered,
+          previous.isRegistrationSuccessful != current.isRegistrationSuccessful,
       listener: (context, state) {
-        if (state.succssFullyRegistered) {
+        if (state.isRegistrationSuccessful) {
           context.go(RoutePaths.home);
         }
       },
@@ -400,6 +400,33 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                       );
                 },
               ),
+              if (state.hasRegistrationError) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.errorContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          state.registrationError,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -412,10 +439,12 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () {
-                        // Clear the referral code if the user skips
-                        Navigator.of(context).pop();
-                      },
+                      onPressed: state.isRegistrationLoading
+                          ? null
+                          : () {
+                              // Clear the referral code if the user skips
+                              Navigator.of(context).pop();
+                            },
                       child: const Text('Cancel'),
                     ),
                   ),
@@ -428,12 +457,21 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        _completeRegistration();
-                      },
-                      child: state.isLoading
-                          ? const CircularProgressIndicator()
+                      onPressed: state.isRegistrationLoading
+                          ? null
+                          : () {
+                              // Navigator.of(context).pop();
+                              _completeRegistration();
+                            },
+                      child: state.isRegistrationLoading
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            )
                           : const Text('Confirm'),
                     ),
                   ),
@@ -509,7 +547,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                         ),
                       ),
                       onPressed:
-                          _isFormValid() && state.institutionInfo.examType != -1 && !authState.isLoading
+                          _isFormValid() && state.institutionInfo.examType != -1 && !authState.isRegistrationLoading
                               ? () {
                                   _showReferralDialog();
                                 }

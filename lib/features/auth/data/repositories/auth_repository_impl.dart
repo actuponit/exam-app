@@ -30,7 +30,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       // Register user with remote data source
-      await _remoteDataSource.register(
+      final user = await _remoteDataSource.register(
         firstName: firstName,
         lastName: lastName,
         phone: phone,
@@ -42,8 +42,13 @@ class AuthRepositoryImpl implements AuthRepository {
       );
       
       // If registration is successful and a referral code was provided, save it locally
-      if (referralCode != null && referralCode.isNotEmpty) {
-        await _localDataSource.saveReferralCode(referralCode);
+      final int? userId = user['user']['id'];
+      final String? code = user['referral_code'];
+      if (userId != null) {
+        await _localDataSource.saveUserId(userId);
+      }
+      if (code != null) {
+        await _localDataSource.saveReferralCode(code);
       }
     } catch (e) {
       throw Exception('Failed to register: $e');

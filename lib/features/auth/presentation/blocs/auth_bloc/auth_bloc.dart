@@ -18,18 +18,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: ''));
+      emit(state.copyWith(
+        examTypesStatus: LoadingStatus.loading,
+        examTypesError: '',
+      ));
       
       final examTypes = await _authRepository.getExamTypes();
       
       emit(state.copyWith(
-        isLoading: false,
+        examTypesStatus: LoadingStatus.loaded,
         examTypes: examTypes,
       ));
     } catch (e) {
       emit(state.copyWith(
-        isLoading: false,
-        error: e.toString(),
+        examTypesStatus: LoadingStatus.error,
+        examTypesError: e.toString(),
       ));
     }
   }
@@ -39,7 +42,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: '', succssFullyRegistered: false));
+      emit(state.copyWith(
+        registrationStatus: LoadingStatus.loading,
+        registrationError: '',
+        isRegistrationSuccessful: false,
+      ));
       
       await _authRepository.register(
         firstName: event.firstName,
@@ -52,11 +59,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         referralCode: event.referralCode,
       );
       
-      emit(state.copyWith(isLoading: false, succssFullyRegistered: true));
+      emit(state.copyWith(
+        registrationStatus: LoadingStatus.loaded,
+        isRegistrationSuccessful: true,
+      ));
     } catch (e) {
       emit(state.copyWith(
-        isLoading: false,
-        error: e.toString(),
+        registrationStatus: LoadingStatus.error,
+        registrationError: e.toString(),
       ));
     }
   }

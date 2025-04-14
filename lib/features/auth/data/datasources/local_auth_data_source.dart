@@ -6,7 +6,7 @@ class LocalAuthDataSourceImpl implements LocalAuthDataSource {
   
   // Keys for SharedPreferences
   static const String _referralCodeKey = 'referral_code';
-  
+  static const String _userIdKey = 'user_id';
   LocalAuthDataSourceImpl(this._prefs);
   
   @override
@@ -17,5 +17,15 @@ class LocalAuthDataSourceImpl implements LocalAuthDataSource {
   @override
   Future<String?> getReferralCode() async {
     return _prefs.getString(_referralCodeKey);
+  }
+
+  @override
+  Future<void> saveUserId(int userId) async {
+    await _prefs.setInt(_userIdKey, userId);
+  }
+
+  @override
+  Future<int?> getUserId() async {
+    return _prefs.getInt(_userIdKey);
   }
 } 

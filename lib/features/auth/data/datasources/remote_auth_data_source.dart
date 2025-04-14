@@ -19,7 +19,7 @@ class RemoteAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<void> register({
+  Future<Map<String, dynamic>> register({
     required String firstName,
     required String lastName,
     required String phone,
@@ -30,7 +30,7 @@ class RemoteAuthDataSource implements AuthDataSource {
     String? referralCode,
   }) async {
     try {
-      await _dio.post('/register', data: {
+      final response = await _dio.post('/register', data: {
         'name': "$firstName $lastName",
         'phone_number': phone,
         'email': email,
@@ -40,6 +40,7 @@ class RemoteAuthDataSource implements AuthDataSource {
         if (referralCode != null && referralCode.isNotEmpty)
           'referral_code': referralCode,
       });
+      return response.data;
     } catch (e) {
       throw Exception('Failed to register: $e');
     }

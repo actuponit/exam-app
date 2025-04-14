@@ -35,10 +35,10 @@ class _ExamSelectionWidgetState extends State<ExamSelectionWidget> {
                   ),
             ),
             const SizedBox(height: 20),
-            if (state.isLoading)
+            if (state.isExamTypesLoading)
               _buildShimmerList()
-            else if (state.error.isNotEmpty)
-              _buildErrorWidget(state.error)
+            else if (state.hasExamTypesError)
+              _buildErrorWidget(state.examTypesError)
             else
               _buildExamList(state.examTypes),
             const SizedBox(height: 30),
@@ -114,20 +114,40 @@ class _ExamSelectionWidgetState extends State<ExamSelectionWidget> {
         color: Theme.of(context).colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Icon(
-            Icons.error_outline,
-            color: Theme.of(context).colorScheme.error,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              error,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onErrorContainer,
+          Row(
+            children: [
+              Icon(
+                Icons.error_outline,
+                color: Theme.of(context).colorScheme.error,
               ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Failed to load exam types',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onErrorContainer,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onErrorContainer,
             ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () {
+              context.read<AuthBloc>().add(LoadExamTypes());
+            },
+            icon: const Icon(Icons.refresh),
+            label: const Text('Try Again'),
           ),
         ],
       ),
