@@ -12,7 +12,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<List<ExamType>> getExamTypes() async {
     try {
       return await _remoteDataSource.getExamTypes();
-    } catch (e) {
+    }  
+    catch (e) {
       throw Exception('Failed to fetch exam types: $e');
     }
   }

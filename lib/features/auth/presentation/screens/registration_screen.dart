@@ -495,6 +495,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
       institutionType: state.institutionInfo.institutionType.name,
       institutionName: state.institutionInfo.institutionName,
       examType: state.institutionInfo.examType,
+      referralCode: state.institutionInfo.referralCode
     ));
   }
 
