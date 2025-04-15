@@ -1,11 +1,11 @@
 import 'package:exam_app/features/auth/presentation/screens/home_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/registration_screen.dart';
+import 'package:exam_app/features/payment/presentation/screens/transaction_verification_screen.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
 import 'package:exam_app/features/quiz/presentation/screens/question_screen.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:exam_app/features/quiz/presentation/screens/year_selection_screen.dart';
 import 'package:exam_app/features/faq/presentation/screens/faq_screen.dart';
-import 'package:exam_app/features/payment/presentation/screens/transaction_verification_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
@@ -106,10 +106,10 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.transactionVerification,
         name: 'TransactionVerification',
-        builder: (context, state) => const TransactionVerificationScreen(),
+        builder: (context, state) => TransactionVerificationScreen.withBloc(),
       ),
     ],
-    initialLocation: RoutePaths.signUp,
+    initialLocation: RoutePaths.home,
     debugLogDiagnostics: true,
     errorPageBuilder: (context, state) => MaterialPage<void>(
       key: state.pageKey,

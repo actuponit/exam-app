@@ -20,4 +20,6 @@ abstract class LocalAuthDataSource {
   Future<String?> getReferralCode();
   Future<void> saveUserId(int userId);
   Future<int?> getUserId();
+  Future<void> saveExamInfo(String name, double price);
+  Future<Map<String, dynamic>?> getExamInfo();
 } 

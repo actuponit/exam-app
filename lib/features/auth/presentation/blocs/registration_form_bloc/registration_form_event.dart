@@ -38,7 +38,7 @@ class RegistrationFormFieldUpdated extends RegistrationEvent {
 }
 
 class ExamTypeSelected extends RegistrationEvent {
-  final int examType;
+  final ExamType examType;
   
   const ExamTypeSelected(this.examType);
 

@@ -26,7 +26,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String institutionType,
     required String institutionName,
-    required int examType,
+    required ExamType examType,
     String? referralCode,
   }) async {
     try {
@@ -38,7 +38,7 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         institutionType: institutionType,
         institutionName: institutionName,
-        examType: examType,
+        examType: examType.id,
         referralCode: referralCode,
       );
       
@@ -51,6 +51,9 @@ class AuthRepositoryImpl implements AuthRepository {
       if (code != null) {
         await _localDataSource.saveReferralCode(code);
       }
+      
+      // Save exam type info
+      await _localDataSource.saveExamInfo(examType.name, examType.price);
     } catch (e) {
       throw Exception('Failed to register: $e');
     }

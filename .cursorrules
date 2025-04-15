@@ -43,8 +43,8 @@
     Key Conventions
     1. Use auto_route for navigation and deep linking.
     2. Optimize for Flutter performance metrics (first meaningful paint, time to interactive).
-    
-    3. Prefer stateless widgets:
+    3. Don't use useecases put the rpository direectly in the bloc
+    4. Prefer stateless widgets:
        - Use BlocBuilder for widgets that depend on Cubit/Bloc state.
        - Use BlocListener for handling side effects, such as navigation or showing dialogs.
     

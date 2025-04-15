@@ -9,7 +9,7 @@ abstract class AuthRepository {
     required String email,
     required String institutionType,
     required String institutionName,
-    required int examType,
+    required ExamType examType,
     String? referralCode,
   });
 } 

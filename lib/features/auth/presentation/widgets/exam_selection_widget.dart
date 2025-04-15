@@ -76,13 +76,13 @@ class _ExamSelectionWidgetState extends State<ExamSelectionWidget> {
                             width: 120,
                             height: 24,
                             radius: 4,
-                            margin: const EdgeInsets.only(bottom: 8),
+                            margin: EdgeInsets.only(bottom: 8),
                           ),
                           ShimmerEffect(
                             width: double.infinity,
                             height: 16,
                             radius: 4,
-                            margin: const EdgeInsets.only(bottom: 8),
+                            margin: EdgeInsets.only(bottom: 8),
                           ),
                           ShimmerEffect(
                             width: 80,
@@ -223,7 +223,7 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
         final isSelected = widget.isSelected;
-        final isReallySelected = widget.exam.id == state.institutionInfo.examType;
+        final isReallySelected = widget.exam.id == state.institutionInfo.examType.id;
         final theme = Theme.of(context);
         
         return AnimatedContainer(
@@ -355,7 +355,7 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
           width: double.infinity,
           child: FilledButton(
             onPressed: () => context.read<RegistrationBloc>().add(
-              ExamTypeSelected(widget.exam.id),
+              ExamTypeSelected(widget.exam),
             ),
             child: const Text('Select Exam'),
           ),

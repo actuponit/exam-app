@@ -2,17 +2,15 @@
 // lib/features/auth/presentation/bloc/registration_bloc.dart
 
 import 'package:equatable/equatable.dart';
+import 'package:exam_app/features/auth/data/models/exam_type.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exam_app/features/auth/domain/models/institution_type.dart';
-import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 
 part 'registration_form_event.dart';
 part 'registration_form_state.dart';
 
 class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
-  final AuthBloc? authBloc; // Optional to allow creation without auth bloc for tests
-
-  RegistrationBloc({this.authBloc}) : super(const RegistrationState()) {
+  RegistrationBloc() : super(const RegistrationState()) {
     on<RegistrationStepChanged>(_onStepChanged);
     on<RegistrationFormFieldUpdated>(_onFormFieldUpdated);
     on<ExamTypeSelected>(_onExamTypeSelected);

@@ -23,7 +23,7 @@ class MainApp extends StatelessWidget {
           create: (context) => getIt<AuthBloc>(),
         ),
         BlocProvider(
-          create: (context) => RegistrationBloc(authBloc: getIt<AuthBloc>()),
+          create: (context) => RegistrationBloc(),
         ),
       ],
       child: MaterialApp.router(

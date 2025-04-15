@@ -82,13 +82,13 @@ class PersonalInfoForm extends Equatable {
 class InstitutionInfoForm extends Equatable {
   final InstitutionType institutionType;
   final String institutionName;
-  final int examType;
+  final ExamType examType;
   final String referralCode;
 
   const InstitutionInfoForm({
     this.institutionType = InstitutionType.elementary,
     this.institutionName = '',
-    this.examType = -1,
+    this.examType = const ExamType(id: -1, name: '', description: '', price: 0),
     this.referralCode = '',
   });
 
@@ -98,7 +98,7 @@ class InstitutionInfoForm extends Equatable {
   InstitutionInfoForm copyWith({
     InstitutionType? institutionType,
     String? institutionName,
-    int? examType,
+    ExamType? examType,
     String? referralCode,
   }) {
     return InstitutionInfoForm(
