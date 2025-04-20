@@ -22,7 +22,7 @@ class SubscriptionStatusCubit extends Cubit<SubscriptionStatusState> {
       (failure) => emit(SubscriptionStatusError(failure.message)),
       (subscription) {
         if (subscription.isInitial) {
-          emit(SubscriptionStatusInitial());
+          emit(const SubscriptionStatusInitial());
         } else if (subscription.isPending) {
           emit(SubscriptionStatusPending(subscription));
         } else if (subscription.isApproved) {
@@ -30,7 +30,7 @@ class SubscriptionStatusCubit extends Cubit<SubscriptionStatusState> {
         } else if (subscription.isDenied) {
           emit(SubscriptionStatusDenied(subscription));
         } else {
-          emit(SubscriptionStatusInitial());
+          emit(const SubscriptionStatusInitial());
         }
       },
     );
