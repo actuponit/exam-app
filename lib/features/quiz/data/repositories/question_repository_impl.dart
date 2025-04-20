@@ -7,7 +7,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     'q1': Question(
       id: 'q1',
       text: 'What is the SI unit of force?',
-      options: [
+      options: const [
         'Newton (N)',
         'Joule (J)',
         'Pascal (Pa)',
@@ -22,7 +22,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     'q2': Question(
       id: 'q2',
       text: 'If \$F = ma\$, what is the acceleration when a force of 10N is applied to a mass of 2kg?',
-      options: [
+      options: const [
         '2 m/s²',
         '5 m/s²',
         '8 m/s²',
@@ -37,7 +37,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     'q3': Question(
       id: 'q3',
       text: 'What is the formula for kinetic energy?',
-      options: [
+      options: const [
         '\$KE = \\frac{1}{2}mv^2\$',
         '\$KE = mgh\$',
         '\$KE = mv\$',
@@ -52,7 +52,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     'q4': Question(
       id: 'q4',
       text: 'What is the relationship between wavelength (λ) and frequency (f) of a wave if c is the speed of light?',
-      options: [
+      options: const [
         '\$c = λf\$',
         '\$c = \\frac{λ}{f}\$',
         '\$c = λ + f\$',
@@ -67,7 +67,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     'q5': Question(
       id: 'q5',
       text: 'What is the equivalent resistance of two resistors R₁ and R₂ connected in parallel?',
-      options: [
+      options: const [
         '\$\\frac{1}{R_{eq}} = \\frac{1}{R_1} + \\frac{1}{R_2}\$',
         '\$R_{eq} = R_1 + R_2\$',
         '\$R_{eq} = \\sqrt{R_1R_2}\$',
@@ -82,7 +82,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     'q6': Question(
       id: 'q6',
       text: 'What is the principle of conservation of momentum?',
-      options: [
+      options: const [
         'Total momentum remains constant in an isolated system',
         'Total energy remains constant in an isolated system',
         'Total force remains constant in an isolated system',
@@ -97,7 +97,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     'q7': Question(
       id: 'q7',
       text: 'What is the relationship between pressure (P), volume (V), and temperature (T) for an ideal gas?',
-      options: [
+      options: const [
         '\$PV = nRT\$',
         '\$P = nRT\$',
         '\$V = nRT\$',
@@ -112,7 +112,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     'q8': Question(
       id: 'q8',
       text: 'What is the magnitude of gravitational force between two masses m₁ and m₂ separated by distance r?',
-      options: [
+      options: const [
         '\$F = G\\frac{m_1m_2}{r^2}\$',
         '\$F = G\\frac{m_1m_2}{r}\$',
         '\$F = G\\frac{m_1+m_2}{r^2}\$',

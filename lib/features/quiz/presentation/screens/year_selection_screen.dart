@@ -127,7 +127,7 @@ class YearListItem extends StatelessWidget {
   final String chapter;
   final int questionCount;
 
-  const YearListItem({
+  const YearListItem({super.key, 
     required this.year,
     required this.chapter,
     required this.questionCount,
@@ -195,7 +195,7 @@ class YearListItem extends StatelessWidget {
               color: textLight,
             ),
           ),
-          trailing: Icon(
+          trailing: const Icon(
             Icons.chevron_right,
             color: textLight,
           ),
@@ -350,7 +350,7 @@ class _ModeButton extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
+              const Icon(
                 Icons.chevron_right,
                 color: textLight,
               ),

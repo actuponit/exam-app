@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import '../../domain/models/question.dart';
-import '../../domain/models/answer.dart' as models;
 import '../../domain/services/score_calculator.dart';
 
 enum QuestionMode { practice, quiz }

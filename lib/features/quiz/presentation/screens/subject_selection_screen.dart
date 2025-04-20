@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 class Subject {
   final String id;
   final String name;
-  final IconData icon;  // Using Material Icons directly
+  final IconData icon; // Using Material Icons directly
   final double progress;
 
   const Subject({
@@ -19,69 +19,70 @@ class Subject {
 
 class SubjectSelectionScreen extends StatelessWidget {
   final List<Subject> subjects = [
-    Subject(
+    const Subject(
       id: '1',
       name: 'Physics',
-      icon: Icons.psychology,  // Direct icon reference
+      icon: Icons.psychology, // Direct icon reference
       progress: 0.4,
     ),
-    Subject(
-      id: '2', 
+    const Subject(
+      id: '2',
       name: 'Chemistry',
-      icon: Icons.science,  // Different icon
+      icon: Icons.science, // Different icon
       progress: 0.8,
     ),
-    Subject(
+    const Subject(
       id: '3',
       name: 'Biology',
-      icon: Icons.eco,  // Another icon
+      icon: Icons.eco, // Another icon
       progress: 0.6,
     ),
-    Subject(
+    const Subject(
       id: '4',
       name: 'Math',
-      icon: Icons.calculate,  // Another icon
+      icon: Icons.calculate, // Another icon
       progress: 0.9,
     ),
-    Subject(
+    const Subject(
       id: '5',
       name: 'English',
-      icon: Icons.language,  // Another icon
+      icon: Icons.language, // Another icon
       progress: 0.1,
     ),
-    Subject(
+    const Subject(
       id: '7',
       name: 'SAT',
-      icon: Icons.book,  // Another icon
+      icon: Icons.book, // Another icon
       progress: 0.3,
     ),
   ];
 
+  SubjectSelectionScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.9,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-          ),
-          itemCount: subjects.length,
-          itemBuilder: (context, index) => SubjectCard(subject: subjects[index]),
+      padding: const EdgeInsets.all(8.0),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.9,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
         ),
-
+        itemCount: subjects.length,
+        itemBuilder: (context, index) => SubjectCard(subject: subjects[index]),
+      ),
     );
   }
 }
 
 class SubjectCard extends StatelessWidget {
   final Subject subject;
-  
-  const SubjectCard({required this.subject});
+
+  const SubjectCard({super.key, required this.subject});
 
   @override
   Widget build(BuildContext context) {
@@ -112,13 +113,13 @@ class SubjectCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: primaryColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    subject.icon,  // Use the icon from Subject
+                    subject.icon, // Use the icon from Subject
                     size: 28,
                     color: primaryColor,
                   ),
@@ -139,7 +140,7 @@ class SubjectCard extends StatelessWidget {
                     minHeight: 8,
                     value: subject.progress,
                     backgroundColor: secondaryColor.withOpacity(0.2),
-                    valueColor: AlwaysStoppedAnimation(primaryColor),
+                    valueColor: const AlwaysStoppedAnimation(primaryColor),
                   ),
                 ),
                 Text(

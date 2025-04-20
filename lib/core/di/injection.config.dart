@@ -53,16 +53,16 @@ Future<_i174.GetIt> init(
     environmentFilter,
   );
   final injectableModule = _$InjectableModule();
-  final quizModule = _$QuizModule();
   final networkModule = _$NetworkModule();
+  final quizModule = _$QuizModule();
   final paymentModule = _$PaymentModule();
   final authModule = _$AuthModule();
   await gh.factoryAsync<_i460.SharedPreferences>(
     () => injectableModule.prefs,
     preResolve: true,
   );
-  gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository());
   gh.singleton<_i361.Dio>(() => networkModule.dio);
+  gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository());
   gh.singleton<_i1047.HiveService>(() => _i1047.HiveService());
   gh.lazySingleton<_i973.InternetConnectionChecker>(
       () => paymentModule.internetConnectionChecker());
@@ -100,9 +100,9 @@ Future<_i174.GetIt> init(
 
 class _$InjectableModule extends _i109.InjectableModule {}
 
-class _$QuizModule extends _i697.QuizModule {}
-
 class _$NetworkModule extends _i851.NetworkModule {}
+
+class _$QuizModule extends _i697.QuizModule {}
 
 class _$PaymentModule extends _i81.PaymentModule {}
 

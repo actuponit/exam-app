@@ -22,7 +22,7 @@ class RoutePaths {
   static const String about = '/about';
   static const String settings = '/settings';
   static const String transactionVerification = '/transaction-verification';
-  
+
   // Deep link paths
   static const String deepLinkQuestions = '/questions/:questionId';
 }
@@ -60,8 +60,8 @@ class AppRouter {
         builder: (context, state) {
           final chapter = state.pathParameters['chapter'] ?? '';
           final year = int.tryParse(state.pathParameters['year'] ?? '');
-          final mode = state.pathParameters['mode'] == 'practice' 
-              ? QuestionMode.practice 
+          final mode = state.pathParameters['mode'] == 'practice'
+              ? QuestionMode.practice
               : QuestionMode.quiz;
           return QuestionScreen(
             chapter: chapter.isNotEmpty ? chapter : null,
@@ -124,7 +124,7 @@ class AppRouter {
 
 class ErrorScreen extends StatelessWidget {
   final Exception? error;
-  
+
   const ErrorScreen({super.key, this.error});
 
   @override
