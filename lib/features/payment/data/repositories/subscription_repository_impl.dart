@@ -31,20 +31,20 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
     try {
       // Get user ID from local storage
       final userId = await localAuthDataSource.getUserId();
-      
+
       if (userId == null) {
         return const Left(ServerFailure('User not authenticated'));
       }
-      
+
       final subscription = await remoteDataSource.verifySubscription(
         userId: userId,
         receiptImage: receiptImage,
         transactionNumber: transactionNumber,
       );
-      
+
       // Cache the subscription status locally
       await localDataSource.cacheSubscriptionStatus(subscription);
-      
+
       return Right(subscription);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -52,38 +52,40 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
-  
+
   @override
   Future<Either<Failure, Subscription>> checkSubscriptionStatus() async {
     try {
       // First check if we have an approved subscription in local storage
       final cachedStatus = await localDataSource.getSubscriptionStatus();
-      
+
       // If subscription is approved, only use local storage as per requirements
       if (cachedStatus?.isApproved ?? false) {
         return Right(cachedStatus!);
       }
-      
+
       // If we're offline, return cached data (even if not approved)
       if (!await networkInfo.isConnected) {
         if (cachedStatus != null) {
           return Right(cachedStatus);
         }
-        return const Left(CacheFailure('No cached subscription data available'));
+        return const Left(
+            CacheFailure('No cached subscription data available'));
       }
-      
+
       // If we're online and not approved, check with server
       final userId = await localAuthDataSource.getUserId();
-      
+
       if (userId == null) {
         return const Left(ServerFailure('User not authenticated'));
       }
-      
-      final remoteStatus = await remoteDataSource.checkSubscriptionStatus(userId);
-      
+
+      final remoteStatus =
+          await remoteDataSource.checkSubscriptionStatus(userId);
+
       // Cache the updated status
       await localDataSource.cacheSubscriptionStatus(remoteStatus);
-      
+
       return Right(remoteStatus);
     } on ServerException catch (e) {
       // If server fails but we have cached data, return it
@@ -98,4 +100,4 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
-} 
+}
