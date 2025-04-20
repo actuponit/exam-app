@@ -9,21 +9,21 @@ class StatusBanner extends StatelessWidget {
   final Subscription? subscription;
   final VoidCallback? onCheckStatus;
   final VoidCallback? onResubmit;
-  
+
   const StatusBanner({
     Key? key,
     this.subscription,
     this.onCheckStatus,
     this.onResubmit,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     // Don't show the banner if subscription is approved
     if (subscription?.isApproved ?? false) {
       return const SizedBox.shrink();
     }
-    
+
     // Handle different status types
     if (subscription?.isPending ?? false) {
       return _buildPendingBanner(context);
@@ -34,7 +34,7 @@ class StatusBanner extends StatelessWidget {
       return _buildDefaultBanner(context);
     }
   }
-  
+
   // Banner for when payment verification is pending
   Widget _buildPendingBanner(BuildContext context) {
     return Container(
@@ -54,59 +54,58 @@ class StatusBanner extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.pending_outlined,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Payment Verification Pending',
-                      style: titleStyle.copyWith(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+          Row(
+            children: [
+              const Icon(
+                Icons.pending_outlined,
+                color: Colors.white,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Payment Verification Pending',
+                style: titleStyle.copyWith(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 4),
-                Text(
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
                   'Your payment is being verified. We\'ll notify you once the process is complete.',
                   style: bodyStyle.copyWith(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 14,
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.orange[700],
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(buttonRadius),
               ),
-            ),
-            onPressed: onCheckStatus,
-            child: const Text('Check Status'),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.orange[700],
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(buttonRadius),
+                  ),
+                ),
+                onPressed: onCheckStatus,
+                child: const Text('Check Status'),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-  
+
   // Banner for when payment verification is denied
   Widget _buildDeniedBanner(BuildContext context) {
     return Container(
@@ -126,59 +125,62 @@ class StatusBanner extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Payment Verification Failed',
-                      style: titleStyle.copyWith(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+          Row(
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.white,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Payment Verification Failed',
+                  style: titleStyle.copyWith(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  subscription?.message ?? 'Your payment could not be verified. Please try again with a clearer receipt image.',
+              ),
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  subscription?.message ??
+                      'Your payment could not be verified. Please try again with a clearer receipt image.',
                   style: bodyStyle.copyWith(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 14,
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.red[700],
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(buttonRadius),
               ),
-            ),
-            onPressed: onResubmit ?? () => context.push(RoutePaths.transactionVerification),
-            child: const Text('Resubmit'),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.red[700],
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(buttonRadius),
+                  ),
+                ),
+                onPressed: onResubmit ??
+                    () => context.push(RoutePaths.transactionVerification),
+                child: const Text('Resubmit'),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-  
+
   // Default banner for initial/no subscription state
   Widget _buildDefaultBanner(BuildContext context) {
     return Container(
@@ -248,4 +250,4 @@ class StatusBanner extends StatelessWidget {
       ),
     );
   }
-} 
+}
