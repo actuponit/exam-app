@@ -44,20 +44,11 @@ class SubscriptionDataSourceImpl implements SubscriptionDataSource {
       final response = await dio.post(
         '/subscribe',
         data: formData,
-        options: Options(
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        ),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Store the current time as lastChecked
         final subscriptionModel = SubscriptionModel.fromJson(response.data['subscription']);
         return subscriptionModel;
-      } else {
-        throw ServerException('Failed to verify subscription: ${response.statusMessage}');
-      }
+      
     } catch (e) {
       throw ServerException('Failed to verify subscription: $e');
     }
@@ -66,20 +57,15 @@ class SubscriptionDataSourceImpl implements SubscriptionDataSource {
   @override
   Future<SubscriptionModel> checkSubscriptionStatus(int userId) async {
     try {
-      final response = await dio.get(
-        '/subscription/status/$userId',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        ),
+      final response = await dio.post(
+        '/subscription/status',
+        data: {
+          'user_id': userId,
+        },
       );
 
-      if (response.statusCode == 200) {
         return SubscriptionModel.fromJson(response.data['subscription']);
-      } else {
-        throw ServerException('Failed to check subscription status: ${response.statusMessage}');
-      }
+      
     } catch (e) {
       throw ServerException('Failed to check subscription status: $e');
     }
