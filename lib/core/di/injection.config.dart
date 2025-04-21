@@ -37,6 +37,7 @@ import '../network/network_info.dart' as _i932;
 import '../services/hive_service.dart' as _i1047;
 import 'injectable_module.dart' as _i109;
 import 'modules/auth_module.dart' as _i4;
+import 'modules/hive_module.dart' as _i31;
 import 'modules/network_module.dart' as _i851;
 import 'modules/payment_module.dart' as _i81;
 import 'modules/quiz_module.dart' as _i697;
@@ -53,21 +54,25 @@ Future<_i174.GetIt> init(
     environmentFilter,
   );
   final injectableModule = _$InjectableModule();
+  final hiveModule = _$HiveModule();
   final quizModule = _$QuizModule();
-  final networkModule = _$NetworkModule();
   final paymentModule = _$PaymentModule();
   final authModule = _$AuthModule();
+  final networkModule = _$NetworkModule();
   await gh.factoryAsync<_i460.SharedPreferences>(
     () => injectableModule.prefs,
     preResolve: true,
   );
+  await gh.singletonAsync<_i1047.HiveService>(
+    () => hiveModule.hiveService,
+    preResolve: true,
+  );
   gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository());
-  gh.singleton<_i361.Dio>(() => networkModule.dio);
-  gh.singleton<_i1047.HiveService>(() => _i1047.HiveService());
   gh.lazySingleton<_i973.InternetConnectionChecker>(
       () => paymentModule.internetConnectionChecker());
   gh.lazySingleton<_i970.LocalAuthDataSource>(
       () => authModule.localAuthDataSource(gh<_i460.SharedPreferences>()));
+  gh.singleton<_i361.Dio>(() => networkModule.dio(gh<_i1047.HiveService>()));
   gh.lazySingleton<_i900.SubscriptionDataSource>(
       () => paymentModule.subscriptionDataSource(gh<_i361.Dio>()));
   gh.lazySingleton<_i970.AuthDataSource>(
@@ -100,10 +105,12 @@ Future<_i174.GetIt> init(
 
 class _$InjectableModule extends _i109.InjectableModule {}
 
-class _$QuizModule extends _i697.QuizModule {}
+class _$HiveModule extends _i31.HiveModule {}
 
-class _$NetworkModule extends _i851.NetworkModule {}
+class _$QuizModule extends _i697.QuizModule {}
 
 class _$PaymentModule extends _i81.PaymentModule {}
 
 class _$AuthModule extends _i4.AuthModule {}
+
+class _$NetworkModule extends _i851.NetworkModule {}

@@ -68,7 +68,9 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 _buildRecentExams(context),
-                const SizedBox(height: 40,),
+                const SizedBox(
+                  height: 40,
+                ),
                 SubjectSelectionScreen(),
               ],
             ),
@@ -115,7 +117,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildStatusBanner(BuildContext context) {
     return BlocConsumer<SubscriptionStatusCubit, SubscriptionStatusState>(
       listener: (context, state) {
@@ -163,12 +165,12 @@ class HomeScreen extends StatelessWidget {
           return const SizedBox.shrink();
         } else {
           // Default banner for initial state
-          return StatusBanner();
+          return const StatusBanner();
         }
       },
     );
   }
-  
+
   Widget _buildLoadingBanner() {
     return Container(
       padding: const EdgeInsets.all(16),

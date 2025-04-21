@@ -29,7 +29,7 @@ class FilePicker extends StatelessWidget {
             width: 1.5,
           ),
         ),
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         child: initialFile != null
             ? Stack(
                 children: [
@@ -59,7 +59,7 @@ class FilePicker extends StatelessWidget {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.cloud_upload,
                     size: 40,
                     color: textLight,

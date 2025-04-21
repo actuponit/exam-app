@@ -69,7 +69,7 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
         if (cachedStatus != null) {
           return Right(cachedStatus);
         }
-        return Left(const CacheFailure('No cached subscription data available'));
+        return const Left(CacheFailure('No cached subscription data available'));
       }
       
       // If we're online and not approved, check with server

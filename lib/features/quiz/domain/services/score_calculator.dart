@@ -1,5 +1,4 @@
 import '../models/question.dart';
-import '../models/answer.dart' as models;
 
 class ScoreResult {
   final int totalQuestions;

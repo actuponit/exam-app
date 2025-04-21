@@ -26,9 +26,9 @@ class AppDrawer extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 50, bottom: 20),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: primaryColor,
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(cardRadius),
           bottomRight: Radius.circular(cardRadius),
         ),

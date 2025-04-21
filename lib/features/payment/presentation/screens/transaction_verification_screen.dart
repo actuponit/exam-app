@@ -109,15 +109,9 @@ class _TransactionVerificationScreenState extends State<TransactionVerificationS
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Payment Verification',
-                    style: displayStyle.copyWith(
-                      fontSize: 28,
-                    ),
-                  ),
                   const SizedBox(height: 8),
                   Text(
-                    'Upload your payment receipt and transaction details',
+                    'Upload your payment receipt or screenshot of the transaction details',
                     style: bodyStyle.copyWith(
                       color: textLight,
                     ),
@@ -239,7 +233,7 @@ class _TransactionVerificationScreenState extends State<TransactionVerificationS
                           borderRadius: BorderRadius.circular(buttonRadius),
                         ),
                       ),
-                      onPressed: state is SubscriptionVerificationLoading 
+                      onPressed: state is SubscriptionVerificationLoading || _receiptImage == null
                           ? null 
                           : _submitVerification,
                       child: state is SubscriptionVerificationLoading

@@ -21,16 +21,16 @@ class ShimmerEffect extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(radius),
       ),
       child: ShaderMask(
         shaderCallback: (bounds) {
           return LinearGradient(
             colors: [
-              Theme.of(context).colorScheme.surfaceVariant,
+              Theme.of(context).colorScheme.surfaceContainerHighest,
               Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.surfaceVariant,
+              Theme.of(context).colorScheme.surfaceContainerHighest,
             ],
             stops: const [0.0, 0.5, 1.0],
             begin: Alignment.topLeft,

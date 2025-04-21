@@ -9,8 +9,9 @@ class ExamModel extends Exam {
   @override
   final String id;
 
+  @override
   @HiveField(2)
-  final SubjectModel subject;  // Embedded essential subject fields
+  final SubjectModel subject; // Embedded essential subject fields
 
   @HiveField(3)
   @override
@@ -35,4 +36,4 @@ class ExamModel extends Exam {
       isLocked: exam.isLocked,
     );
   }
-} 
+}

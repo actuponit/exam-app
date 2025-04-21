@@ -3,30 +3,30 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 /// A reusable dialog with blurred background
-/// 
+///
 /// This dialog can be used for confirmations, data input, or any other modal interaction
 class BlurredDialog extends StatelessWidget {
   /// Title displayed at the top of the dialog
   final String title;
-  
+
   /// Subtitle text displayed below the title
   final String subtitle;
-  
+
   /// Main content widget of the dialog
   final Widget content;
-  
+
   /// List of action widgets, typically buttons
   final List<Widget> actions;
-  
+
   /// Blur intensity for the background
   final double blurIntensity;
-  
+
   /// Padding around the dialog content
   final EdgeInsets contentPadding;
-  
+
   /// Border radius for the dialog
   final double borderRadius;
-  
+
   /// Whether the dialog can be dismissed by tapping outside
   final bool barrierDismissible;
 
@@ -97,11 +97,11 @@ class BlurredDialog extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(borderRadius),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 10.0,
-            offset: const Offset(0.0, 10.0),
+            offset: Offset(0.0, 10.0),
           ),
         ],
       ),
@@ -129,7 +129,8 @@ class BlurredDialog extends StatelessWidget {
             children: actions.map((widget) {
               // Wrap each action with Expanded if there are multiple actions
               return actions.length > 1
-                  ? Expanded(child: Padding(
+                  ? Expanded(
+                      child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: widget,
                     ))
@@ -140,4 +141,4 @@ class BlurredDialog extends StatelessWidget {
       ),
     );
   }
-} 
+}

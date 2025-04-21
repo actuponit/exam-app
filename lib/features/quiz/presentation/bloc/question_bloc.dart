@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/models/question.dart';
-import '../../domain/models/answer.dart' as models;
 import '../../domain/repositories/question_repository.dart';
 import '../../domain/services/score_calculator.dart';
 import 'question_event.dart';

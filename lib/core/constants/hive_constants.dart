@@ -8,5 +8,6 @@ abstract class HiveTypeIds {
 /// Hive Box Names
 abstract class HiveBoxNames {
   static const exams = 'exams_box';
+  static const httpCache = 'http_cache';
   // Add more box names as needed
 } 

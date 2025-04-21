@@ -1,19 +1,23 @@
 import 'package:dio/dio.dart';
+import 'package:exam_app/core/di/cache_interceptor.dart';
+import 'package:exam_app/core/services/hive_service.dart';
 import 'package:injectable/injectable.dart';
 
 @module
 abstract class NetworkModule {
   @singleton
-  Dio get dio {
+  Dio dio(HiveService hiveService) {
     final dio = Dio(BaseOptions(
       baseUrl: 'https://ethioexamhub.com/api/',
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 3),
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
     ));
+
+    final cacheBox = hiveService.cacheBox;
 
     // Add interceptors
     dio.interceptors.addAll([
@@ -25,12 +29,14 @@ abstract class NetworkModule {
         responseBody: true,
         error: true,
       ),
+      CacheInterceptor(cacheBox: cacheBox),
       InterceptorsWrapper(
         onError: (error, handler) {
           String errorMessage = 'An unexpected error occurred';
-          
+
           if (error.type == DioExceptionType.connectionTimeout) {
-            errorMessage = 'Connection timed out. Please check your internet connection';
+            errorMessage =
+                'Connection timed out. Please check your internet connection';
           } else if (error.type == DioExceptionType.sendTimeout) {
             errorMessage = 'Request timed out while sending data';
           } else if (error.type == DioExceptionType.receiveTimeout) {
@@ -48,7 +54,8 @@ abstract class NetworkModule {
           } else if (error.type == DioExceptionType.cancel) {
             errorMessage = 'Request was cancelled';
           } else if (error.type == DioExceptionType.connectionError) {
-            errorMessage = 'No internet connection. Please check your network settings';
+            errorMessage =
+                'No internet connection. Please check your network settings';
           }
 
           error = error.copyWith(message: errorMessage);
@@ -59,4 +66,4 @@ abstract class NetworkModule {
 
     return dio;
   }
-} 
+}

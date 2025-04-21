@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'question_state.dart';
 
 abstract class QuestionEvent extends Equatable {
   const QuestionEvent();
