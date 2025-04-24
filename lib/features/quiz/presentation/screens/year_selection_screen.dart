@@ -1,106 +1,129 @@
+import 'dart:ui';
 import 'package:exam_app/core/theme.dart';
+import 'package:exam_app/features/exams/domain/entities/exam.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/exam_bloc/exam_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:ui';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class YearSelectionScreen extends StatefulWidget {
-  final Map<String, List<int>> chapterYears = {
-    'All': List.generate(10, (index) => 2015 + index),
-    'Unit 1: Mechanics': [2015, 2016, 2017, 2019, 2020],
-    'Unit 2: Electricity': [2016, 2017, 2018, 2021, 2022],
-    'Unit 3: Waves & Optics': [2018, 2019, 2020, 2022, 2023],
-    'Unit 4: Modern Physics': [2020, 2021, 2022, 2023, 2024],
-  };
+class YearSelectionScreen extends StatelessWidget {
+  final String subjectId;
 
-  YearSelectionScreen({super.key});
-
-  @override
-  State<YearSelectionScreen> createState() => _YearSelectionScreenState();
-}
-
-class _YearSelectionScreenState extends State<YearSelectionScreen> {
-  String _selectedChapter = 'All';
+  const YearSelectionScreen({
+    super.key,
+    required this.subjectId,
+  });
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ExamBloc>().add(LoadExams(subjectId));
+    });
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Select Chapter', style: displayStyle.copyWith(color: Colors.white)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+        appBar: AppBar(
+          title: Text('Select Chapter',
+              style: displayStyle.copyWith(color: Colors.white)),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey[200]!,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        body: BlocBuilder<ExamBloc, ExamState>(builder: (context, state) {
+          if (state is ExamLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is ExamError) {
+            return Center(
+              child: Text(
+                'Error: ${state.message}',
+                style: bodyStyle.copyWith(color: textLight),
+              ),
+            );
+          }
+
+          if (state is ExamLoaded) {
+            return Column(
               children: [
-                Text(
-                  'Filter by Chapter',
-                  style: titleStyle.copyWith(
-                    fontSize: 16,
-                    color: textLight,
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey[200]!,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Filter by Chapter',
+                        style: titleStyle.copyWith(
+                          fontSize: 16,
+                          color: textLight,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(cardRadius),
+                        ),
+                        height: 40,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: state.chapters.length + 1,
+                          separatorBuilder: (_, __) => const SizedBox(width: 8),
+                          itemBuilder: (context, index) {
+                            final isAll = index == 0;
+                            final chapter = isAll
+                                ? Chapter(id: "all", name: "All")
+                                : state.chapters[index - 1];
+                            final selected =
+                                state.filteredChapterId == chapter.id;
+
+                            return FilterChip(
+                              selected: selected,
+                              label: Text(chapter.name),
+                              labelStyle: bodyStyle.copyWith(
+                                color: selected ? Colors.white : textDark,
+                                fontSize: 14,
+                              ),
+                              backgroundColor: Colors.grey[100],
+                              selectedColor: primaryColor,
+                              checkmarkColor: Colors.white,
+                              onSelected: (selected) {
+                                context
+                                    .read<ExamBloc>()
+                                    .add(FilterExamsByChapter(chapter.id));
+                              },
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(cardRadius),
-                  ),
-                  height: 40,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: widget.chapterYears.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      final chapter = widget.chapterYears.keys.elementAt(index);
-                      final isSelected = chapter == _selectedChapter;
-                      return FilterChip(
-                        selected: isSelected,
-                        label: Text(chapter),
-                        labelStyle: bodyStyle.copyWith(
-                          color: isSelected ? Colors.white : textDark,
-                          fontSize: 14,
-                        ),
-                        backgroundColor: Colors.grey[100],
-                        selectedColor: primaryColor,
-                        checkmarkColor: Colors.white,
-                        onSelected: (selected) {
-                          setState(() => _selectedChapter = chapter);
-                        },
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                      );
-                    },
-                  ),
+                Expanded(
+                  child: _buildYearList(state),
                 ),
               ],
-            ),
-          ),
-          Expanded(
-            child: _buildYearList(),
-          ),
-        ],
-      ),
-    );
+            );
+          }
+
+          return Container();
+        }));
   }
 
-  Widget _buildYearList() {
-    final years = widget.chapterYears[_selectedChapter] ?? [];
-    if (years.isEmpty) {
+  Widget _buildYearList(ExamLoaded state) {
+    if (state.examsByYear.isEmpty) {
       return Center(
         child: Text(
           'No questions available for this chapter',
@@ -109,28 +132,28 @@ class _YearSelectionScreenState extends State<YearSelectionScreen> {
       );
     }
 
+    final keys = state.examsByYear.keys.toList();
+
     return ListView.separated(
       padding: const EdgeInsets.all(16),
-      itemCount: years.length,
+      itemCount: keys.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) => YearListItem(
-        year: years[index],
-        chapter: _selectedChapter,
-        questionCount: _selectedChapter == 'All' ? 35 : 9,
+        exam: state.examsByYear[keys[index]] as Exam,
+        selectedChapterId: state.filteredChapterId,
       ),
     );
   }
 }
 
 class YearListItem extends StatelessWidget {
-  final int year;
-  final String chapter;
-  final int questionCount;
+  final Exam exam;
+  final String selectedChapterId;
 
-  const YearListItem({super.key, 
-    required this.year,
-    required this.chapter,
-    required this.questionCount,
+  const YearListItem({
+    super.key,
+    required this.exam,
+    required this.selectedChapterId,
   });
 
   @override
@@ -151,7 +174,8 @@ class YearListItem extends StatelessWidget {
           ),
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           leading: Container(
             width: 60,
             height: 60,
@@ -164,13 +188,13 @@ class YearListItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  year.toString(),
+                  exam.year.toString(),
                   style: titleStyle.copyWith(
                     color: primaryColor,
                     fontSize: 18,
                   ),
                 ),
-                if (chapter != 'All')
+                if (selectedChapterId != 'all')
                   Text(
                     'Unit',
                     style: bodyStyle.copyWith(
@@ -182,15 +206,15 @@ class YearListItem extends StatelessWidget {
             ),
           ),
           title: Text(
-            chapter == 'All' 
-                ? 'EUEE $year Entrance Exam'
-                : '$chapter ($year)',
+            selectedChapterId == 'all'
+                ? '${exam.title} (${exam.year})'
+                : '${exam.chapters[0].name} (${exam.year})',
             style: titleStyle.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
           subtitle: Text(
-            '$questionCount Questions • ${questionCount >= 50 ? "2h 30m" : "1h"}',
+            '${exam.totalQuestions} Questions • ${exam.durationMins} mins',
             style: bodyStyle.copyWith(
               color: textLight,
             ),
@@ -360,4 +384,4 @@ class _ModeButton extends StatelessWidget {
       ),
     );
   }
-} 
+}

@@ -47,12 +47,14 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.subjects,
         name: 'Subjects',
-        builder: (context, state) => SubjectSelectionScreen(),
+        builder: (context, state) => const SubjectSelectionScreen(),
       ),
       GoRoute(
-        path: RoutePaths.years,
+        path: '${RoutePaths.years}/:subjectId',
         name: 'Years',
-        builder: (context, state) => YearSelectionScreen(),
+        builder: (context, state) => YearSelectionScreen(
+          subjectId: state.pathParameters['subjectId']!,
+        ),
       ),
       GoRoute(
         path: RoutePaths.questions,

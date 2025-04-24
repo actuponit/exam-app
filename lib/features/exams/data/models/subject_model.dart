@@ -14,23 +14,30 @@ class SubjectModel extends Subject {
 
   @HiveField(2)
   @override
-  final String iconPath;
+  final String iconName;
+
+  @HiveField(3)
+  @override
+  final double progress;
 
   const SubjectModel({
     required this.id,
     required this.name,
-    required this.iconPath,
+    required this.iconName,
+    this.progress = 0.0,
   }) : super(
           id: id,
           name: name,
-          iconPath: iconPath,
+          iconName: iconName,
+          progress: progress,
         );
 
   factory SubjectModel.fromEntity(Subject subject) {
     return SubjectModel(
       id: subject.id,
       name: subject.name,
-      iconPath: subject.iconPath,
+      iconName: subject.iconName,
+      progress: subject.progress,
     );
   }
-} 
+}

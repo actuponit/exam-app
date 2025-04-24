@@ -1,81 +1,43 @@
 import 'package:exam_app/core/theme.dart';
+import 'package:exam_app/features/exams/domain/entities/subject.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-// TEMPORARY SUBJECT CLASS - REMOVE LATER
-class Subject {
-  final String id;
-  final String name;
-  final IconData icon; // Using Material Icons directly
-  final double progress;
-
-  const Subject({
-    required this.id,
-    required this.name,
-    required this.icon,
-    required this.progress,
-  });
-}
-
 class SubjectSelectionScreen extends StatelessWidget {
-  final List<Subject> subjects = [
-    const Subject(
-      id: '1',
-      name: 'Physics',
-      icon: Icons.psychology, // Direct icon reference
-      progress: 0.4,
-    ),
-    const Subject(
-      id: '2',
-      name: 'Chemistry',
-      icon: Icons.science, // Different icon
-      progress: 0.8,
-    ),
-    const Subject(
-      id: '3',
-      name: 'Biology',
-      icon: Icons.eco, // Another icon
-      progress: 0.6,
-    ),
-    const Subject(
-      id: '4',
-      name: 'Math',
-      icon: Icons.calculate, // Another icon
-      progress: 0.9,
-    ),
-    const Subject(
-      id: '5',
-      name: 'English',
-      icon: Icons.language, // Another icon
-      progress: 0.1,
-    ),
-    const Subject(
-      id: '7',
-      name: 'SAT',
-      icon: Icons.book, // Another icon
-      progress: 0.3,
-    ),
-  ];
-
-  SubjectSelectionScreen({super.key});
+  const SubjectSelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.9,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-        ),
-        itemCount: subjects.length,
-        itemBuilder: (context, index) => SubjectCard(subject: subjects[index]),
-      ),
-    );
+    return BlocBuilder<SubjectBloc, SubjectState>(builder: (context, state) {
+      if (state is SubjectLoading) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (state is SubjectLoaded) {
+        final subjects = state.subjects;
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.9,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+            ),
+            itemCount: subjects.length,
+            itemBuilder: (context, index) =>
+                SubjectCard(subject: subjects[index]),
+          ),
+        );
+      } else if (state is SubjectError) {
+        return Center(child: Text(state.message));
+      } else {
+        context.read<SubjectBloc>().add(LoadSubjects());
+        return const SizedBox();
+      }
+    });
   }
 }
 
@@ -106,9 +68,9 @@ class SubjectCard extends StatelessWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(cardRadius),
-          onTap: () => context.push('/years'),
+          onTap: () => context.push('/years/${subject.id}'),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -119,7 +81,7 @@ class SubjectCard extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    subject.icon, // Use the icon from Subject
+                    subject.icon,
                     size: 28,
                     color: primaryColor,
                   ),
