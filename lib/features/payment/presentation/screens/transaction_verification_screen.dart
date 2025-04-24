@@ -7,8 +7,6 @@ import '../../../../core/theme.dart';
 import '../../../../core/presentation/widgets/file_picker.dart';
 import '../../../../features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
-import 'package:exam_app/features/payment/presentation/bloc/subscription_event.dart';
-import 'package:exam_app/features/payment/presentation/bloc/subscription_state.dart';
 
 class TransactionVerificationScreen extends StatefulWidget {
   const TransactionVerificationScreen({super.key});

@@ -1,8 +1,6 @@
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
-import 'package:exam_app/features/payment/presentation/bloc/subscription_event.dart';
-import 'package:exam_app/features/payment/presentation/bloc/subscription_state.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     // Start periodic status checking when screen loads
-    context.read<SubscriptionBloc>().add(const StartPeriodicStatusCheck());
+    context.read<SubscriptionBloc>().add(const CheckSubscriptionStatus());
   }
 
   @override
@@ -137,6 +135,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildStatusBanner(BuildContext context) {
     return BlocConsumer<SubscriptionBloc, SubscriptionState>(
+      listenWhen: (previous, current) =>
+          !(previous is SubscriptionStatusLoaded &&
+              current is SubscriptionStatusLoaded &&
+              previous.status == SubscriptionStatus.pending &&
+              current.status == SubscriptionStatus.pending),
       listener: (context, state) {
         if (state is SubscriptionError) {
           AppSnackBar.error(
@@ -155,6 +158,10 @@ class _HomeScreenState extends State<HomeScreen> {
             context: context,
             message: 'Your subscription is active!',
           );
+        } else if (state is SubscriptionStatusLoaded &&
+            state.status == SubscriptionStatus.pending) {
+          context.read<SubscriptionBloc>().add(
+              const StartPeriodicStatusCheck(interval: Duration(seconds: 5)));
         }
       },
       builder: (context, state) {
