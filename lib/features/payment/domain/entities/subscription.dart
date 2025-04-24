@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 class Subscription extends Equatable {
   static const String STATUS_INITIAL = 'initial';
   static const String STATUS_PENDING = 'pending';
-  static const String STATUS_APPROVED = 'approved';
+  static const String STATUS_APPROVED = 'paid';
   static const String STATUS_DENIED = 'failed';
 
   final String status;

@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:image_picker/image_picker.dart';
+part of 'subscription_bloc.dart';
 
 abstract class SubscriptionEvent extends Equatable {
   const SubscriptionEvent();

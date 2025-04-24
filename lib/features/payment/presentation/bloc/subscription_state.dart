@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:image_picker/image_picker.dart';
-
-import '../../domain/entities/subscription.dart';
+part of 'subscription_bloc.dart';
 
 abstract class SubscriptionState extends Equatable {
   const SubscriptionState();

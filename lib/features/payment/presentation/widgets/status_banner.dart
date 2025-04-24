@@ -41,6 +41,16 @@ class _StatusBannerState extends State<StatusBanner> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Check if subscription is provided
     if (widget.subscription != null) {
