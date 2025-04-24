@@ -5,38 +5,59 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/theme.dart';
 import '../../domain/entities/subscription.dart';
 
-class StatusBanner extends StatelessWidget {
+class StatusBanner extends StatefulWidget {
   final Subscription? subscription;
   final VoidCallback? onCheckStatus;
   final VoidCallback? onResubmit;
 
   const StatusBanner({
-    Key? key,
+    super.key,
     this.subscription,
     this.onCheckStatus,
     this.onResubmit,
-  }) : super(key: key);
+  });
+
+  @override
+  State<StatusBanner> createState() => _StatusBannerState();
+}
+
+class _StatusBannerState extends State<StatusBanner> {
+  String _getLastCheckedTime() {
+    if (widget.subscription == null) return '';
+
+    final lastChecked = widget.subscription?.lastChecked ?? DateTime.now();
+    final now = DateTime.now();
+    final difference = now.difference(lastChecked);
+
+    if (difference.inSeconds < 60) {
+      return 'just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+    } else {
+      return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Don't show the banner if subscription is approved
-    if (subscription?.isApproved ?? false) {
-      return const SizedBox.shrink();
+    // Check if subscription is provided
+    if (widget.subscription != null) {
+      if (widget.subscription!.isPending) {
+        return _buildPendingBanner(context);
+      } else if (widget.subscription!.isDenied) {
+        return _buildDeniedBanner(context);
+      }
     }
-
-    // Handle different status types
-    if (subscription?.isPending ?? false) {
-      return _buildPendingBanner(context);
-    } else if (subscription?.isDenied ?? false) {
-      return _buildDeniedBanner(context);
-    } else {
-      // Initial state or unknown
-      return _buildDefaultBanner(context);
-    }
+    // Default for initial state
+    return _buildDefaultBanner(context);
   }
 
   // Banner for when payment verification is pending
   Widget _buildPendingBanner(BuildContext context) {
+    final lastCheckedTimeText = _getLastCheckedTime();
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -86,6 +107,9 @@ class StatusBanner extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(
+                width: 2,
+              ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -96,11 +120,32 @@ class StatusBanner extends StatelessWidget {
                     borderRadius: BorderRadius.circular(buttonRadius),
                   ),
                 ),
-                onPressed: onCheckStatus,
-                child: const Text('Check Status'),
+                onPressed: widget.onCheckStatus,
+                child: const Text('Check Now'),
               ),
             ],
           ),
+          if (lastCheckedTimeText.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.access_time_rounded,
+                    color: Colors.white.withOpacity(0.9),
+                    size: 14,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Last checked: $lastCheckedTimeText',
+                    style: bodyStyle.copyWith(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -108,11 +153,13 @@ class StatusBanner extends StatelessWidget {
 
   // Banner for when payment verification is denied
   Widget _buildDeniedBanner(BuildContext context) {
+    final lastCheckedTimeText = _getLastCheckedTime();
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.red[300]!, Colors.red[500]!],
+          colors: [Colors.red[300]!, Colors.red[600]!],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -135,29 +182,53 @@ class StatusBanner extends StatelessWidget {
                 size: 18,
               ),
               const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Payment Verification Failed',
-                  style: titleStyle.copyWith(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+              Text(
+                'Payment Verification Failed',
+                style: titleStyle.copyWith(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 4),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Text(
-                  subscription?.message ??
-                      'Your payment could not be verified. Please try again with a clearer receipt image.',
-                  style: bodyStyle.copyWith(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 14,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.subscription?.message ??
+                          'Your payment could not be verified. Please try again with a clearer receipt image.',
+                      style: bodyStyle.copyWith(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 14,
+                      ),
+                    ),
+                    if (lastCheckedTimeText.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_rounded,
+                              color: Colors.white.withOpacity(0.9),
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Last checked: $lastCheckedTimeText',
+                              style: bodyStyle.copyWith(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
               ),
               ElevatedButton(
@@ -170,7 +241,7 @@ class StatusBanner extends StatelessWidget {
                     borderRadius: BorderRadius.circular(buttonRadius),
                   ),
                 ),
-                onPressed: onResubmit ??
+                onPressed: widget.onResubmit ??
                     () => context.push(RoutePaths.transactionVerification),
                 child: const Text('Resubmit'),
               ),

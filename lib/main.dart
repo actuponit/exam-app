@@ -3,12 +3,13 @@ import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/core/theme.dart';
 import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
+import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await configureDependencies();
   runApp(const MainApp());
 }
@@ -25,6 +26,9 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => RegistrationBloc(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<SubscriptionBloc>(),
         ),
       ],
       child: MaterialApp.router(

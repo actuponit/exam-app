@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/payment/domain/entities/subscription.dart';
@@ -15,6 +16,8 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
   final SubscriptionLocalDataSource localDataSource;
   final LocalAuthDataSource localAuthDataSource;
   final NetworkInfo networkInfo;
+  StreamController<Either<Failure, Subscription>>? _statusStreamController;
+  Timer? _statusCheckTimer;
 
   SubscriptionRepositoryImpl({
     required this.remoteDataSource,
@@ -99,5 +102,66 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
+  }
+
+  @override
+  Stream<Either<Failure, Subscription>> watchSubscriptionStatus({
+    Duration interval = const Duration(minutes: 5),
+    bool stopWhenApproved = true,
+  }) {
+    // Cancel any existing stream
+    stopWatchingSubscriptionStatus();
+
+    // Create a new stream controller
+    _statusStreamController =
+        StreamController<Either<Failure, Subscription>>.broadcast();
+
+    // Immediately check status and add to stream
+    // checkSubscriptionStatus().then((status) {
+    //   if (!(_statusStreamController?.isClosed ?? true)) {
+    //     _statusStreamController?.add(status);
+
+    //     // If status is approved and stopWhenApproved is true, close the stream
+    //     if (stopWhenApproved && status.isRight()) {
+    //       final subscription = status.getOrElse(() => Subscription(status: ''));
+    //       if (subscription.isApproved) {
+    //         stopWatchingSubscriptionStatus();
+    //         return;
+    //       }
+    //     }
+    //   }
+    // });
+
+    // Set up periodic checks
+    _statusCheckTimer = Timer.periodic(interval, (_) async {
+      if (_statusStreamController?.isClosed ?? true) {
+        _statusCheckTimer?.cancel();
+        return;
+      }
+
+      final status = await checkSubscriptionStatus();
+      if (!(_statusStreamController?.isClosed ?? true)) {
+        _statusStreamController?.add(status);
+
+        // If status is approved and stopWhenApproved is true, close the stream
+        if (stopWhenApproved && status.isRight()) {
+          final subscription =
+              status.getOrElse(() => const Subscription(status: ''));
+          if (!subscription.isPending) {
+            stopWatchingSubscriptionStatus();
+          }
+        }
+      }
+    });
+
+    return _statusStreamController!.stream;
+  }
+
+  @override
+  void stopWatchingSubscriptionStatus() {
+    _statusCheckTimer?.cancel();
+    _statusCheckTimer = null;
+    _statusStreamController?.close();
+    _statusStreamController = null;
   }
 }

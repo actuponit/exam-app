@@ -11,8 +11,17 @@ class SubscriptionModel extends Subscription {
     return SubscriptionModel(
       status: json['payment_status'] ?? Subscription.STATUS_INITIAL,
       message: json['message'],
-      lastChecked: json['last_checked'] != null 
-          ? DateTime.parse(json['last_checked']) 
+      lastChecked: json['last_checked'] != null
+          ? DateTime.parse(json['last_checked'])
+          : DateTime.now(),
+    );
+  }
+
+  factory SubscriptionModel.fromCheckJson(Map<String, dynamic> json) {
+    return SubscriptionModel(
+      status: json['status'] ?? Subscription.STATUS_INITIAL,
+      lastChecked: json['last_checked'] != null
+          ? DateTime.parse(json['last_checked'])
           : DateTime.now(),
     );
   }
@@ -31,4 +40,4 @@ class SubscriptionModel extends Subscription {
       'last_checked': lastChecked?.toIso8601String(),
     };
   }
-} 
+}

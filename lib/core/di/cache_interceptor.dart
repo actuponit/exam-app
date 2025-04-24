@@ -34,6 +34,10 @@ class CacheInterceptor extends Interceptor {
         debugPrint("⏰ [Cache expired] Removing: $cacheKey");
         await cacheBox.delete(cacheKey);
       }
+      handler.next(options.copyWith(extra: {
+        'cacheResponse': true,
+      }));
+      return;
     }
 
     handler.next(options);

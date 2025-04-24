@@ -36,7 +36,8 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         ));
         break;
       case RegistrationStep.institutionInfo:
-        final institutionInfo = updateInstitutionInfo(state.institutionInfo, event);
+        final institutionInfo =
+            updateInstitutionInfo(state.institutionInfo, event);
         emit(state.copyWith(
           institutionInfo: institutionInfo,
           status: true,
@@ -60,7 +61,8 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     ));
   }
 
-  PersonalInfoForm updatePersonalInfo(PersonalInfoForm form, RegistrationFormFieldUpdated event) {
+  PersonalInfoForm updatePersonalInfo(
+      PersonalInfoForm form, RegistrationFormFieldUpdated event) {
     switch (event.field) {
       case 'firstName':
         return form.copyWith(firstName: event.value);
@@ -75,10 +77,12 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     }
   }
 
-  InstitutionInfoForm updateInstitutionInfo(InstitutionInfoForm form, RegistrationFormFieldUpdated event) {
+  InstitutionInfoForm updateInstitutionInfo(
+      InstitutionInfoForm form, RegistrationFormFieldUpdated event) {
     switch (event.field) {
       case 'institutionType':
-        return form.copyWith(institutionType: InstitutionType.values.firstWhere(
+        return form.copyWith(
+            institutionType: InstitutionType.values.firstWhere(
           (type) => type.name == event.value,
         ));
       case 'institutionName':
