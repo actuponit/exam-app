@@ -12,7 +12,7 @@ abstract class SubscriptionDataSource {
     required XFile receiptImage,
     String? transactionNumber,
   });
-  
+
   /// Checks the status of a user's subscription
   /// Returns a [SubscriptionModel] with status information
   /// Throws a [ServerException] for server errors
@@ -46,28 +46,27 @@ class SubscriptionDataSourceImpl implements SubscriptionDataSource {
         data: formData,
       );
 
-        final subscriptionModel = SubscriptionModel.fromJson(response.data['subscription']);
-        return subscriptionModel;
-      
+      final subscriptionModel =
+          SubscriptionModel.fromJson(response.data['subscription']);
+      return subscriptionModel;
     } catch (e) {
       throw ServerException('Failed to verify subscription: $e');
     }
   }
-  
+
   @override
   Future<SubscriptionModel> checkSubscriptionStatus(int userId) async {
     try {
       final response = await dio.post(
-        '/subscription/status',
+        '/check-subscription',
         data: {
           'user_id': userId,
         },
       );
 
-        return SubscriptionModel.fromJson(response.data['subscription']);
-      
+      return SubscriptionModel.fromCheckJson(response.data);
     } catch (e) {
       throw ServerException('Failed to check subscription status: $e');
     }
   }
-} 
+}

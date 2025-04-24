@@ -1,9 +1,9 @@
-import 'package:exam_app/core/di/injection.dart';
+import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
-import 'package:exam_app/features/payment/presentation/cubit/subscription_status_cubit.dart';
+import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
+import 'package:exam_app/features/payment/presentation/bloc/subscription_event.dart';
+import 'package:exam_app/features/payment/presentation/bloc/subscription_state.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
-import 'package:exam_app/features/payment/presentation/widgets/status_snack_bar.dart';
-import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,80 +11,89 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/app_drawer.dart';
 import '../../../../core/theme.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Start periodic status checking when screen loads
+    context.read<SubscriptionBloc>().add(const StartPeriodicStatusCheck());
+  }
+
+  @override
+  void dispose() {
+    // Stop periodic status checking when screen is disposed
+    context.read<SubscriptionBloc>().add(const StopPeriodicStatusCheck());
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-            create: (context) =>
-                getIt<SubscriptionStatusCubit>()..checkStatus()),
-        BlocProvider(
-            create: (context) =>
-                context.read<SubjectBloc>()..add(LoadSubjects())),
-      ],
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Home',
-            style: displayStyle.copyWith(
-              color: Colors.white,
-              fontSize: 24,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Home',
+          style: displayStyle.copyWith(
+            color: Colors.white,
+            fontSize: 24,
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.notifications_outlined),
-              onPressed: () {
-                // TODO: Implement notifications
-              },
-            ),
-          ],
         ),
-        drawer: const AppDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Welcome back!',
-                  style: displayStyle.copyWith(
-                    fontSize: 28,
-                  ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              // TODO: Implement notifications
+            },
+          ),
+        ],
+      ),
+      drawer: const AppDrawer(),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Welcome back!',
+                style: displayStyle.copyWith(
+                  fontSize: 28,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Practice for your upcoming exams',
-                  style: bodyStyle.copyWith(
-                    color: textLight,
-                  ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Practice for your upcoming exams',
+                style: bodyStyle.copyWith(
+                  color: textLight,
                 ),
-                const SizedBox(height: 40),
-                _buildStatusBanner(context),
-                // _buildQuickActions(context),
-                const SizedBox(height: 40),
-                Text(
-                  'Recent Exams',
-                  style: titleStyle.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
+              ),
+              const SizedBox(height: 40),
+              _buildStatusBanner(context),
+              // _buildQuickActions(context),
+              const SizedBox(height: 40),
+              Text(
+                'Recent Exams',
+                style: titleStyle.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 16),
-                _buildRecentExams(context),
-                const SizedBox(
-                  height: 40,
-                ),
+              ),
+              const SizedBox(height: 16),
+              _buildRecentExams(context),
+              const SizedBox(
+                height: 40,
+              ),
                 const SubjectSelectionScreen(),
               ],
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -127,54 +136,54 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildStatusBanner(BuildContext context) {
-    return BlocConsumer<SubscriptionStatusCubit, SubscriptionStatusState>(
+    return BlocConsumer<SubscriptionBloc, SubscriptionState>(
       listener: (context, state) {
-        if (state is SubscriptionStatusError) {
-          StatusSnackBar.showSnackBar(
-            context,
-            StatusSnackBar.error(
-              context: context,
-              message: 'Failed to check subscription status: ${state.message}',
-              actionLabel: 'Retry',
-              onActionPressed: () {
-                context.read<SubscriptionStatusCubit>().checkStatus();
-              },
-            ),
+        if (state is SubscriptionError) {
+          AppSnackBar.error(
+            context: context,
+            message: state.message,
+            actionLabel: 'Retry',
+            onActionPressed: () {
+              context
+                  .read<SubscriptionBloc>()
+                  .add(const CheckSubscriptionStatus());
+            },
           );
-        } else if (state is SubscriptionStatusApproved) {
-          StatusSnackBar.showSnackBar(
-            context,
-            StatusSnackBar.success(
-              context: context,
-              message: 'Your subscription is active!',
-            ),
+        } else if (state is SubscriptionStatusLoaded &&
+            state.status == SubscriptionStatus.approved) {
+          AppSnackBar.success(
+            context: context,
+            message: 'Your subscription is active!',
           );
         }
       },
       builder: (context, state) {
-        if (state is SubscriptionStatusLoading) {
+        if (state is SubscriptionLoading) {
           return _buildLoadingBanner();
-        } else if (state is SubscriptionStatusPending) {
-          return StatusBanner(
-            subscription: state.subscription,
-            onCheckStatus: () {
-              context.read<SubscriptionStatusCubit>().checkStatus();
-            },
-          );
-        } else if (state is SubscriptionStatusDenied) {
-          return StatusBanner(
-            subscription: state.subscription,
-            onResubmit: () {
-              context.push(RoutePaths.transactionVerification);
-            },
-          );
-        } else if (state is SubscriptionStatusApproved) {
-          // Don't show banner for approved status
-          return const SizedBox.shrink();
-        } else {
-          // Default banner for initial state
-          return const StatusBanner();
+        } else if (state is SubscriptionStatusLoaded) {
+          if (state.status == SubscriptionStatus.pending) {
+            return StatusBanner(
+              subscription: state.subscription,
+              onCheckStatus: () {
+                context
+                    .read<SubscriptionBloc>()
+                    .add(const CheckSubscriptionStatus());
+              },
+            );
+          } else if (state.status == SubscriptionStatus.denied) {
+            return StatusBanner(
+              subscription: state.subscription,
+              onResubmit: () {
+                context.push(RoutePaths.transactionVerification);
+              },
+            );
+          } else if (state.status == SubscriptionStatus.approved) {
+            // Don't show banner for approved status
+            return const SizedBox.shrink();
+          }
         }
+        // Default banner for initial state
+        return const StatusBanner();
       },
     );
   }
@@ -210,57 +219,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ActionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _ActionCard({
-    required this.icon,
-    required this.title,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 100,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(cardRadius),
-          border: Border.all(
-            color: color.withOpacity(0.2),
-            width: 1,
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: color,
-              size: 32,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: titleStyle.copyWith(
-                fontSize: 14,
-                color: color,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

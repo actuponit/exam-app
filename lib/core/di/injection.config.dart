@@ -28,12 +28,8 @@ import '../../features/payment/data/datasources/subscription_local_data_source.d
     as _i622;
 import '../../features/payment/domain/repositories/subscription_repository.dart'
     as _i611;
-import '../../features/payment/domain/usecases/verify_subscription.dart'
-    as _i273;
-import '../../features/payment/presentation/cubit/subscription_status_cubit.dart'
-    as _i711;
-import '../../features/payment/presentation/cubit/subscription_verification_cubit.dart'
-    as _i112;
+import '../../features/payment/presentation/bloc/subscription_bloc.dart'
+    as _i383;
 import '../../features/quiz/domain/repositories/question_repository.dart'
     as _i837;
 import '../network/network_info.dart' as _i932;
@@ -104,12 +100,8 @@ Future<_i174.GetIt> init(
           ));
   gh.lazySingleton<_i661.AuthBloc>(
       () => authModule.authBloc(gh<_i573.AuthRepository>()));
-  gh.lazySingleton<_i711.SubscriptionStatusCubit>(() => paymentModule
-      .subscriptionStatusCubit(gh<_i611.SubscriptionRepository>()));
-  gh.lazySingleton<_i112.SubscriptionVerificationCubit>(() => paymentModule
-      .subscriptionVerificationCubit(gh<_i611.SubscriptionRepository>()));
-  gh.factory<_i273.VerifySubscription>(() =>
-      paymentModule.verifySubscription(gh<_i611.SubscriptionRepository>()));
+  gh.factory<_i383.SubscriptionBloc>(
+      () => paymentModule.subscriptionBloc(gh<_i611.SubscriptionRepository>()));
   return getIt;
 }
 

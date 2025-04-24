@@ -108,7 +108,7 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.transactionVerification,
         name: 'TransactionVerification',
-        builder: (context, state) => TransactionVerificationScreen.withBloc(),
+        builder: (context, state) => const TransactionVerificationScreen(),
       ),
     ],
     initialLocation: RoutePaths.home,

@@ -4,8 +4,8 @@ class Subscription extends Equatable {
   static const String STATUS_INITIAL = 'initial';
   static const String STATUS_PENDING = 'pending';
   static const String STATUS_APPROVED = 'approved';
-  static const String STATUS_DENIED = 'denied';
-  
+  static const String STATUS_DENIED = 'failed';
+
   final String status;
   final String? message;
   final DateTime? lastChecked;
@@ -15,7 +15,7 @@ class Subscription extends Equatable {
     this.message,
     this.lastChecked,
   });
-  
+
   bool get isInitial => status == STATUS_INITIAL;
   bool get isPending => status == STATUS_PENDING;
   bool get isApproved => status == STATUS_APPROVED;
@@ -23,4 +23,4 @@ class Subscription extends Equatable {
 
   @override
   List<Object?> get props => [status, message, lastChecked];
-} 
+}
