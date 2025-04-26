@@ -46,8 +46,8 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
       );
 
       // Cache the subscription status locally
-      await localDataSource.cacheSubscriptionStatus(subscription);
 
+      await localDataSource.cacheSubscriptionStatus(subscription);
       return Right(subscription);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -68,13 +68,13 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
       }
 
       // If we're offline, return cached data (even if not approved)
-      if (!await networkInfo.isConnected) {
-        if (cachedStatus != null) {
-          return Right(cachedStatus);
-        }
-        return const Left(
-            CacheFailure('No cached subscription data available'));
-      }
+      // if (!await networkInfo.isConnected) {
+      //   if (cachedStatus != null) {
+      //     return Right(cachedStatus);
+      //   }
+      //   return const Left(
+      //       CacheFailure('No cached subscription data available'));
+      // }
 
       // If we're online and not approved, check with server
       final userId = await localAuthDataSource.getUserId();
@@ -89,7 +89,10 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
       // Cache the updated status
       await localDataSource.cacheSubscriptionStatus(remoteStatus);
 
-      return Right(remoteStatus);
+      return Right(remoteStatus.copyWith(
+        wasApproved:
+            remoteStatus.isApproved && cachedStatus?.isApproved == false,
+      ));
     } on ServerException catch (e) {
       // If server fails but we have cached data, return it
       final cachedStatus = await localDataSource.getSubscriptionStatus();
