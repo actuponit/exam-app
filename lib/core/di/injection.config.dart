@@ -32,6 +32,15 @@ import '../../features/payment/presentation/bloc/subscription_bloc.dart'
     as _i383;
 import '../../features/quiz/domain/repositories/question_repository.dart'
     as _i837;
+import '../../features/splash/data/datasources/user_preferences_local_datasource.dart'
+    as _i293;
+import '../../features/splash/data/datasources/user_preferences_local_datasource_impl.dart'
+    as _i424;
+import '../../features/splash/data/repositories/user_preferences_repository_impl.dart'
+    as _i429;
+import '../../features/splash/domain/repositories/user_preferences_repository.dart'
+    as _i421;
+import '../../features/splash/presentation/cubit/splash_cubit.dart' as _i125;
 import '../network/network_info.dart' as _i932;
 import '../services/hive_service.dart' as _i1047;
 import 'injectable_module.dart' as _i109;
@@ -78,6 +87,8 @@ Future<_i174.GetIt> init(
       () => paymentModule.internetConnectionChecker());
   gh.lazySingleton<_i970.LocalAuthDataSource>(
       () => authModule.localAuthDataSource(gh<_i460.SharedPreferences>()));
+  gh.lazySingleton<_i293.UserPreferencesLocalDataSource>(() =>
+      _i424.UserPreferencesLocalDataSourceImpl(gh<_i460.SharedPreferences>()));
   gh.singleton<_i361.Dio>(() => networkModule.dio(gh<_i1047.HiveService>()));
   gh.lazySingleton<_i900.SubscriptionDataSource>(
       () => paymentModule.subscriptionDataSource(gh<_i361.Dio>()));
@@ -87,6 +98,11 @@ Future<_i174.GetIt> init(
       paymentModule.subscriptionLocalDataSource(gh<_i460.SharedPreferences>()));
   gh.lazySingleton<_i932.NetworkInfo>(
       () => paymentModule.networkInfo(gh<_i973.InternetConnectionChecker>()));
+  gh.lazySingleton<_i421.UserPreferencesRepository>(
+      () => _i429.UserPreferencesRepositoryImpl(
+            gh<_i293.UserPreferencesLocalDataSource>(),
+            gh<_i970.LocalAuthDataSource>(),
+          ));
   gh.lazySingleton<_i573.AuthRepository>(() => authModule.authRepository(
         gh<_i970.AuthDataSource>(),
         gh<_i970.LocalAuthDataSource>(),
@@ -98,6 +114,8 @@ Future<_i174.GetIt> init(
             gh<_i970.LocalAuthDataSource>(),
             gh<_i932.NetworkInfo>(),
           ));
+  gh.factory<_i125.SplashCubit>(
+      () => _i125.SplashCubit(gh<_i421.UserPreferencesRepository>()));
   gh.lazySingleton<_i661.AuthBloc>(
       () => authModule.authBloc(gh<_i573.AuthRepository>()));
   gh.factory<_i383.SubscriptionBloc>(

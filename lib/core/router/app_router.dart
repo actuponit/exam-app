@@ -6,10 +6,12 @@ import 'package:exam_app/features/quiz/presentation/screens/question_screen.dart
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:exam_app/features/quiz/presentation/screens/year_selection_screen.dart';
 import 'package:exam_app/features/faq/presentation/screens/faq_screen.dart';
+import 'package:exam_app/features/splash/presentation/screens/splash_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 class RoutePaths {
+  static const String splash = '/splash';
   static const String login = '/login';
   static const String signUp = '/signup';
   static const String home = '/home';
@@ -32,7 +34,12 @@ class AppRouter {
     routes: [
       GoRoute(
         path: '/',
-        redirect: (context, state) => RoutePaths.login,
+        redirect: (context, state) => RoutePaths.splash,
+      ),
+      GoRoute(
+        path: RoutePaths.splash,
+        name: 'Splash',
+        builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
         path: RoutePaths.signUp,
@@ -111,7 +118,7 @@ class AppRouter {
         builder: (context, state) => const TransactionVerificationScreen(),
       ),
     ],
-    initialLocation: RoutePaths.home,
+    initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true,
     errorPageBuilder: (context, state) => MaterialPage<void>(
       key: state.pageKey,

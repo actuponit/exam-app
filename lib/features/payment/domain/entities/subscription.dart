@@ -9,11 +9,13 @@ class Subscription extends Equatable {
   final String status;
   final String? message;
   final DateTime? lastChecked;
+  final bool wasNotApproved;
 
   const Subscription({
     required this.status,
     this.message,
     this.lastChecked,
+    this.wasNotApproved = false,
   });
 
   bool get isInitial => status == STATUS_INITIAL;
@@ -21,6 +23,20 @@ class Subscription extends Equatable {
   bool get isApproved => status == STATUS_APPROVED;
   bool get isDenied => status == STATUS_DENIED;
 
+  Subscription copyWith({
+    String? status,
+    String? message,
+    DateTime? lastChecked,
+    bool? wasApproved,
+  }) {
+    return Subscription(
+      status: status ?? this.status,
+      message: message ?? this.message,
+      lastChecked: lastChecked ?? this.lastChecked,
+      wasNotApproved: wasApproved ?? this.wasNotApproved,
+    );
+  }
+
   @override
-  List<Object?> get props => [status, message, lastChecked];
+  List<Object?> get props => [status, message, lastChecked, wasNotApproved];
 }
