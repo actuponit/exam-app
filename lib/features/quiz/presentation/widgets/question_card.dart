@@ -34,11 +34,12 @@ class QuestionCard extends StatelessWidget {
             ...question.options.map((option) {
               final isSelected = selectedAnswer == option;
               final isCorrect = question.correctOption == option;
-              
+
               return OptionCard(
                 option: option,
                 isSelected: isSelected,
-                isCorrect: showAnswer ? isCorrect : null,
+                isCorrect:
+                    showAnswer && selectedAnswer != null ? isCorrect : null,
                 onTap: () => onAnswerSelected(option),
               );
             }).toList(),
@@ -69,4 +70,4 @@ class QuestionCard extends StatelessWidget {
       ),
     );
   }
-} 
+}

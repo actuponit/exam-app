@@ -130,8 +130,9 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
   @override
   Future<List<Question>> getQuestions({
-    String? chapter,
-    int? year,
+    required String subjectId,
+    String? chapterId,
+    required int year,
     int page = 1,
     int pageSize = 3,
   }) async {
@@ -139,10 +140,10 @@ class QuestionRepositoryImpl implements QuestionRepository {
     await Future.delayed(const Duration(milliseconds: 500));
 
     final filteredQuestions = _questions.values.where((q) {
-      if (chapter != null && chapter.isNotEmpty) {
-        return q.chapter == chapter;
+      if (chapterId != null && chapterId.isNotEmpty) {
+        return q.chapter == chapterId;
       }
-      if (year != null && year > 0) {
+      if (year > 0) {
         return q.year == year;
       }
       return true;

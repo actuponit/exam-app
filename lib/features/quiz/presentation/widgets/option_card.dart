@@ -37,7 +37,7 @@ class OptionCard extends StatelessWidget {
           : theme.colorScheme.onSurface;
     } else if (isCorrect == true) {
       // Correct answer
-      backgroundColor = Colors.green.withOpacity(0.2);
+      backgroundColor = Colors.amber.withOpacity(0.5);
       borderColor = Colors.green;
       textColor = Colors.green.shade800;
     } else {
