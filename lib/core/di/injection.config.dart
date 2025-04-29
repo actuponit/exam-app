@@ -19,6 +19,9 @@ import '../../features/auth/data/datasources/auth_data_source.dart' as _i970;
 import '../../features/auth/data/repositories/auth_repository.dart' as _i573;
 import '../../features/auth/presentation/blocs/auth_bloc/auth_bloc.dart'
     as _i661;
+import '../../features/exams/domain/repositories/exam_repository.dart' as _i254;
+import '../../features/exams/domain/repositories/subject_repository.dart'
+    as _i634;
 import '../../features/payment/data/datasources/subscription_data_source.dart'
     as _i900;
 import '../../features/payment/data/datasources/subscription_local_data_source.dart'
@@ -37,10 +40,12 @@ import '../network/network_info.dart' as _i932;
 import '../services/hive_service.dart' as _i1047;
 import 'injectable_module.dart' as _i109;
 import 'modules/auth_module.dart' as _i4;
+import 'modules/exam_module.dart' as _i486;
 import 'modules/hive_module.dart' as _i31;
 import 'modules/network_module.dart' as _i851;
 import 'modules/payment_module.dart' as _i81;
 import 'modules/quiz_module.dart' as _i697;
+import 'modules/subject_module.dart' as _i143;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 Future<_i174.GetIt> init(
@@ -55,7 +60,9 @@ Future<_i174.GetIt> init(
   );
   final injectableModule = _$InjectableModule();
   final hiveModule = _$HiveModule();
+  final subjectModule = _$SubjectModule();
   final quizModule = _$QuizModule();
+  final examModule = _$ExamModule();
   final paymentModule = _$PaymentModule();
   final authModule = _$AuthModule();
   final networkModule = _$NetworkModule();
@@ -67,7 +74,10 @@ Future<_i174.GetIt> init(
     () => hiveModule.hiveService,
     preResolve: true,
   );
+  gh.singleton<_i634.SubjectRepository>(
+      () => subjectModule.subjectRepository());
   gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository());
+  gh.singleton<_i254.ExamRepository>(() => examModule.examRepository());
   gh.lazySingleton<_i973.InternetConnectionChecker>(
       () => paymentModule.internetConnectionChecker());
   gh.lazySingleton<_i970.LocalAuthDataSource>(
@@ -107,7 +117,11 @@ class _$InjectableModule extends _i109.InjectableModule {}
 
 class _$HiveModule extends _i31.HiveModule {}
 
+class _$SubjectModule extends _i143.SubjectModule {}
+
 class _$QuizModule extends _i697.QuizModule {}
+
+class _$ExamModule extends _i486.ExamModule {}
 
 class _$PaymentModule extends _i81.PaymentModule {}
 

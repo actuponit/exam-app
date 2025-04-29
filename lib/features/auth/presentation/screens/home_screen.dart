@@ -3,6 +3,7 @@ import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/features/payment/presentation/cubit/subscription_status_cubit.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_snack_bar.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,8 +16,15 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<SubscriptionStatusCubit>()..checkStatus(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+            create: (context) =>
+                getIt<SubscriptionStatusCubit>()..checkStatus()),
+        BlocProvider(
+            create: (context) =>
+                context.read<SubjectBloc>()..add(LoadSubjects())),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -71,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(
                   height: 40,
                 ),
-                SubjectSelectionScreen(),
+                const SubjectSelectionScreen(),
               ],
             ),
           ),
