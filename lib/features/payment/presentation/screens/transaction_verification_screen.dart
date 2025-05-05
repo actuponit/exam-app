@@ -80,10 +80,10 @@ class _TransactionVerificationScreenState
       body: BlocConsumer<SubscriptionBloc, SubscriptionState>(
         listener: (context, state) {
           if (state is SubscriptionStatusLoaded &&
-              state.status == SubscriptionStatus.pending) {
+              state.subscription.isPending) {
             AppSnackBar.success(
               context: context,
-              message: 'Payment verification successful!',
+              message: 'Payment verification sent successful!y',
             );
             Navigator.of(context).pop();
           }

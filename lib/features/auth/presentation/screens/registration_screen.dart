@@ -3,6 +3,7 @@ import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/features/auth/domain/models/institution_type.dart';
 import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
+import 'package:exam_app/features/auth/presentation/utils/form_validator.dart';
 import 'package:exam_app/features/auth/presentation/widgets/exam_selection_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,8 +60,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
           centerTitle: true,
           elevation: 0,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Theme.of(context).colorScheme.onPrimary,
           leading: BlocBuilder<RegistrationBloc, RegistrationState>(
             builder: (context, state) {
               return state.currentStep == RegistrationStep.institutionInfo
@@ -147,6 +146,15 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
+  // Add form key for validation
+  final _formKey = GlobalKey<FormState>();
+
+  // Add error states
+  String? firstNameError;
+  String? lastNameError;
+  String? phoneError;
+  String? emailError;
+
   @override
   void initState() {
     super.initState();
@@ -167,10 +175,58 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
   }
 
   bool _isFormValid() {
-    return firstNameController.text.isNotEmpty &&
+    return firstNameError == null &&
+        lastNameError == null &&
+        phoneError == null &&
+        emailError == null &&
+        firstNameController.text.isNotEmpty &&
         lastNameController.text.isNotEmpty &&
         phoneController.text.isNotEmpty &&
         emailController.text.isNotEmpty;
+  }
+
+  void _validateAndUpdateField(String field, String value) {
+    setState(() {
+      switch (field) {
+        case 'firstName':
+          firstNameError = FormValidator.validateName(value);
+          break;
+        case 'lastName':
+          lastNameError = FormValidator.validateName(value);
+          break;
+        case 'phone':
+          // Format phone number before validation
+          final formattedPhone = FormValidator.formatPhoneNumber(value);
+          phoneController.text = formattedPhone;
+          phoneController.selection = TextSelection.fromPosition(
+            TextPosition(offset: formattedPhone.length),
+          );
+          phoneError = FormValidator.validatePhone(formattedPhone);
+          break;
+        case 'email':
+          emailError = FormValidator.validateEmail(value);
+          break;
+      }
+    });
+
+    // Only update the bloc if there are no errors
+    if (field == 'phone') {
+      context.read<RegistrationBloc>().add(
+            RegistrationFormFieldUpdated(
+              step: RegistrationStep.personalInfo,
+              field: field,
+              value: FormValidator.formatPhoneNumber(value),
+            ),
+          );
+    } else {
+      context.read<RegistrationBloc>().add(
+            RegistrationFormFieldUpdated(
+              step: RegistrationStep.personalInfo,
+              field: field,
+              value: value,
+            ),
+          );
+    }
   }
 
   @override
@@ -179,61 +235,69 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
       builder: (context, state) {
         final bloc = context.read<RegistrationBloc>();
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              _buildTextField(
-                context: context,
-                label: 'First Name',
-                field: 'firstName',
-                autofillHints: const [AutofillHints.givenName],
-                controller: firstNameController,
-              ),
-              _buildTextField(
-                context: context,
-                label: 'Last Name',
-                field: 'lastName',
-                autofillHints: const [AutofillHints.familyName],
-                controller: lastNameController,
-              ),
-              _buildTextField(
-                context: context,
-                label: 'Phone Number',
-                field: 'phone',
-                keyboardType: TextInputType.phone,
-                autofillHints: const [AutofillHints.telephoneNumber],
-                controller: phoneController,
-              ),
-              _buildTextField(
-                context: context,
-                label: 'Email',
-                field: 'email',
-                keyboardType: TextInputType.emailAddress,
-                autofillHints: const [AutofillHints.email],
-                controller: emailController,
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: _isFormValid()
-                      ? () {
-                          bloc.add(const RegistrationStepChanged(
-                            RegistrationStep.institutionInfo,
-                          ));
-                        }
-                      : null,
-                  child: const Text('Continue'),
+        return Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _buildTextField(
+                  context: context,
+                  label: 'First Name',
+                  field: 'firstName',
+                  autofillHints: const [AutofillHints.givenName],
+                  controller: firstNameController,
+                  errorText: firstNameError,
                 ),
-              ),
-            ],
+                _buildTextField(
+                  context: context,
+                  label: 'Last Name',
+                  field: 'lastName',
+                  autofillHints: const [AutofillHints.familyName],
+                  controller: lastNameController,
+                  errorText: lastNameError,
+                ),
+                _buildTextField(
+                  context: context,
+                  label: 'Phone Number',
+                  field: 'phone',
+                  keyboardType: TextInputType.phone,
+                  autofillHints: const [AutofillHints.telephoneNumber],
+                  controller: phoneController,
+                  errorText: phoneError,
+                  prefixText: '+ 251 ',
+                ),
+                _buildTextField(
+                  context: context,
+                  label: 'Email',
+                  field: 'email',
+                  keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
+                  controller: emailController,
+                  errorText: emailError,
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: _isFormValid()
+                        ? () {
+                            bloc.add(const RegistrationStepChanged(
+                              RegistrationStep.institutionInfo,
+                            ));
+                          }
+                        : null,
+                    child: const Text('Continue'),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -250,6 +314,8 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
     bool isPassword = false,
     VoidCallback? onPressed,
     required TextEditingController controller,
+    String? errorText,
+    String? prefixText,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -261,6 +327,8 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           labelText: label,
+          errorText: errorText,
+          prefixText: prefixText,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -273,16 +341,7 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
                 )
               : null,
         ),
-        onChanged: (value) {
-          context.read<RegistrationBloc>().add(
-                RegistrationFormFieldUpdated(
-                  step: RegistrationStep.personalInfo,
-                  field: field,
-                  value: value,
-                ),
-              );
-          setState(() {}); // Refresh UI to update button state
-        },
+        onChanged: (value) => _validateAndUpdateField(field, value),
       ),
     );
   }
@@ -488,15 +547,14 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
     final bloc = context.read<AuthBloc>();
     final state = context.read<RegistrationBloc>().state;
     bloc.add(RegisterUser(
-      firstName: state.personalInfo.firstName,
-      lastName: state.personalInfo.lastName,
-      phone: state.personalInfo.phone,
-      email: state.personalInfo.email,
-      institutionType: state.institutionInfo.institutionType.name,
-      institutionName: state.institutionInfo.institutionName,
-      examType: state.institutionInfo.examType,
-      referralCode: state.institutionInfo.referralCode
-    ));
+        firstName: state.personalInfo.firstName,
+        lastName: state.personalInfo.lastName,
+        phone: state.personalInfo.phone,
+        email: state.personalInfo.email,
+        institutionType: state.institutionInfo.institutionType.name,
+        institutionName: state.institutionInfo.institutionName,
+        examType: state.institutionInfo.examType,
+        referralCode: state.institutionInfo.referralCode));
   }
 
   @override
@@ -547,12 +605,13 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed:
-                          _isFormValid() && state.institutionInfo.examType != -1 && !authState.isRegistrationLoading
-                              ? () {
-                                  _showReferralDialog();
-                                }
-                              : null,
+                      onPressed: _isFormValid() &&
+                              state.institutionInfo.examType != -1 &&
+                              !authState.isRegistrationLoading
+                          ? () {
+                              _showReferralDialog();
+                            }
+                          : null,
                       child: const Text('Complete Registration'),
                     ),
                   );

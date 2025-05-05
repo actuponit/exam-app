@@ -77,9 +77,10 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
     result.fold(
       (failure) => emit(SubscriptionError(failure.message)),
       (subscription) {
-        emit(VerificationSuccess(subscription));
-        // After successful verification, start periodic checking
-        add(const StartPeriodicStatusCheck());
+        emit(SubscriptionStatusLoaded(
+          subscription: subscription,
+          status: SubscriptionStatus.pending,
+        ));
       },
     );
   }

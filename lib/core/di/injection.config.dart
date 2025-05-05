@@ -32,6 +32,10 @@ import '../../features/payment/presentation/bloc/subscription_bloc.dart'
     as _i383;
 import '../../features/quiz/domain/repositories/question_repository.dart'
     as _i837;
+import '../../features/quiz/presentation/bloc/exam_bloc/exam_bloc.dart'
+    as _i1020;
+import '../../features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart'
+    as _i354;
 import '../../features/splash/data/datasources/user_preferences_local_datasource.dart'
     as _i293;
 import '../../features/splash/data/datasources/user_preferences_local_datasource_impl.dart'
@@ -64,10 +68,10 @@ Future<_i174.GetIt> init(
     environmentFilter,
   );
   final injectableModule = _$InjectableModule();
-  final hiveModule = _$HiveModule();
-  final subjectModule = _$SubjectModule();
-  final quizModule = _$QuizModule();
   final examModule = _$ExamModule();
+  final subjectModule = _$SubjectModule();
+  final hiveModule = _$HiveModule();
+  final quizModule = _$QuizModule();
   final paymentModule = _$PaymentModule();
   final authModule = _$AuthModule();
   final networkModule = _$NetworkModule();
@@ -75,25 +79,29 @@ Future<_i174.GetIt> init(
     () => injectableModule.prefs,
     preResolve: true,
   );
+  gh.singleton<_i254.ExamRepository>(() => examModule.examRepository());
+  gh.singleton<_i634.SubjectRepository>(
+      () => subjectModule.subjectRepository());
   await gh.singletonAsync<_i1047.HiveService>(
     () => hiveModule.hiveService,
     preResolve: true,
   );
-  gh.singleton<_i634.SubjectRepository>(
-      () => subjectModule.subjectRepository());
   gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository());
-  gh.singleton<_i254.ExamRepository>(() => examModule.examRepository());
   gh.lazySingleton<_i973.InternetConnectionChecker>(
       () => paymentModule.internetConnectionChecker());
   gh.lazySingleton<_i970.LocalAuthDataSource>(
       () => authModule.localAuthDataSource(gh<_i460.SharedPreferences>()));
   gh.lazySingleton<_i293.UserPreferencesLocalDataSource>(() =>
       _i424.UserPreferencesLocalDataSourceImpl(gh<_i460.SharedPreferences>()));
+  gh.factory<_i354.SubjectBloc>(
+      () => subjectModule.subjectBloc(gh<_i634.SubjectRepository>()));
   gh.singleton<_i361.Dio>(() => networkModule.dio(gh<_i1047.HiveService>()));
   gh.lazySingleton<_i900.SubscriptionDataSource>(
       () => paymentModule.subscriptionDataSource(gh<_i361.Dio>()));
   gh.lazySingleton<_i970.AuthDataSource>(
       () => authModule.remoteAuthDataSource(gh<_i361.Dio>()));
+  gh.factory<_i1020.ExamBloc>(
+      () => examModule.examBloc(gh<_i254.ExamRepository>()));
   gh.lazySingleton<_i622.SubscriptionLocalDataSource>(() =>
       paymentModule.subscriptionLocalDataSource(gh<_i460.SharedPreferences>()));
   gh.lazySingleton<_i932.NetworkInfo>(
@@ -125,13 +133,13 @@ Future<_i174.GetIt> init(
 
 class _$InjectableModule extends _i109.InjectableModule {}
 
-class _$HiveModule extends _i31.HiveModule {}
+class _$ExamModule extends _i486.ExamModule {}
 
 class _$SubjectModule extends _i143.SubjectModule {}
 
-class _$QuizModule extends _i697.QuizModule {}
+class _$HiveModule extends _i31.HiveModule {}
 
-class _$ExamModule extends _i486.ExamModule {}
+class _$QuizModule extends _i697.QuizModule {}
 
 class _$PaymentModule extends _i81.PaymentModule {}
 

@@ -1,7 +1,9 @@
+import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,65 +35,68 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Home',
-          style: displayStyle.copyWith(
-            color: Colors.white,
-            fontSize: 24,
+    return BlocProvider(
+      create: (context) => getIt<SubjectBloc>()..add(LoadSubjects()),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Home',
+            style: displayStyle.copyWith(
+              color: Colors.white,
+              fontSize: 24,
+            ),
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.notifications_outlined),
+              onPressed: () {
+                // TODO: Implement notifications
+              },
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // TODO: Implement notifications
-            },
-          ),
-        ],
-      ),
-      drawer: const AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Welcome back!',
-                style: displayStyle.copyWith(
-                  fontSize: 28,
+        drawer: const AppDrawer(),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Welcome back!',
+                  style: displayStyle.copyWith(
+                    fontSize: 28,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Practice for your upcoming exams',
-                style: bodyStyle.copyWith(
-                  color: textLight,
+                const SizedBox(height: 8),
+                Text(
+                  'Practice for your upcoming exams',
+                  style: bodyStyle.copyWith(
+                    color: textLight,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 40),
-              _buildStatusBanner(context),
-              // _buildQuickActions(context),
-              const SizedBox(height: 40),
-              Text(
-                'Recent Exams',
-                style: titleStyle.copyWith(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: 40),
+                _buildStatusBanner(context),
+                // _buildQuickActions(context),
+                const SizedBox(height: 40),
+                Text(
+                  'Recent Exams',
+                  style: titleStyle.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              _buildRecentExams(context),
-              const SizedBox(
-                height: 40,
-              ),
+                const SizedBox(height: 16),
+                _buildRecentExams(context),
+                const SizedBox(
+                  height: 40,
+                ),
                 const SubjectSelectionScreen(),
               ],
             ),
           ),
         ),
+      ),
     );
   }
 
@@ -161,8 +166,9 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         } else if (state is SubscriptionStatusLoaded &&
             state.status == SubscriptionStatus.pending) {
-          context.read<SubscriptionBloc>().add(
-              const StartPeriodicStatusCheck(interval: Duration(seconds: 5)));
+          context
+              .read<SubscriptionBloc>()
+              .add(const StartPeriodicStatusCheck());
         }
       },
       builder: (context, state) {
