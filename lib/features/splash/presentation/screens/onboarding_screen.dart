@@ -55,7 +55,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         listener: (context, state) {
           if (state.isComplete) {
             // Navigate to home when onboarding is complete
-            context.go(RoutePaths.home);
+            if (state.isLoggedIn) {
+              context.go(RoutePaths.home);
+            } else {
+              context.go(RoutePaths.signUp);
+            }
           }
         },
         builder: (context, state) {
@@ -161,6 +165,5 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   void _completeOnboarding(BuildContext context) {
     context.read<SplashCubit>().completeOnboarding();
-    context.go(RoutePaths.signUp);
   }
 }
