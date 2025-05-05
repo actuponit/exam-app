@@ -9,14 +9,16 @@ import '../widgets/question_card.dart';
 import '../widgets/quiz_result_dialog.dart';
 
 class QuestionScreen extends StatelessWidget {
-  final String? chapter;
-  final int? year;
+  final String subjectId;
+  final String? chapterId;
+  final int year;
   final bool isQuizMode;
 
   const QuestionScreen({
     super.key,
-    this.chapter,
-    this.year,
+    required this.subjectId,
+    required this.year,
+    this.chapterId,
     this.isQuizMode = false,
   });
 
@@ -26,7 +28,8 @@ class QuestionScreen extends StatelessWidget {
       create: (context) => QuestionBloc(
         repository: getIt<QuestionRepository>(),
       )..add(QuestionStarted(
-          chapter: chapter,
+          subjectId: subjectId,
+          chapterId: chapterId,
           year: year,
           isQuizMode: isQuizMode,
         )),
@@ -37,7 +40,7 @@ class QuestionScreen extends StatelessWidget {
 
 class QuestionScreenContent extends StatefulWidget {
   const QuestionScreenContent({super.key});
-  
+
   @override
   State<QuestionScreenContent> createState() => _QuestionScreenContentState();
 }
@@ -61,7 +64,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
             if (!state.isQuizMode) return const Text('Practice Mode');
             return Row(
               mainAxisSize: MainAxisSize.min,
-          children: [
+              children: [
                 const Text('Quiz Mode'),
                 const SizedBox(width: 8),
                 Container(
@@ -91,7 +94,8 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
               if (!state.isQuizMode) return const SizedBox();
               return TextButton.icon(
                 onPressed: state.canSubmit
-                    ? () => context.read<QuestionBloc>().add(const QuizSubmitted())
+                    ? () =>
+                        context.read<QuestionBloc>().add(const QuizSubmitted())
                     : null,
                 icon: const Icon(Icons.check_circle_outline),
                 label: const Text('Submit'),
@@ -102,25 +106,28 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
       ),
       body: BlocConsumer<QuestionBloc, QuestionState>(
         listener: (context, state) {
-          if (state.status == QuestionStatus.success && state.currentPage != _currentPage) {
+          if (state.status == QuestionStatus.success &&
+              state.currentPage != _currentPage) {
             _pageController.animateToPage(
               state.currentPage,
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
             );
           }
-          
+
           // Show result dialog when quiz is submitted
-          if (state.status == QuestionStatus.submitted && state.isQuizMode && state.scoreResult != null) {
+          if (state.status == QuestionStatus.submitted &&
+              state.isQuizMode &&
+              state.scoreResult != null) {
             showDialog(
               context: context,
               barrierDismissible: false,
               builder: (context) => ResultDialog(
                 scoreResult: state.scoreResult!,
                 onClose: () => Navigator.of(context).pop(),
-      ),
-    );
-  }
+              ),
+            );
+          }
         },
         builder: (context, state) {
           if (state.status == QuestionStatus.loading) {
@@ -129,27 +136,28 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
 
           if (state.status == QuestionStatus.error) {
             return Center(
-      child: Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+                children: [
                   const Text('Error loading questions'),
-          const SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
                       context.read<QuestionBloc>().add(
                             QuestionStarted(
-                              chapter: state.chapter,
+                              subjectId: state.subjectId,
+                              chapterId: state.chapterId,
                               year: state.year,
                               isQuizMode: state.isQuizMode,
                             ),
                           );
                     },
                     child: const Text('Retry'),
-            ),
-        ],
-      ),
-    );
-  }
+                  ),
+                ],
+              ),
+            );
+          }
 
           return Column(
             children: [
@@ -162,8 +170,9 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                   },
                   itemCount: state.totalPages,
                   itemBuilder: (context, pageIndex) {
-                    final pageQuestions = state.questions.skip(pageIndex * 3).take(3).toList();
-                    
+                    final pageQuestions =
+                        state.questions.skip(pageIndex * 3).take(3).toList();
+
                     return ListView.builder(
                       padding: const EdgeInsets.only(bottom: 16),
                       itemCount: pageQuestions.length,
@@ -198,7 +207,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                         width: 8,
                         height: 8,
                         margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: index == _currentPage
                               ? Theme.of(context).primaryColor
@@ -214,4 +223,4 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
       ),
     );
   }
-} 
+}

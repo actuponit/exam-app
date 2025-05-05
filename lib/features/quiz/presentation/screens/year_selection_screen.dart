@@ -1,7 +1,9 @@
 import 'dart:ui';
+import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/core/theme.dart';
 import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/exam_bloc/exam_bloc.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -223,13 +225,23 @@ class YearListItem extends StatelessWidget {
             Icons.chevron_right,
             color: textLight,
           ),
-          onTap: () => _showModeSelectionDialog(context),
+          onTap: () => _showModeSelectionDialog(
+            context,
+            year: exam.year.toString(),
+            subjectId: exam.subjectId,
+            chapterId: selectedChapterId == 'all' ? null : exam.chapters[0].id,
+          ),
         ),
       ),
     );
   }
 
-  Future<void> _showModeSelectionDialog(BuildContext context) async {
+  Future<void> _showModeSelectionDialog(
+    BuildContext context, {
+    required String year,
+    required String subjectId,
+    String? chapterId,
+  }) async {
     return showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.5),
@@ -275,7 +287,12 @@ class YearListItem extends StatelessWidget {
                   description: 'Review answers as you go',
                   onTap: () {
                     context.pop();
-                    context.push('/questions', extra: {'mode': 'practice'});
+                    context.push(
+                        '${RoutePaths.years}/$subjectId/$year${RoutePaths.questions}',
+                        extra: {
+                          'mode': QuestionMode.practice,
+                          'chapterId': chapterId,
+                        });
                   },
                 ),
                 const SizedBox(height: 16),
@@ -285,7 +302,12 @@ class YearListItem extends StatelessWidget {
                   description: 'Timed exam with final review',
                   onTap: () {
                     context.pop();
-                    context.push('/questions', extra: {'mode': 'quiz'});
+                    context.push(
+                        '${RoutePaths.years}/$subjectId/$year${RoutePaths.questions}',
+                        extra: {
+                          'mode': QuestionMode.quiz,
+                          'chapterId': chapterId,
+                        });
                   },
                 ),
                 const SizedBox(height: 24),

@@ -19,6 +19,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     on<QuestionPageChanged>(_onQuestionPageChanged);
     on<QuestionAnswered>(_onQuestionAnswered);
     on<QuizSubmitted>(_onQuizSubmitted);
+    on<QuizTicked>(_onQuizTicked);
   }
 
   Future<void> _onQuestionStarted(
@@ -27,7 +28,8 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
   ) async {
     emit(state.copyWith(
       status: QuestionStatus.loading,
-      chapter: event.chapter,
+      chapterId: event.chapterId,
+      subjectId: event.subjectId,
       year: event.year,
       isQuizMode: event.isQuizMode,
       answers: const {},
@@ -40,7 +42,8 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
 
     try {
       final questions = await _repository.getQuestions(
-        chapter: event.chapter,
+        subjectId: event.subjectId,
+        chapterId: event.chapterId,
         year: event.year,
       );
 
@@ -50,7 +53,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
       ));
 
       if (event.isQuizMode) {
-        _startTimer(emit);
+        _startTimer();
       }
     } catch (e) {
       emit(state.copyWith(
@@ -60,20 +63,22 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     }
   }
 
-  void _startTimer(Emitter<QuestionState> emit) {
+  void _startTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(
       const Duration(seconds: 1),
-      (timer) {
-        final remaining = state.timeRemaining;
-        if (remaining == null || remaining <= 1) {
-          timer.cancel();
-          add(const QuizSubmitted());
-        } else {
-          emit(state.copyWith(timeRemaining: remaining - 1));
-        }
-      },
+      (_) => add(QuizTicked()),
     );
+  }
+
+  void _onQuizTicked(event, emit) {
+    final remaining = state.timeRemaining;
+    if (remaining == null || remaining <= 1) {
+      _timer?.cancel();
+      add(const QuizSubmitted());
+    } else {
+      emit(state.copyWith(timeRemaining: remaining - 1));
+    }
   }
 
   void _onQuestionPageChanged(
@@ -128,4 +133,4 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     _timer?.cancel();
     return super.close();
   }
-} 
+}

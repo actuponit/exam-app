@@ -10,8 +10,9 @@ class QuestionState extends Equatable {
   final Map<String, String> answers; // questionId -> selectedOption
   final QuestionStatus status;
   final String? error;
-  final String? chapter;
-  final int? year;
+  final String subjectId;
+  final String? chapterId;
+  final int year;
   final bool isQuizMode;
   final bool isSubmitted;
   final int currentPage;
@@ -24,8 +25,9 @@ class QuestionState extends Equatable {
     this.answers = const {},
     this.status = QuestionStatus.initial,
     this.error,
-    this.chapter,
-    this.year,
+    this.subjectId = '',
+    this.chapterId,
+    this.year = 0,
     this.isQuizMode = false,
     this.isSubmitted = false,
     this.currentPage = 0,
@@ -56,7 +58,8 @@ class QuestionState extends Equatable {
     Map<String, String>? answers,
     QuestionStatus? status,
     String? error,
-    String? chapter,
+    String? subjectId,
+    String? chapterId,
     int? year,
     bool? isQuizMode,
     bool? isSubmitted,
@@ -70,7 +73,8 @@ class QuestionState extends Equatable {
       answers: answers ?? this.answers,
       status: status ?? this.status,
       error: error ?? this.error,
-      chapter: chapter ?? this.chapter,
+      subjectId: subjectId ?? this.subjectId,
+      chapterId: chapterId ?? this.chapterId,
       year: year ?? this.year,
       isQuizMode: isQuizMode ?? this.isQuizMode,
       isSubmitted: isSubmitted ?? this.isSubmitted,
@@ -87,7 +91,8 @@ class QuestionState extends Equatable {
         answers,
         status,
         error,
-        chapter,
+        subjectId,
+        chapterId,
         year,
         isQuizMode,
         isSubmitted,

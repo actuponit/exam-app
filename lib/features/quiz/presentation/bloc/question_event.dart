@@ -8,18 +8,20 @@ abstract class QuestionEvent extends Equatable {
 }
 
 class QuestionStarted extends QuestionEvent {
-  final String? chapter;
-  final int? year;
+  final String subjectId;
+  final String? chapterId;
+  final int year;
   final bool isQuizMode;
 
   const QuestionStarted({
-    this.chapter,
-    this.year,
+    required this.subjectId,
+    required this.year,
+    this.chapterId,
     this.isQuizMode = false,
   });
 
   @override
-  List<Object?> get props => [chapter, year, isQuizMode];
+  List<Object?> get props => [subjectId, chapterId, year, isQuizMode];
 }
 
 class QuestionPageChanged extends QuestionEvent {
@@ -57,4 +59,6 @@ class AnswerRevealed extends QuestionEvent {
   List<Object?> get props => [questionId];
 }
 
-class LoadMoreRequested extends QuestionEvent {} 
+class LoadMoreRequested extends QuestionEvent {}
+
+class QuizTicked extends QuestionEvent {}

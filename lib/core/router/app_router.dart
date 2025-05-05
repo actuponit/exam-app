@@ -64,16 +64,19 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: RoutePaths.questions,
+        path: '${RoutePaths.years}/:subjectId/:year${RoutePaths.questions}',
         name: 'Questions',
         builder: (context, state) {
-          final chapter = state.pathParameters['chapter'] ?? '';
-          final year = int.tryParse(state.pathParameters['year'] ?? '');
-          final mode = state.pathParameters['mode'] == 'practice'
-              ? QuestionMode.practice
-              : QuestionMode.quiz;
+          final subjectId = state.pathParameters['subjectId'] ?? '';
+          final year = int.tryParse(state.pathParameters['year'] ?? '') ?? 0;
+
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final chapterId = extra['chapterId'];
+          final mode = extra['mode'] ?? QuestionMode.practice;
+
           return QuestionScreen(
-            chapter: chapter.isNotEmpty ? chapter : null,
+            subjectId: subjectId,
+            chapterId: chapterId,
             year: year,
             isQuizMode: mode == QuestionMode.quiz,
           );
