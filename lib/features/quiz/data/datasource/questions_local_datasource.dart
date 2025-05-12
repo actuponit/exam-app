@@ -25,13 +25,13 @@ class QuestionsLocalDatasource implements IQuestionsLocalDatasource {
   Future<void> saveQuestions(List<Question> questions) async {
     await _questionsBox.clear();
     for (final question in questions) {
-      await _questionsBox.put(question.id, question.toModel());
+      await _questionsBox.put(question.id, QuestionModel.fromEntity(question));
     }
   }
 
   @override
   Future<void> updateQuestion(Question question) async {
-    await _questionsBox.put(question.id, question.toModel());
+    await _questionsBox.put(question.id, QuestionModel.fromEntity(question));
   }
 
   @override

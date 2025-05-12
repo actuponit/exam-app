@@ -65,21 +65,6 @@ class Question extends Equatable {
       subject: subject ?? this.subject,
     );
   }
-
-  QuestionModel toModel() {
-    return QuestionModel(
-      id: id,
-      text: text,
-      options: options.map((e) => OptionModel.fromEntity(e)).toList(),
-      correctOption: correctOption,
-      explanation: explanation,
-      year: year,
-      createdAt: createdAt,
-      isAttempted: isAttempted,
-      chapter: chapter,
-      subject: subject,
-    );
-  }
 }
 
 class Option extends Equatable {
