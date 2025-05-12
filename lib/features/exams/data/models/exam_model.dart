@@ -2,6 +2,8 @@ import 'package:exam_app/core/constants/hive_constants.dart';
 import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:hive/hive.dart';
 
+part 'exam_model.g.dart';
+
 @HiveType(typeId: HiveTypeIds.exam)
 class ExamModel extends Exam {
   @HiveField(0)
@@ -48,6 +50,19 @@ class ExamModel extends Exam {
             totalQuestions: totalQuestions,
             durationMins: durationMins,
             chapters: chapters);
+
+  factory ExamModel.fromEntity(Exam exam) {
+    return ExamModel(
+      id: exam.id,
+      subjectId: exam.subjectId,
+      year: exam.year,
+      title: exam.title,
+      totalQuestions: exam.totalQuestions,
+      durationMins: exam.durationMins,
+      chapters:
+          exam.chapters.map((e) => ExamChapterModel.fromEntity(e)).toList(),
+    );
+  }
 }
 
 @HiveType(typeId: 2)
@@ -64,14 +79,17 @@ class ExamChapterModel extends ExamChapter {
   @override
   final int questionCount;
 
-  @HiveField(3)
-  @override
-  final int order;
-
   ExamChapterModel({
     required this.id,
     required this.name,
     required this.questionCount,
-    required this.order,
-  }) : super(id: id, name: name, questionCount: questionCount, order: order);
+  }) : super(id: id, name: name, questionCount: questionCount);
+
+  factory ExamChapterModel.fromEntity(ExamChapter chapter) {
+    return ExamChapterModel(
+      id: chapter.id,
+      name: chapter.name,
+      questionCount: chapter.questionCount,
+    );
+  }
 }

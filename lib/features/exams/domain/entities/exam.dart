@@ -55,21 +55,18 @@ class Chapter {
 
 class ExamChapter extends Chapter {
   final int questionCount;
-  final int order;
 
-  ExamChapter(
-      {required String id,
-      required this.questionCount,
-      required String name,
-      required this.order})
-      : super(id: id, name: name);
+  ExamChapter({
+    required String id,
+    required this.questionCount,
+    required String name,
+  }) : super(id: id, name: name);
 
   @override
   factory ExamChapter.fromJson(Map<String, dynamic> json) {
     return ExamChapter(
-        id: json['id'],
-        questionCount: json['questionCount'],
-        name: json['name'],
-        order: json['order']);
+        id: json['id'].toString(),
+        questionCount: json['questionCount'] ?? 0,
+        name: json['name']);
   }
 }

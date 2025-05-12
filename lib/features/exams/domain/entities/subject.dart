@@ -7,15 +7,48 @@ class Subject extends Equatable {
   final String name;
   final String iconName;
   final double progress;
+  final String? region;
 
   const Subject({
     required this.id,
     required this.name,
     required this.iconName,
-    required this.progress,
+    this.progress = 0.0,
+    this.region,
   });
 
-  IconData get icon => iconFromName(iconName);
+  IconData get icon => iconFromName(name);
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'icon_name': iconName,
+        'progress': progress,
+        'region': region,
+      };
+
+  Subject copyWith({
+    String? id,
+    String? name,
+    String? iconName,
+    double? progress,
+    String? region,
+  }) {
+    return Subject(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      iconName: iconName ?? this.iconName,
+      progress: progress ?? this.progress,
+      region: region ?? this.region,
+    );
+  }
+
+  factory Subject.fromJson(Map<String, dynamic> json) => Subject(
+        id: json['id'].toString(),
+        name: json['name'] as String,
+        iconName: json['name'] as String,
+        region: json['region'] as String?,
+      );
 
   @override
   List<Object?> get props => [
@@ -23,5 +56,6 @@ class Subject extends Equatable {
         name,
         iconName,
         progress,
+        region,
       ];
 }

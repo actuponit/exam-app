@@ -1,14 +1,19 @@
 import 'package:equatable/equatable.dart';
+import 'package:exam_app/features/exams/domain/entities/exam.dart';
+import 'package:exam_app/features/exams/domain/entities/subject.dart';
+import 'package:exam_app/features/quiz/data/models/question_model.dart';
 
 class Question extends Equatable {
   final String id;
   final String text;
-  final List<String> options;
+  final List<Option> options;
   final String correctOption;
   final String? explanation;
-  final String? chapter;
   final int? year;
   final DateTime createdAt;
+  final bool isAttempted;
+  final ExamChapter chapter;
+  final Subject subject;
 
   const Question({
     required this.id,
@@ -16,9 +21,11 @@ class Question extends Equatable {
     required this.options,
     required this.correctOption,
     this.explanation,
-    this.chapter,
     this.year,
     required this.createdAt,
+    this.isAttempted = false,
+    required this.chapter,
+    required this.subject,
   });
 
   @override
@@ -36,12 +43,14 @@ class Question extends Equatable {
   Question copyWith({
     String? id,
     String? text,
-    List<String>? options,
+    List<Option>? options,
     String? correctOption,
     String? explanation,
-    String? chapter,
+    ExamChapter? chapter,
     int? year,
     DateTime? createdAt,
+    bool? isAttempted,
+    Subject? subject,
   }) {
     return Question(
       id: id ?? this.id,
@@ -52,6 +61,23 @@ class Question extends Equatable {
       chapter: chapter ?? this.chapter,
       year: year ?? this.year,
       createdAt: createdAt ?? this.createdAt,
+      isAttempted: isAttempted ?? this.isAttempted,
+      subject: subject ?? this.subject,
+    );
+  }
+
+  QuestionModel toModel() {
+    return QuestionModel(
+      id: id,
+      text: text,
+      options: options.map((e) => OptionModel.fromEntity(e)).toList(),
+      correctOption: correctOption,
+      explanation: explanation,
+      year: year,
+      createdAt: createdAt,
+      isAttempted: isAttempted,
+      chapter: chapter,
+      subject: subject,
     );
   }
 }
@@ -82,4 +108,4 @@ class Answer extends Equatable {
 
   @override
   List<Object?> get props => [questionId, selectedOptionId, answeredAt];
-} 
+}

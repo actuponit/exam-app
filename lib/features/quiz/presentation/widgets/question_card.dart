@@ -36,11 +36,11 @@ class QuestionCard extends StatelessWidget {
               final isCorrect = question.correctOption == option;
 
               return OptionCard(
-                option: option,
+                option: option.text,
                 isSelected: isSelected,
                 isCorrect:
                     showAnswer && selectedAnswer != null ? isCorrect : null,
-                onTap: () => onAnswerSelected(option),
+                onTap: () => onAnswerSelected(option.id),
               );
             }).toList(),
             if (showAnswer && selectedAnswer != null)

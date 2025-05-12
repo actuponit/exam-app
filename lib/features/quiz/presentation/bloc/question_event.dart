@@ -7,6 +7,8 @@ abstract class QuestionEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class FetchQuestions extends QuestionEvent {}
+
 class QuestionStarted extends QuestionEvent {
   final String subjectId;
   final String? chapterId;

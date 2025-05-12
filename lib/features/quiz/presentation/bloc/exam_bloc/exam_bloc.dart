@@ -71,7 +71,6 @@ class ExamBloc extends Bloc<ExamEvent, ExamState> {
           return map;
         })
         .values
-        .toList()
-      ..sort((a, b) => a.order.compareTo(b.order));
+        .toList();
   }
 }

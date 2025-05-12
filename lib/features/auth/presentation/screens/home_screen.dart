@@ -3,6 +3,8 @@ import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/question_bloc.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/question_event.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // Start periodic status checking when screen loads
     context.read<SubscriptionBloc>().add(const CheckSubscriptionStatus());
+    context.read<QuestionBloc>().add(FetchQuestions());
   }
 
   @override
@@ -36,7 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<SubjectBloc>()..add(LoadSubjects()),
+      // create: (context) => getIt<SubjectBloc>()..add(LoadSubjects()),
+      create: (context) => getIt<SubjectBloc>(),
       child: Scaffold(
         appBar: AppBar(
           title: Text(

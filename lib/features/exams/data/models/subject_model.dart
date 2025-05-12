@@ -2,6 +2,8 @@ import 'package:hive/hive.dart';
 import '../../domain/entities/subject.dart';
 import '../../../../core/constants/hive_constants.dart';
 
+part 'subject_model.g.dart';
+
 @HiveType(typeId: HiveTypeIds.subject)
 class SubjectModel extends Subject {
   @HiveField(0)

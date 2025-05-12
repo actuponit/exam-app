@@ -20,6 +20,20 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     on<QuestionAnswered>(_onQuestionAnswered);
     on<QuizSubmitted>(_onQuizSubmitted);
     on<QuizTicked>(_onQuizTicked);
+    on<FetchQuestions>(_onFetchQuestions);
+  }
+
+  Future<void> _onFetchQuestions(
+    FetchQuestions event,
+    Emitter<QuestionState> emit,
+  ) async {
+    emit(state.copyWith(status: QuestionStatus.loading));
+    try {
+      await _repository.getAllQuestions();
+      emit(state.copyWith(status: QuestionStatus.success));
+    } catch (e) {
+      emit(state.copyWith(status: QuestionStatus.error, error: e.toString()));
+    }
   }
 
   Future<void> _onQuestionStarted(
