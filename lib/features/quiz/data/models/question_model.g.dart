@@ -25,8 +25,8 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       year: fields[5] as int?,
       createdAt: fields[6] as DateTime,
       isAttempted: fields[7] as bool,
-      chapter: fields[8] as ExamChapter,
-      subject: fields[9] as Subject,
+      chapter: fields[8] as ExamChapterModel,
+      subject: fields[9] as SubjectModel,
     );
   }
 
