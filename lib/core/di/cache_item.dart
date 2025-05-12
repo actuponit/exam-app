@@ -1,6 +1,7 @@
+import 'package:exam_app/core/constants/hive_constants.dart';
 import 'package:hive/hive.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: HiveTypeIds.cache)
 class CacheItem extends HiveObject {
   @override
   @HiveField(0)

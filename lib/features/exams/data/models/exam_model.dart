@@ -65,7 +65,7 @@ class ExamModel extends Exam {
   }
 }
 
-@HiveType(typeId: 2)
+@HiveType(typeId: HiveTypeIds.chapter)
 class ExamChapterModel extends ExamChapter {
   @HiveField(0)
   @override

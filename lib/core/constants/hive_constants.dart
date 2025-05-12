@@ -5,6 +5,8 @@ abstract class HiveTypeIds {
 
   static const question = 2;
   static const option = 3;
+  static const chapter = 4;
+  static const cache = 5;
   // Add more type IDs as needed
 }
 
