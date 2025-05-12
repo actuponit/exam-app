@@ -1,4 +1,6 @@
 import 'package:exam_app/core/constants/hive_constants.dart';
+import 'package:exam_app/features/exams/data/models/exam_model.dart';
+import 'package:exam_app/features/exams/data/models/subject_model.dart';
 import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:exam_app/features/exams/domain/entities/subject.dart';
 import 'package:exam_app/features/quiz/domain/models/question.dart';
@@ -42,11 +44,11 @@ class QuestionModel extends Question {
 
   @HiveField(8)
   @override
-  final ExamChapter chapter;
+  final ExamChapterModel chapter;
 
   @HiveField(9)
   @override
-  final Subject subject;
+  final SubjectModel subject;
 
   const QuestionModel({
     required this.id,
@@ -82,8 +84,8 @@ class QuestionModel extends Question {
       year: question.year,
       createdAt: question.createdAt,
       isAttempted: question.isAttempted,
-      chapter: question.chapter,
-      subject: question.subject,
+      chapter: ExamChapterModel.fromEntity(question.chapter),
+      subject: SubjectModel.fromEntity(question.subject),
     );
   }
 }

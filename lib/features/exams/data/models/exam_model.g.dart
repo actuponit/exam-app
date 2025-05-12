@@ -60,7 +60,7 @@ class ExamModelAdapter extends TypeAdapter<ExamModel> {
 
 class ExamChapterModelAdapter extends TypeAdapter<ExamChapterModel> {
   @override
-  final int typeId = 2;
+  final int typeId = 4;
 
   @override
   ExamChapterModel read(BinaryReader reader) {
