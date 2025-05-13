@@ -89,7 +89,7 @@ class SubjectCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Flexible(
                   child: Text(
-                    subject.name,
+                    subject.name.toUpperCase(),
                     overflow: TextOverflow.ellipsis,
                     style: titleStyle.copyWith(
                       fontSize: 18,

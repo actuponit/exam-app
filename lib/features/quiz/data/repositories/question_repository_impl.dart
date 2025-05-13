@@ -1,4 +1,4 @@
-import 'package:exam_app/core/di/modules/quiz_module.dart';
+import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:exam_app/features/exams/domain/entities/subject.dart';
 import '../../domain/models/question.dart';
@@ -207,16 +207,19 @@ class QuestionRepositoryImpl implements QuestionRepository {
   final IQuestionsRemoteDatasource _remoteDatasource;
   final ISubjectLocalDatasource _subjectLocalDatasource;
   final IExamLocalDatasource _examLocalDatasource;
+  final LocalAuthDataSource _authLocalDatasource;
 
   QuestionRepositoryImpl({
     required IQuestionsLocalDatasource localDatasource,
     required IQuestionsRemoteDatasource remoteDatasource,
     required ISubjectLocalDatasource subjectLocalDatasource,
     required IExamLocalDatasource examLocalDatasource,
+    required LocalAuthDataSource authLocalDatasource,
   })  : _localDatasource = localDatasource,
         _remoteDatasource = remoteDatasource,
         _subjectLocalDatasource = subjectLocalDatasource,
-        _examLocalDatasource = examLocalDatasource;
+        _examLocalDatasource = examLocalDatasource,
+        _authLocalDatasource = authLocalDatasource;
 
   final Map<String, models.Answer> _answers = {};
 
@@ -228,10 +231,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
     int page = 1,
     int pageSize = 3,
   }) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    final filteredQuestions = _questions.values.where((q) {
+    final localQuestions = await _localDatasource.getQuestions();
+    final filteredQuestions = localQuestions.where((q) {
       if (chapterId != null && chapterId.isNotEmpty) {
         return q.chapter.id == chapterId;
       }
@@ -272,7 +273,12 @@ class QuestionRepositoryImpl implements QuestionRepository {
       }
 
       // If no local data, fetch from remote
-      final questionsMap = await _remoteDatasource.getQuestions("subjectId");
+      final int? userId = await _authLocalDatasource.getUserId();
+      if (userId == null) {
+        throw Exception('User ID not found');
+      }
+      final questionsMap =
+          await _remoteDatasource.getQuestions(userId.toString());
       // Convert the map to a flat list of questions
       final List<Question> allQuestions =
           questionsMap.values.expand((questions) => questions).toList();

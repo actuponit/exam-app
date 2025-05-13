@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:exam_app/core/services/hive_service.dart';
+import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/exams/data/datasource/exam_local_datasource.dart';
 import 'package:exam_app/features/exams/data/datasource/subject_local_datasource.dart';
 import 'package:exam_app/features/quiz/data/models/question_model.dart';
@@ -36,11 +37,13 @@ abstract class QuizModule {
     IQuestionsRemoteDatasource remoteDatasource,
     ISubjectLocalDatasource subjectLocalDatasource,
     IExamLocalDatasource examLocalDatasource,
+    LocalAuthDataSource authLocalDatasource,
   ) =>
       QuestionRepositoryImpl(
         localDatasource: localDatasource,
         remoteDatasource: remoteDatasource,
         subjectLocalDatasource: subjectLocalDatasource,
         examLocalDatasource: examLocalDatasource,
+        authLocalDatasource: authLocalDatasource,
       );
 }

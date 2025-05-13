@@ -5,6 +5,7 @@ import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.da
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_event.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:flutter/material.dart';
@@ -38,69 +39,78 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      // create: (context) => getIt<SubjectBloc>()..add(LoadSubjects()),
-      create: (context) => getIt<SubjectBloc>(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Home',
-            style: displayStyle.copyWith(
-              color: Colors.white,
-              fontSize: 24,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.notifications_outlined),
-              onPressed: () {
-                // TODO: Implement notifications
-              },
-            ),
-          ],
-        ),
-        drawer: const AppDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Welcome back!',
+    return BlocBuilder<QuestionBloc, QuestionState>(
+      builder: (context, state) {
+        if (state.status == QuestionStatus.success) {
+          return BlocProvider(
+            create: (context) => getIt<SubjectBloc>()..add(LoadSubjects()),
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  'Home',
                   style: displayStyle.copyWith(
-                    fontSize: 28,
+                    color: Colors.white,
+                    fontSize: 24,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Practice for your upcoming exams',
-                  style: bodyStyle.copyWith(
-                    color: textLight,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_outlined),
+                    onPressed: () {
+                      // TODO: Implement notifications
+                    },
+                  ),
+                ],
+              ),
+              drawer: const AppDrawer(),
+              body: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Welcome back!',
+                        style: displayStyle.copyWith(
+                          fontSize: 28,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Practice for your upcoming exams',
+                        style: bodyStyle.copyWith(
+                          color: textLight,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      _buildStatusBanner(context),
+                      // _buildQuickActions(context),
+                      const SizedBox(height: 40),
+                      Text(
+                        'Recent Exams',
+                        style: titleStyle.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildRecentExams(context),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      const SubjectSelectionScreen(),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 40),
-                _buildStatusBanner(context),
-                // _buildQuickActions(context),
-                const SizedBox(height: 40),
-                Text(
-                  'Recent Exams',
-                  style: titleStyle.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildRecentExams(context),
-                const SizedBox(
-                  height: 40,
-                ),
-                const SubjectSelectionScreen(),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
+          );
+        } else if (state.status == QuestionStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
     );
   }
 
@@ -164,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
         } else if (state is SubscriptionStatusLoaded &&
             state.status == SubscriptionStatus.approved &&
             state.subscription.wasNotApproved) {
+          context.read<QuestionBloc>().add(FetchQuestions());
           AppSnackBar.success(
             context: context,
             message: 'Your subscription is active!',

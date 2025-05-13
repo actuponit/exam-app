@@ -131,12 +131,6 @@ Future<_i174.GetIt> init(
       () => paymentModule.networkInfo(gh<_i973.InternetConnectionChecker>()));
   gh.singleton<_i634.SubjectRepository>(() =>
       subjectModule.subjectRepository(gh<_i156.ISubjectLocalDatasource>()));
-  gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository(
-        gh<_i516.IQuestionsLocalDatasource>(),
-        gh<_i413.IQuestionsRemoteDatasource>(),
-        gh<_i156.ISubjectLocalDatasource>(),
-        gh<_i506.IExamLocalDatasource>(),
-      ));
   gh.lazySingleton<_i421.UserPreferencesRepository>(
       () => _i429.UserPreferencesRepositoryImpl(
             gh<_i293.UserPreferencesLocalDataSource>(),
@@ -157,6 +151,13 @@ Future<_i174.GetIt> init(
             gh<_i970.LocalAuthDataSource>(),
             gh<_i932.NetworkInfo>(),
           ));
+  gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository(
+        gh<_i516.IQuestionsLocalDatasource>(),
+        gh<_i413.IQuestionsRemoteDatasource>(),
+        gh<_i156.ISubjectLocalDatasource>(),
+        gh<_i506.IExamLocalDatasource>(),
+        gh<_i970.LocalAuthDataSource>(),
+      ));
   gh.factory<_i125.SplashCubit>(
       () => _i125.SplashCubit(gh<_i421.UserPreferencesRepository>()));
   gh.factory<_i1020.ExamBloc>(
