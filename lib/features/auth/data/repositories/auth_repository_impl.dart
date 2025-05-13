@@ -12,9 +12,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<List<ExamType>> getExamTypes() async {
     try {
       return await _remoteDataSource.getExamTypes();
-    }  
-    catch (e) {
-      throw Exception('Failed to fetch exam types: $e');
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -41,7 +40,7 @@ class AuthRepositoryImpl implements AuthRepository {
         examType: examType.id,
         referralCode: referralCode,
       );
-      
+
       // If registration is successful and a referral code was provided, save it locally
       final int? userId = user['user']['id'];
       final String? code = user['referral_code'];
@@ -51,11 +50,11 @@ class AuthRepositoryImpl implements AuthRepository {
       if (code != null) {
         await _localDataSource.saveReferralCode(code);
       }
-      
+
       // Save exam type info
       await _localDataSource.saveExamInfo(examType.name, examType.price);
     } catch (e) {
       throw Exception('Failed to register: $e');
     }
   }
-} 
+}

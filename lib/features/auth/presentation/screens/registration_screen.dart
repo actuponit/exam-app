@@ -606,7 +606,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                         ),
                       ),
                       onPressed: _isFormValid() &&
-                              state.institutionInfo.examType != -1 &&
+                              state.institutionInfo.examType.id != -1 &&
                               !authState.isRegistrationLoading
                           ? () {
                               _showReferralDialog();
