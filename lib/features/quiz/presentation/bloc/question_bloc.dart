@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:exam_app/features/quiz/domain/models/answer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/question_repository.dart';
 import '../../domain/services/score_calculator.dart';
@@ -107,7 +108,13 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     Emitter<QuestionState> emit,
   ) {
     final newAnswers = Map<String, String>.from(state.answers)
-      ..[event.questionId] = event.selectedOption;
+      ..[event.question.id] = event.selectedOption;
+
+    _repository.saveAnswer(Answer(
+      question: event.question,
+      selectedOption: event.selectedOption,
+      answeredAt: DateTime.now(),
+    ));
 
     emit(state.copyWith(answers: newAnswers));
 

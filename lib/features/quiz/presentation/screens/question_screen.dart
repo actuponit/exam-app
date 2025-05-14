@@ -185,7 +185,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                           onAnswerSelected: (answer) {
                             context.read<QuestionBloc>().add(
                                   QuestionAnswered(
-                                    questionId: question.id,
+                                    question: question,
                                     selectedOption: answer,
                                   ),
                                 );

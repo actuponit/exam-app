@@ -20,14 +20,15 @@ class SubjectModelAdapter extends TypeAdapter<SubjectModel> {
       id: fields[0] as String,
       name: fields[1] as String,
       iconName: fields[2] as String,
-      progress: fields[3] as double,
+      total: fields[3] as int,
+      attempted: fields[4] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, SubjectModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class SubjectModelAdapter extends TypeAdapter<SubjectModel> {
       ..writeByte(2)
       ..write(obj.iconName)
       ..writeByte(3)
-      ..write(obj.progress);
+      ..write(obj.total)
+      ..writeByte(4)
+      ..write(obj.attempted);
   }
 
   @override

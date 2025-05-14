@@ -20,18 +20,24 @@ class SubjectModel extends Subject {
 
   @HiveField(3)
   @override
-  final double progress;
+  final int total;
+
+  @HiveField(4)
+  @override
+  final int attempted;
 
   const SubjectModel({
     required this.id,
     required this.name,
     required this.iconName,
-    this.progress = 0.0,
+    this.total = 0,
+    this.attempted = 0,
   }) : super(
           id: id,
           name: name,
           iconName: iconName,
-          progress: progress,
+          total: total,
+          attempted: attempted,
         );
 
   factory SubjectModel.fromEntity(Subject subject) {
@@ -39,7 +45,8 @@ class SubjectModel extends Subject {
       id: subject.id,
       name: subject.name,
       iconName: subject.iconName,
-      progress: subject.progress,
+      total: subject.total,
+      attempted: subject.attempted,
     );
   }
 }

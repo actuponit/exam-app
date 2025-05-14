@@ -1,4 +1,3 @@
-import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
@@ -39,68 +38,70 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<QuestionBloc, QuestionState>(
+    return BlocConsumer<QuestionBloc, QuestionState>(
+      listener: (context, state) {
+        if (state.status == QuestionStatus.success) {
+          context.read<SubjectBloc>().add(LoadSubjects());
+        }
+      },
       builder: (context, state) {
         if (state.status == QuestionStatus.success) {
-          return BlocProvider(
-            create: (context) => getIt<SubjectBloc>()..add(LoadSubjects()),
-            child: Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  'Home',
-                  style: displayStyle.copyWith(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                'Home',
+                style: displayStyle.copyWith(
+                  color: Colors.white,
+                  fontSize: 24,
                 ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications_outlined),
-                    onPressed: () {
-                      // TODO: Implement notifications
-                    },
-                  ),
-                ],
               ),
-              drawer: const AppDrawer(),
-              body: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Welcome back!',
-                        style: displayStyle.copyWith(
-                          fontSize: 28,
-                        ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.notifications_outlined),
+                  onPressed: () {
+                    // TODO: Implement notifications
+                  },
+                ),
+              ],
+            ),
+            drawer: const AppDrawer(),
+            body: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome back!',
+                      style: displayStyle.copyWith(
+                        fontSize: 28,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Practice for your upcoming exams',
-                        style: bodyStyle.copyWith(
-                          color: textLight,
-                        ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Practice for your upcoming exams',
+                      style: bodyStyle.copyWith(
+                        color: textLight,
                       ),
-                      const SizedBox(height: 40),
-                      _buildStatusBanner(context),
-                      // _buildQuickActions(context),
-                      const SizedBox(height: 40),
-                      Text(
-                        'Recent Exams',
-                        style: titleStyle.copyWith(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    ),
+                    const SizedBox(height: 40),
+                    _buildStatusBanner(context),
+                    // _buildQuickActions(context),
+                    const SizedBox(height: 40),
+                    Text(
+                      'Recent Exams',
+                      style: titleStyle.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(height: 16),
-                      _buildRecentExams(context),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      const SubjectSelectionScreen(),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildRecentExams(context),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    const SubjectSelectionScreen(),
+                  ],
                 ),
               ),
             ),

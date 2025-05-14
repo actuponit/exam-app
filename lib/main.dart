@@ -7,6 +7,7 @@ import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.da
 import 'package:exam_app/features/quiz/domain/repositories/question_repository.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/exam_bloc/exam_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_bloc.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:exam_app/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,6 +45,9 @@ class MainApp extends StatelessWidget {
           create: (context) => QuestionBloc(
             repository: getIt<QuestionRepository>(),
           ),
+        ),
+        BlocProvider(
+          create: (context) => getIt<SubjectBloc>(),
         ),
       ],
       child: MaterialApp.router(

@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:exam_app/features/exams/domain/entities/subject.dart';
-import 'package:exam_app/features/quiz/data/models/question_model.dart';
 
 class Question extends Equatable {
   final String id;

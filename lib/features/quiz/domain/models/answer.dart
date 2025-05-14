@@ -1,32 +1,33 @@
 import 'package:equatable/equatable.dart';
+import 'package:exam_app/features/quiz/domain/models/question.dart';
 
 class Answer extends Equatable {
-  final String questionId;
+  final Question question;
   final String selectedOption;
   final DateTime answeredAt;
 
   const Answer({
-    required this.questionId,
+    required this.question,
     required this.selectedOption,
     required this.answeredAt,
   });
 
   @override
   List<Object?> get props => [
-        questionId,
+        question,
         selectedOption,
         answeredAt,
       ];
 
   Answer copyWith({
-    String? questionId,
+    Question? questionId,
     String? selectedOption,
     DateTime? answeredAt,
   }) {
     return Answer(
-      questionId: questionId ?? this.questionId,
+      question: questionId ?? this.question,
       selectedOption: selectedOption ?? this.selectedOption,
       answeredAt: answeredAt ?? this.answeredAt,
     );
   }
-} 
+}

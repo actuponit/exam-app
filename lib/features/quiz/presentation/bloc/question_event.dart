@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:exam_app/features/quiz/domain/models/question.dart';
 
 abstract class QuestionEvent extends Equatable {
   const QuestionEvent();
@@ -36,16 +37,16 @@ class QuestionPageChanged extends QuestionEvent {
 }
 
 class QuestionAnswered extends QuestionEvent {
-  final String questionId;
+  final Question question;
   final String selectedOption;
 
   const QuestionAnswered({
-    required this.questionId,
+    required this.question,
     required this.selectedOption,
   });
 
   @override
-  List<Object> get props => [questionId, selectedOption];
+  List<Object> get props => [question, selectedOption];
 }
 
 class QuizSubmitted extends QuestionEvent {

@@ -6,16 +6,20 @@ class Subject extends Equatable {
   final String id;
   final String name;
   final String iconName;
-  final double progress;
   final String? region;
+  final int total;
+  final int attempted;
 
   const Subject({
     required this.id,
     required this.name,
     required this.iconName,
-    this.progress = 0.0,
+    this.total = 0,
+    this.attempted = 0,
     this.region,
   });
+
+  double get progress => attempted / total;
 
   IconData get icon => iconFromName(name);
 
@@ -23,7 +27,6 @@ class Subject extends Equatable {
         'id': id,
         'name': name,
         'icon_name': iconName,
-        'progress': progress,
         'region': region,
       };
 
@@ -31,14 +34,16 @@ class Subject extends Equatable {
     String? id,
     String? name,
     String? iconName,
-    double? progress,
+    int? total,
+    int? attempted,
     String? region,
   }) {
     return Subject(
       id: id ?? this.id,
       name: name ?? this.name,
       iconName: iconName ?? this.iconName,
-      progress: progress ?? this.progress,
+      total: total ?? this.total,
+      attempted: attempted ?? this.attempted,
       region: region ?? this.region,
     );
   }
@@ -55,7 +60,8 @@ class Subject extends Equatable {
         id,
         name,
         iconName,
-        progress,
+        total,
+        attempted,
         region,
       ];
 }
