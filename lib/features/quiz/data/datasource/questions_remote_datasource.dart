@@ -270,7 +270,7 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
       // };
 
       final response = await dio.post(
-        'questions',
+        'get-questions',
         data: {'user_id': userId},
       );
 

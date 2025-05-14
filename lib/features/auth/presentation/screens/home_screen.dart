@@ -106,11 +106,115 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         } else if (state.status == QuestionStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return _buildLoadingScreen();
         } else {
-          return const SizedBox.shrink();
+          return _buildErrorScreen(() {
+            context.read<QuestionBloc>().add(FetchQuestions());
+          });
         }
       },
+    );
+  }
+
+  Widget _buildLoadingScreen() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).primaryColor,
+                ),
+                strokeWidth: 3,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Loading your study materials...',
+              style: titleStyle.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Please wait while we prepare your dashboard',
+              style: bodyStyle.copyWith(
+                color: textLight,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorScreen(VoidCallback onRetry) {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(cardRadius),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 20),
+                  SelectableText.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Something went wrong\n',
+                          style: titleStyle.copyWith(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'We couldn\'t load your dashboard content',
+                          style: bodyStyle.copyWith(
+                            color: textLight,
+                          ),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Try Again'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
