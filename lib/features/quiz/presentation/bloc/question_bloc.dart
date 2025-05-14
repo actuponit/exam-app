@@ -30,7 +30,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
   ) async {
     emit(state.copyWith(status: QuestionStatus.loading));
     try {
-      await _repository.getAllQuestions();
+      await _repository.getAllQuestions(ensureBackend: event.ensureBackend);
       emit(state.copyWith(status: QuestionStatus.success));
     } catch (e) {
       emit(state.copyWith(status: QuestionStatus.error, error: e.toString()));

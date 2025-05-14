@@ -12,5 +12,5 @@ abstract class QuestionRepository {
 
   Future<void> saveAnswer(models.Answer answer);
   Future<List<models.Answer>> getSavedAnswers(List<String> questionIds);
-  Future<void> getAllQuestions();
+  Future<void> getAllQuestions({bool ensureBackend = false});
 }

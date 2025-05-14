@@ -78,8 +78,11 @@ class QuestionRepositoryImpl implements QuestionRepository {
   }
 
   @override
-  Future<void> getAllQuestions() async {
+  Future<void> getAllQuestions({bool ensureBackend = false}) async {
     try {
+      if (ensureBackend) {
+        await _localDatasource.clearQuestions();
+      }
       // First check if we have data in local storage
       final localQuestions = await _localDatasource.getQuestions();
 

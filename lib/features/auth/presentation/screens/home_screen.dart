@@ -279,7 +279,9 @@ class _HomeScreenState extends State<HomeScreen> {
         } else if (state is SubscriptionStatusLoaded &&
             state.status == SubscriptionStatus.approved &&
             state.subscription.wasNotApproved) {
-          context.read<QuestionBloc>().add(FetchQuestions());
+          context.read<QuestionBloc>().add(const FetchQuestions(
+                ensureBackend: true,
+              ));
           AppSnackBar.success(
             context: context,
             message: 'Your subscription is active!',

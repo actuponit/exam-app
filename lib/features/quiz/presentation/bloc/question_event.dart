@@ -8,7 +8,14 @@ abstract class QuestionEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class FetchQuestions extends QuestionEvent {}
+class FetchQuestions extends QuestionEvent {
+  final bool ensureBackend;
+
+  const FetchQuestions({this.ensureBackend = false});
+
+  @override
+  List<Object?> get props => [ensureBackend];
+}
 
 class QuestionStarted extends QuestionEvent {
   final String subjectId;
