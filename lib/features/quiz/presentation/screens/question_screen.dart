@@ -92,13 +92,53 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
           BlocBuilder<QuestionBloc, QuestionState>(
             builder: (context, state) {
               if (!state.isQuizMode) return const SizedBox();
-              return TextButton.icon(
-                onPressed: state.canSubmit
-                    ? () =>
-                        context.read<QuestionBloc>().add(const QuizSubmitted())
-                    : null,
-                icon: const Icon(Icons.check_circle_outline),
-                label: const Text('Submit'),
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                child: ElevatedButton.icon(
+                  onPressed: state.canSubmit
+                      ? () => context
+                          .read<QuestionBloc>()
+                          .add(const QuizSubmitted())
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    disabledBackgroundColor: Colors.grey.shade200,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                    backgroundColor: state.canSubmit
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey.shade200,
+                    foregroundColor:
+                        state.canSubmit ? Colors.white : Colors.grey.shade700,
+                    elevation: state.canSubmit ? 4 : 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        color: state.canSubmit
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.grey.shade400,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                  icon: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Icon(
+                      state.canSubmit
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                      key: ValueKey<bool>(state.canSubmit),
+                      size: 24,
+                    ),
+                  ),
+                  label: Text(
+                    'Submit',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
               );
             },
           ),
