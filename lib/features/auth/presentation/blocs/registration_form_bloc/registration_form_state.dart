@@ -21,13 +21,13 @@ class RegistrationState extends Equatable {
 
   @override
   List<Object?> get props => [
-    currentStep,
-    personalInfo,
-    institutionInfo,
-    status,
-    isLoading,
-    currentPage,
-  ];
+        currentStep,
+        personalInfo,
+        institutionInfo,
+        status,
+        isLoading,
+        currentPage,
+      ];
 
   RegistrationState copyWith({
     RegistrationStep? currentStep,
@@ -93,7 +93,8 @@ class InstitutionInfoForm extends Equatable {
   });
 
   @override
-  List<Object?> get props => [institutionType, institutionName, examType, referralCode];
+  List<Object?> get props =>
+      [institutionType, institutionName, examType, referralCode];
 
   InstitutionInfoForm copyWith({
     InstitutionType? institutionType,

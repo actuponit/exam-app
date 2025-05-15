@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:exam_app/core/error/exceptions.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/auth/data/models/exam_type.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
@@ -53,8 +55,15 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // Save exam type info
       await _localDataSource.saveExamInfo(examType.name, examType.price);
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final message = e.response?.data["message"];
+        throw ServerException(
+            message ?? "An unexpected error ocured during registration");
+      }
+      throw ServerException("An unexpected error ocured during registration");
     } catch (e) {
-      throw Exception('Failed to register: $e');
+      throw ServerException("An unexpected error ocured during registration");
     }
   }
 }

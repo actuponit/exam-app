@@ -1,3 +1,4 @@
+import 'package:exam_app/core/error/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exam_app/features/auth/data/models/exam_type.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
@@ -22,9 +23,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         examTypesStatus: LoadingStatus.loading,
         examTypesError: '',
       ));
-      
+
       final examTypes = await _authRepository.getExamTypes();
-      
+
       emit(state.copyWith(
         examTypesStatus: LoadingStatus.loaded,
         examTypes: examTypes,
@@ -47,7 +48,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         registrationError: '',
         isRegistrationSuccessful: false,
       ));
-      
+
       await _authRepository.register(
         firstName: event.firstName,
         lastName: event.lastName,
@@ -58,16 +59,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         examType: event.examType,
         referralCode: event.referralCode,
       );
-      
+
       emit(state.copyWith(
         registrationStatus: LoadingStatus.loaded,
         isRegistrationSuccessful: true,
       ));
+    } on ServerException catch (e) {
+      emit(state.copyWith(
+        registrationStatus: LoadingStatus.error,
+        registrationError: e.message,
+      ));
     } catch (e) {
       emit(state.copyWith(
         registrationStatus: LoadingStatus.error,
-        registrationError: e.toString(),
+        registrationError: "Something went wrong",
       ));
     }
   }
-} 
+}
