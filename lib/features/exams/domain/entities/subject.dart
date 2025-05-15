@@ -19,7 +19,10 @@ class Subject extends Equatable {
     this.region,
   });
 
-  double get progress => attempted / total;
+  double get progress {
+    if (total == 0) return 0;
+    return attempted / total;
+  }
 
   IconData get icon => iconFromName(name);
 

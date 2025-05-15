@@ -113,9 +113,11 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<void> saveSubjects(List<Question> questions,
       Map<String, List<Question>> questionsMap) async {
     List<Subject> subjects = questions.map((q) => q.subject).toSet().toList();
-    subjects.map((subject) => subject.copyWith(
-          total: questionsMap[subject.name]?.length,
-        ));
+    subjects = subjects
+        .map((subject) => subject.copyWith(
+              total: questionsMap[subject.name]?.length,
+            ))
+        .toList();
     await _subjectLocalDatasource.saveSubjects(subjects);
   }
 

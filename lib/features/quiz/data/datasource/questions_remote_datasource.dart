@@ -309,7 +309,7 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
       correctOption: json['correct_choice_id'].toString(),
       explanation: json['explanation'],
       chapter: chapter,
-      year: json['year_group']?['year'],
+      year: int.tryParse(json['year_group']?['year']),
       createdAt: DateTime.parse(json['created_at']),
       subject: subject,
     );
