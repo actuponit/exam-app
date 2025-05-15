@@ -9,12 +9,14 @@ class QuestionCard extends StatefulWidget {
   final String? selectedAnswer;
   final bool showAnswer;
   final Function(String) onAnswerSelected;
+  final bool celebrate;
 
   const QuestionCard({
     super.key,
     required this.question,
     this.selectedAnswer,
     required this.showAnswer,
+    this.celebrate = false,
     required this.onAnswerSelected,
   });
 
@@ -30,7 +32,7 @@ class _QuestionCardState extends State<QuestionCard> {
   void initState() {
     super.initState();
     _confettiController =
-        ConfettiController(duration: const Duration(seconds: 3));
+        ConfettiController(duration: const Duration(seconds: 1));
 
     // Create keys for each option
     for (var option in widget.question.options) {
@@ -43,8 +45,8 @@ class _QuestionCardState extends State<QuestionCard> {
     super.didUpdateWidget(oldWidget);
 
     // Play confetti when answer is shown and correct
-    if (widget.showAnswer &&
-        !oldWidget.showAnswer &&
+    if (widget.celebrate &&
+        oldWidget.selectedAnswer == null &&
         widget.selectedAnswer == widget.question.correctOption) {
       _confettiController.play();
     }
@@ -95,22 +97,19 @@ class _QuestionCardState extends State<QuestionCard> {
                         child: Align(
                           alignment: Alignment.center,
                           child: ConfettiWidget(
+                            emissionFrequency: 0.05,
                             confettiController: _confettiController,
                             blastDirectionality: BlastDirectionality.explosive,
-                            particleDrag: 0.05,
-                            emissionFrequency: 0.05,
-                            numberOfParticles: 30,
-                            maxBlastForce: 20,
-                            minBlastForce: 10,
-                            gravity: 0.1,
+                            numberOfParticles: 7,
+                            maxBlastForce: 10,
+                            minBlastForce: 5,
+                            gravity: 0.2,
                             shouldLoop: false,
                             colors: const [
                               Colors.green,
-                              Colors.blue,
-                              Colors.pink,
-                              Colors.orange,
+                              Colors.lightGreen,
+                              Colors.lightBlue,
                               Colors.purple,
-                              Colors.yellow,
                             ],
                           ),
                         ),

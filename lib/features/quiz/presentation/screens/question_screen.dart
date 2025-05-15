@@ -182,6 +182,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                           question: question,
                           selectedAnswer: state.answers[question.id],
                           showAnswer: !state.isQuizMode || state.isSubmitted,
+                          celebrate: !state.isQuizMode,
                           onAnswerSelected: (answer) {
                             context.read<QuestionBloc>().add(
                                   QuestionAnswered(
