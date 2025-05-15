@@ -100,11 +100,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       height: 40,
                     ),
+                    const SizedBox(
+                      height: 24,
+                    ),
                     const SubjectSelectionScreen(),
                   ],
                 ),
               ),
             ),
+            floatingActionButton: _buildRefetchButton(context),
           );
         } else if (state.status == QuestionStatus.loading) {
           return _buildLoadingScreen();
@@ -356,6 +360,120 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildRefetchButton(BuildContext context) {
+    return FloatingActionButtonPulse(
+      onPressed: () {
+        context.read<QuestionBloc>().add(const FetchQuestions(
+              ensureBackend: true,
+            ));
+      },
+      tooltip: 'Refresh Exam Content',
+      gradient: LinearGradient(
+        colors: [
+          Theme.of(context).primaryColor,
+          Theme.of(context).primaryColor.withBlue(
+              (Theme.of(context).primaryColor.blue + 30).clamp(0, 255)),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      child: const Icon(
+        Icons.refresh_rounded,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+class FloatingActionButtonPulse extends StatefulWidget {
+  final VoidCallback onPressed;
+  final Widget child;
+  final String tooltip;
+  final LinearGradient gradient;
+
+  const FloatingActionButtonPulse({
+    Key? key,
+    required this.onPressed,
+    required this.child,
+    required this.tooltip,
+    required this.gradient,
+  }) : super(key: key);
+
+  @override
+  State<FloatingActionButtonPulse> createState() =>
+      _FloatingActionButtonPulseState();
+}
+
+class _FloatingActionButtonPulseState extends State<FloatingActionButtonPulse>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _pulseAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _pulseAnimation.value,
+          child: Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: widget.gradient.colors.first.withOpacity(0.3),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: FloatingActionButton(
+              onPressed: widget.onPressed,
+              tooltip: widget.tooltip,
+              elevation: 8,
+              highlightElevation: 12,
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: widget.gradient,
+                ),
+                child: Center(
+                  child: widget.child,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -57,7 +57,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
   @override
   Future<void> saveAnswer(models.Answer answer) async {
-    if (!answer.question.isAttempted) {
+    final q = await _localDatasource.getQuestion(answer.question.id);
+    if (q?.isAttempted == false) {
       final subjects = await _subjectLocalDatasource.getSubjects();
       final subject =
           subjects.firstWhere((s) => s.id == answer.question.subject.id);

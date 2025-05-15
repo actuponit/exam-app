@@ -18,35 +18,34 @@ class OptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     // Determine colors based on selection and correctness
     Color backgroundColor;
     Color borderColor;
     Color textColor;
-    
+
     if (isCorrect == null) {
       // Not showing correctness yet
-      backgroundColor = isSelected 
-          ? theme.colorScheme.primaryContainer 
+      backgroundColor = isSelected
+          ? theme.colorScheme.primaryContainer
           : theme.colorScheme.surface;
-      borderColor = isSelected 
-          ? theme.colorScheme.primary 
-          : theme.colorScheme.outline;
-      textColor = isSelected 
-          ? theme.colorScheme.onPrimaryContainer 
+      borderColor =
+          isSelected ? theme.colorScheme.primary : theme.colorScheme.outline;
+      textColor = isSelected
+          ? theme.colorScheme.onPrimaryContainer
           : theme.colorScheme.onSurface;
     } else if (isCorrect == true) {
       // Correct answer
-      backgroundColor = Colors.amber.withOpacity(0.5);
-      borderColor = Colors.green;
-      textColor = Colors.green.shade800;
+      backgroundColor = Theme.of(context).primaryColor.withAlpha(200);
+      borderColor = Theme.of(context).primaryColor;
+      textColor = Colors.white;
     } else {
       // Incorrect answer
-      backgroundColor = isSelected 
-          ? Colors.red.withOpacity(0.2) 
-          : theme.colorScheme.surface;
+      backgroundColor =
+          isSelected ? Colors.red.withOpacity(0.2) : theme.colorScheme.surface;
       borderColor = isSelected ? Colors.red : theme.colorScheme.outline;
-      textColor = isSelected ? Colors.red.shade800 : theme.colorScheme.onSurface;
+      textColor =
+          isSelected ? Colors.red.shade800 : theme.colorScheme.onSurface;
     }
 
     return Padding(
@@ -72,4 +71,4 @@ class OptionCard extends StatelessWidget {
       ),
     );
   }
-} 
+}

@@ -7,6 +7,7 @@ abstract class IQuestionsLocalDatasource {
   Future<void> saveQuestions(List<Question> questions);
   Future<void> updateQuestion(Question question);
   Future<void> clearQuestions();
+  Future<Question?> getQuestion(String id);
 }
 
 class QuestionsLocalDatasource implements IQuestionsLocalDatasource {
@@ -37,5 +38,10 @@ class QuestionsLocalDatasource implements IQuestionsLocalDatasource {
   @override
   Future<void> clearQuestions() async {
     await _questionsBox.clear();
+  }
+
+  @override
+  Future<QuestionModel?> getQuestion(String id) async {
+    return _questionsBox.get(id);
   }
 }
