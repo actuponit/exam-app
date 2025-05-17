@@ -251,7 +251,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               trailing: TextButton(
-                onPressed: () => context.push('/subjects'),
+                onPressed: () {
+                  final sub = context.read<SubjectBloc>().state;
+                  if (sub is SubjectLoaded && sub.subjects.isNotEmpty) {
+                    context.push("/years/${sub.subjects.first.id}");
+                  }
+                },
                 child: const Text('Start Now'),
               ),
             ),

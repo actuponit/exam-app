@@ -13,7 +13,7 @@ class RemoteAuthDataSource implements AuthDataSource {
       final response = await _dio.get('/exam-type');
       final List<dynamic> data = response.data['data'] as List<dynamic>;
       return data.map((json) => ExamType.fromJson(json)).toList();
-    }on DioException catch (e) {
+    } on DioException catch (e) {
       throw Exception("${e.message}");
     } catch (e) {
       throw Exception('Failed to fetch exam types: $e');
@@ -31,22 +31,16 @@ class RemoteAuthDataSource implements AuthDataSource {
     required int examType,
     String? referralCode,
   }) async {
-    try {
-      final response = await _dio.post('/register', data: {
-        'name': "$firstName $lastName",
-        'phone_number': phone,
-        'email': email,
-        'institution_type': institutionType,
-        'institution_name': institutionName,
-        'type_id': examType,
-        if (referralCode != null && referralCode.isNotEmpty)
-          'referral_code': referralCode,
-      });
-      return response.data;
-    } on DioException catch (e) {
-      throw Exception("${e.message}");
-    }catch (e) {
-      throw Exception('Failed to register: $e');
-    }
+    final response = await _dio.post('/register', data: {
+      'name': "$firstName $lastName",
+      'phone_number': phone,
+      'email': email,
+      'institution_type': institutionType,
+      'institution_name': institutionName,
+      'type_id': examType,
+      if (referralCode != null && referralCode.isNotEmpty)
+        'referral_code': referralCode,
+    });
+    return response.data;
   }
-} 
+}

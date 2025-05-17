@@ -113,12 +113,15 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
   Future<void> saveSubjects(List<Question> questions,
       Map<String, List<Question>> questionsMap) async {
-    List<Subject> subjects = questions.map((q) => q.subject).toSet().toList();
-    subjects = subjects
-        .map((subject) => subject.copyWith(
-              total: questionsMap[subject.name]?.length,
-            ))
-        .toList();
+    List<Subject> subjects = [];
+    for (final subjectName in questionsMap.keys) {
+      subjects.add(Subject(
+        id: subjectName,
+        name: subjectName,
+        total: questionsMap[subjectName]?.length ?? 0,
+        iconName: subjectName.toLowerCase(),
+      ));
+    }
     await _subjectLocalDatasource.saveSubjects(subjects);
   }
 
@@ -129,7 +132,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     for (final question in questions) {
       if (question.year == null) continue;
 
-      final subjectId = question.subject.id;
+      final subjectId = question.subject.name;
       final year = question.year!;
 
       groupedQuestions.putIfAbsent(subjectId, () => {});

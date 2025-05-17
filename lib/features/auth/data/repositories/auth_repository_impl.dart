@@ -61,7 +61,7 @@ class AuthRepositoryImpl implements AuthRepository {
         throw ServerException(
             message ?? "An unexpected error ocured during registration");
       }
-      throw ServerException("An unexpected error ocured during registration");
+      throw ServerException("Server Error: ${e.message}");
     } catch (e) {
       throw ServerException("An unexpected error ocured during registration");
     }
