@@ -12,4 +12,7 @@ abstract class AuthRepository {
     required ExamType examType,
     String? referralCode,
   });
-} 
+
+  // Profile methods
+  Future<Map<String, dynamic>> getUserProfile();
+}

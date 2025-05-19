@@ -45,4 +45,4 @@ class ExamType {
 
   @override
   int get hashCode => id.hashCode ^ name.hashCode;
-} 
+}

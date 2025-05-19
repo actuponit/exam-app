@@ -2,7 +2,7 @@ import 'package:exam_app/features/auth/data/models/exam_type.dart';
 
 abstract class AuthDataSource {
   Future<List<ExamType>> getExamTypes();
-  
+
   Future<Map<String, dynamic>> register({
     required String firstName,
     required String lastName,
@@ -22,4 +22,13 @@ abstract class LocalAuthDataSource {
   Future<int?> getUserId();
   Future<void> saveExamInfo(String name, double price);
   Future<Map<String, dynamic>?> getExamInfo();
-} 
+  Future<Map<String, dynamic>?> getAllUserInfo();
+  Future<void> setAllUserInfo({
+    required String firstName,
+    required String lastName,
+    required String phone,
+    required String email,
+    required String institutionType,
+    required String institutionName,
+  });
+}

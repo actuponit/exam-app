@@ -59,6 +59,7 @@ dependencies:
   flutter_svg: ^2.1.0
   smooth_page_indicator: ^1.2.1
   flutter_markdown: ^0.7.7
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:
