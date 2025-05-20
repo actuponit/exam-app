@@ -1,4 +1,9 @@
+import 'package:exam_app/core/di/injection.dart';
+import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
+import 'package:exam_app/features/profile/presentation/bloc/profile_cubit.dart';
+import 'package:exam_app/features/profile/presentation/bloc/profile_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
 
@@ -24,49 +29,60 @@ class AppDrawer extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 50, bottom: 20),
-      decoration: const BoxDecoration(
-        color: primaryColor,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(cardRadius),
-          bottomRight: Radius.circular(cardRadius),
-        ),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
-              color: Colors.white.withOpacity(0.2),
-            ),
-            child: Icon(
-              Icons.person,
-              size: 40,
-              color: Colors.white.withOpacity(0.9),
+    return BlocProvider(
+      create: (context) =>
+          ProfileCubit(authRepository: getIt<AuthRepository>())..loadProfile(),
+      child: Builder(builder: (context) {
+        return Container(
+          padding:
+              const EdgeInsets.only(top: 50, bottom: 20, left: 10, right: 10),
+          decoration: const BoxDecoration(
+            color: primaryColor,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(cardRadius),
+              bottomRight: Radius.circular(cardRadius),
             ),
           ),
-          const SizedBox(height: 12),
-          Text(
-            'Guest User',
-            style: titleStyle.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
+          child: BlocBuilder<ProfileCubit, ProfileState>(
+            builder: (context, state) {
+              return Column(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                      color: Colors.white.withOpacity(0.2),
+                    ),
+                    child: Icon(
+                      Icons.person,
+                      size: 40,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    state.firstName ?? 'Guest User',
+                    style: titleStyle.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    state.email ?? 'guest@example.com',
+                    style: bodyStyle.copyWith(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
-          const SizedBox(height: 4),
-          Text(
-            'guest@example.com',
-            style: bodyStyle.copyWith(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
+        );
+      }),
     );
   }
 
@@ -113,16 +129,6 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           const Divider(),
-          _DrawerListTile(
-            icon: Icons.logout,
-            title: 'Logout',
-            onTap: () {
-              // TODO: Implement logout logic
-              context.go('/login');
-            },
-            textColor: Colors.red,
-            iconColor: Colors.red,
-          ),
           const SizedBox(height: 8),
           Text(
             'Version 1.0.0',
@@ -176,4 +182,4 @@ class _DrawerListTile extends StatelessWidget {
       visualDensity: VisualDensity.compact,
     );
   }
-} 
+}

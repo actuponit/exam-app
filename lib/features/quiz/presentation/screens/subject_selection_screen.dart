@@ -6,6 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class SubjectSelectionScreen extends StatelessWidget {
+  static Widget route = Scaffold(
+    appBar: AppBar(
+      title: const Text('Subjects'),
+    ),
+    body: const SubjectSelectionScreen(),
+  );
   const SubjectSelectionScreen({super.key});
 
   @override
