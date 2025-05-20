@@ -49,4 +49,12 @@ class SubscriptionError extends SubscriptionState {
 }
 
 // Enum for subscription status
-enum SubscriptionStatus { initial, pending, approved, denied }
+enum SubscriptionStatus {
+  initial,
+  pending,
+  approved,
+  denied;
+
+  @override
+  String toString() => name.toUpperCase();
+}

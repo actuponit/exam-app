@@ -1,3 +1,6 @@
+import 'package:exam_app/core/di/injection.dart';
+import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
+import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exam_app/core/theme.dart';
@@ -7,6 +10,10 @@ import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 
 class ProfileScreen extends StatelessWidget {
+  static Widget route = BlocProvider(
+      create: (context) =>
+          ProfileCubit(authRepository: getIt<AuthRepository>())..loadProfile(),
+      child: const ProfileScreen());
   const ProfileScreen({super.key});
 
   @override
@@ -22,126 +29,180 @@ class ProfileScreen extends StatelessWidget {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Profile',
-              style: displayStyle.copyWith(
-                color: Colors.white,
-                fontSize: 24,
+          body: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 200,
+                pinned: true,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Theme.of(context).primaryColor,
+                          Theme.of(context).primaryColor.withOpacity(0.8),
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 40),
+                          CircleAvatar(
+                            radius: 45,
+                            backgroundColor: Colors.white.withOpacity(0.2),
+                            child: Text(
+                              '${state.firstName?[0] ?? ''}${state.lastName?[0] ?? ''}',
+                              style: displayStyle.copyWith(
+                                fontSize: 36,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            '${state.firstName ?? ''} ${state.lastName ?? ''}',
+                            style: displayStyle.copyWith(
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            state.email ?? '',
+                            style: bodyStyle.copyWith(
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildProfileHeader(context, state),
-                const SizedBox(height: 24),
-                _buildSubscriptionCard(context, state),
-                const SizedBox(height: 24),
-                _buildReferralCard(context, state),
-                const SizedBox(height: 24),
-              ],
-            ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSubscriptionCard(context, state),
+                      const SizedBox(height: 24),
+                      _buildReferralCard(context, state),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, ProfileState state) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(cardRadius),
-        side: BorderSide(color: Colors.grey[200]!),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-              child: Text(
-                '${state.firstName?[0] ?? ''}${state.lastName?[0] ?? ''}',
-                style: displayStyle.copyWith(
-                  fontSize: 32,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '${state.firstName ?? ''} ${state.lastName ?? ''}',
-              style: titleStyle.copyWith(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              state.email ?? '',
-              style: bodyStyle.copyWith(
-                color: textLight,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildSubscriptionCard(BuildContext context, ProfileState state) {
+    final subscriptionState = context.read<SubscriptionBloc>().state;
+    final subscriptionStatus = subscriptionState is SubscriptionStatusLoaded
+        ? subscriptionState.status.toString().toUpperCase()
+        : 'Unknown Status';
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(cardRadius),
         side: BorderSide(color: Colors.grey[200]!),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Subscription Plan',
-              style: titleStyle.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'Active',
-                    style: bodyStyle.copyWith(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(cardRadius),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.white,
+              Colors.grey[50]!,
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.card_membership,
                       color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  state.examType?.name ?? 'No Plan Selected',
-                  style: bodyStyle.copyWith(
-                    fontSize: 16,
+                  const SizedBox(width: 12),
+                  Text(
+                    'Subscription Plan',
+                    style: titleStyle.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey[200]!,
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        subscriptionStatus,
+                        style: bodyStyle.copyWith(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        state.examType?.name ?? 'No Plan Selected',
+                        style: bodyStyle.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -154,76 +215,114 @@ class ProfileScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(cardRadius),
         side: BorderSide(color: Colors.grey[200]!),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Your Referral Code',
-              style: titleStyle.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Share your referral code with friends and earn rewards!',
-              style: bodyStyle.copyWith(
-                color: textLight,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(cardRadius),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.white,
+              Colors.grey[50]!,
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Text(
-                    state.referralCode ?? 'No referral code',
-                    style: bodyStyle.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.card_giftcard,
+                      color: Theme.of(context).primaryColor,
                     ),
                   ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.copy),
-                        onPressed: () {
-                          if (state.referralCode != null) {
-                            Clipboard.setData(
-                              ClipboardData(text: state.referralCode!),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Referral code copied!'),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.share),
-                        onPressed: () {
-                          if (state.referralCode != null) {
-                            Share.share(
-                              'Join me on Exam App! Use my referral code: ${state.referralCode} to get started and I\'ll earn rewards when you subscribe!',
-                            );
-                          }
-                        },
-                      ),
-                    ],
+                  const SizedBox(width: 12),
+                  Text(
+                    'Your Referral Code',
+                    style: titleStyle.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Share your referral code with friends and earn rewards!',
+                style: bodyStyle.copyWith(
+                  color: textLight,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey[200]!,
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      state.referralCode ?? 'No referral code',
+                      style: bodyStyle.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.copy),
+                          color: Theme.of(context).primaryColor,
+                          onPressed: () {
+                            if (state.referralCode != null) {
+                              Clipboard.setData(
+                                ClipboardData(text: state.referralCode!),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Referral code copied!'),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.share),
+                          color: Theme.of(context).primaryColor,
+                          onPressed: () {
+                            if (state.referralCode != null) {
+                              Share.share(
+                                'Join me on Exam App! Use my referral code: ${state.referralCode} to get started and I\'ll earn rewards when you subscribe!',
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

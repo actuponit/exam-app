@@ -1,6 +1,7 @@
 import 'package:exam_app/features/auth/presentation/screens/home_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/registration_screen.dart';
 import 'package:exam_app/features/payment/presentation/screens/transaction_verification_screen.dart';
+import 'package:exam_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
 import 'package:exam_app/features/quiz/presentation/screens/question_screen.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
@@ -85,9 +86,7 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.profile,
         name: 'Profile',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Profile Screen - Coming Soon')),
-        ),
+        builder: (context, state) => ProfileScreen.route,
       ),
       GoRoute(
         path: RoutePaths.faq,
