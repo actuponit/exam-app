@@ -35,21 +35,25 @@ class QuestionRepositoryImpl implements QuestionRepository {
     required String subjectId,
     String? chapterId,
     required int year,
-    int page = 1,
+    int page = 0,
     int pageSize = 3,
   }) async {
     final localQuestions = await _localDatasource.getQuestions();
     final filteredQuestions = localQuestions.where((q) {
+      bool isMatch = true;
+      if (subjectId.isNotEmpty) {
+        isMatch = isMatch && q.subject.name == subjectId;
+      }
       if (chapterId != null && chapterId.isNotEmpty) {
-        return q.chapter.id == chapterId;
+        isMatch = isMatch && q.chapter.id == chapterId;
       }
       if (year > 0) {
-        return q.year == year;
+        isMatch = isMatch && q.year == year;
       }
-      return true;
+      return isMatch;
     }).toList();
 
-    final start = (page - 1) * pageSize;
+    final start = page * pageSize;
     final end = start + pageSize;
 
     return filteredQuestions.skip(start).take(end - start).toList();
@@ -61,7 +65,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     if (q?.isAttempted == false) {
       final subjects = await _subjectLocalDatasource.getSubjects();
       final subject =
-          subjects.firstWhere((s) => s.id == answer.question.subject.id);
+          subjects.firstWhere((s) => s.name == answer.question.subject.name);
       await _subjectLocalDatasource.updateSubject(subject.copyWith(
         attempted: subject.attempted + 1,
       ));
@@ -160,16 +164,17 @@ class QuestionRepositoryImpl implements QuestionRepository {
             name: entry.value.first.chapter.name,
             questionCount: entry.value.length,
           );
-        }).toList();
+        }).toList()
+          ..sort((a, b) => a.id.compareTo(b.id));
 
         // Create exam
         final exam = Exam(
           id: 'exam_${subjectId}_$year',
           subjectId: subjectId,
           year: year,
-          title: '$year ${questions.first.subject.name} Exam',
+          title: '${questions.first.subject.name} Exam',
           totalQuestions: questions.length,
-          durationMins: 60, // Default duration
+          durationMins: 60,
           chapters: chapters,
         );
 

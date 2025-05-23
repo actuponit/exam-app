@@ -12,17 +12,15 @@ final class ExamInitial extends ExamState {}
 class ExamLoading extends ExamState {}
 
 class ExamLoaded extends ExamState {
-  final Map<int, Exam> examsByYear;
-  final List<Chapter> chapters;
-  final String filteredChapterId;
+  final List<Exam> exams;
+  final List<ExamChapter> chapters;
+  final ExamChapter? filteredChapter;
 
   const ExamLoaded(
-      {required this.examsByYear,
-      this.filteredChapterId = "all",
-      required this.chapters});
+      {required this.exams, this.filteredChapter, required this.chapters});
 
   @override
-  List<Object> get props => [examsByYear, filteredChapterId, chapters];
+  List<Object> get props => [exams, chapters, filteredChapter?.id ?? "all"];
 }
 
 class ExamError extends ExamState {

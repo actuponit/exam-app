@@ -9,6 +9,8 @@ part 'exam_state.dart';
 class ExamBloc extends Bloc<ExamEvent, ExamState> {
   final ExamRepository examRepository;
   List<Exam> _allExams = [];
+  List<ExamChapter> _allChapters = [];
+  Map<String, ExamChapter> _allChaptersMap = {};
 
   ExamBloc(this.examRepository) : super(ExamInitial()) {
     on<LoadExams>(_onLoadExams);
@@ -20,10 +22,9 @@ class ExamBloc extends Bloc<ExamEvent, ExamState> {
     try {
       _allExams = await examRepository.fetchExamsBySubject(event.subjectId);
 
-      final chapters = _extractChapters(_allExams);
+      _allChapters = _extractChapters(_allExams);
 
-      emit(
-          ExamLoaded(examsByYear: _groupByYear(_allExams), chapters: chapters));
+      emit(ExamLoaded(exams: _allExams, chapters: _allChapters));
     } catch (e) {
       emit(const ExamError('Failed to load exams'));
     }
@@ -38,39 +39,28 @@ class ExamBloc extends Bloc<ExamEvent, ExamState> {
         .where((exam) => exam.containsChapter(event.chapterId))
         .toList();
 
-    final chapters = _extractChapters(_allExams);
-
     emit(ExamLoaded(
-      examsByYear: _groupByYear(filtered),
-      filteredChapterId: event.chapterId,
-      chapters: chapters,
+      exams: filtered,
+      filteredChapter: _allChaptersMap[event.chapterId],
+      chapters: _allChapters,
     ));
   }
 
   void _onClearFilter(FilterExamsByChapter event, Emitter<ExamState> emit) {
     final chapters = _extractChapters(_allExams);
     emit(ExamLoaded(
-      examsByYear: _groupByYear(_allExams),
+      exams: _allExams,
       chapters: chapters,
     ));
   }
 
-  Map<int, Exam> _groupByYear(List<Exam> exams) {
-    final Map<int, Exam> grouped = {};
-    for (var exam in exams) {
-      grouped.putIfAbsent(exam.year, () => exam);
-    }
-    return grouped;
-  }
-
   List<ExamChapter> _extractChapters(List<Exam> exams) {
-    return exams
+    _allChaptersMap = exams
         .expand((exam) => exam.chapters)
         .fold<Map<String, ExamChapter>>({}, (map, chapter) {
-          map[chapter.id] = chapter;
-          return map;
-        })
-        .values
-        .toList();
+      map[chapter.id] = chapter;
+      return map;
+    });
+    return _allChaptersMap.values.toList();
   }
 }

@@ -1,6 +1,8 @@
 import 'package:exam_app/core/di/injection.dart';
+import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/repositories/question_repository.dart';
 import '../bloc/question_bloc.dart';
 import '../bloc/question_event.dart';
@@ -59,6 +61,12 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            context.read<SubjectBloc>().add(LoadSubjects());
+            context.pop();
+          },
+        ),
         title: BlocBuilder<QuestionBloc, QuestionState>(
           builder: (context, state) {
             if (!state.isQuizMode) return const Text('Practice Mode');
@@ -130,7 +138,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                       size: 24,
                     ),
                   ),
-                  label: Text(
+                  label: const Text(
                     'Submit',
                     style: TextStyle(
                       fontSize: 16,

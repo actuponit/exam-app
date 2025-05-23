@@ -87,7 +87,8 @@ class YearSelectionScreen extends StatelessWidget {
                                 ? Chapter(id: "all", name: "All")
                                 : state.chapters[index - 1];
                             final selected =
-                                state.filteredChapterId == chapter.id;
+                                state.filteredChapter?.id == chapter.id ||
+                                    (isAll && state.filteredChapter == null);
 
                             return FilterChip(
                               selected: selected,
@@ -125,7 +126,7 @@ class YearSelectionScreen extends StatelessWidget {
   }
 
   Widget _buildYearList(ExamLoaded state) {
-    if (state.examsByYear.isEmpty) {
+    if (state.exams.isEmpty) {
       return Center(
         child: Text(
           'No questions available for this chapter',
@@ -134,15 +135,13 @@ class YearSelectionScreen extends StatelessWidget {
       );
     }
 
-    final keys = state.examsByYear.keys.toList();
-
     return ListView.separated(
       padding: const EdgeInsets.all(16),
-      itemCount: keys.length,
+      itemCount: state.exams.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) => YearListItem(
-        exam: state.examsByYear[keys[index]] as Exam,
-        selectedChapterId: state.filteredChapterId,
+        exam: state.exams[index],
+        selectedChapter: state.filteredChapter,
       ),
     );
   }
@@ -150,12 +149,12 @@ class YearSelectionScreen extends StatelessWidget {
 
 class YearListItem extends StatelessWidget {
   final Exam exam;
-  final String selectedChapterId;
+  final ExamChapter? selectedChapter;
 
   const YearListItem({
     super.key,
     required this.exam,
-    required this.selectedChapterId,
+    this.selectedChapter,
   });
 
   @override
@@ -196,7 +195,7 @@ class YearListItem extends StatelessWidget {
                     fontSize: 18,
                   ),
                 ),
-                if (selectedChapterId != 'all')
+                if (selectedChapter != null)
                   Text(
                     'Unit',
                     style: bodyStyle.copyWith(
@@ -208,15 +207,17 @@ class YearListItem extends StatelessWidget {
             ),
           ),
           title: Text(
-            selectedChapterId == 'all'
+            selectedChapter == null
                 ? '${exam.title} (${exam.year})'
-                : '${exam.chapters[0].name} (${exam.year})',
+                : '${selectedChapter?.name} (${exam.year})',
             style: titleStyle.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
           subtitle: Text(
-            '${exam.totalQuestions} Questions • ${exam.durationMins} mins',
+            selectedChapter == null
+                ? '${exam.totalQuestions} Questions • ${exam.durationMins} mins'
+                : '${selectedChapter?.questionCount} Questions • ${exam.durationMins} mins',
             style: bodyStyle.copyWith(
               color: textLight,
             ),
@@ -229,7 +230,7 @@ class YearListItem extends StatelessWidget {
             context,
             year: exam.year.toString(),
             subjectId: exam.subjectId,
-            chapterId: selectedChapterId == 'all' ? null : exam.chapters[0].id,
+            chapterId: selectedChapter?.id,
           ),
         ),
       ),
