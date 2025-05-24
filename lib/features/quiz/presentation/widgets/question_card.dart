@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../domain/models/question.dart';
 import 'markdown_latex.dart';
 import 'option_card.dart';
+import 'package:exam_app/features/quiz/presentation/widgets/explanation_display.dart';
 
 class QuestionCard extends StatefulWidget {
   final Question question;
@@ -119,27 +120,11 @@ class _QuestionCardState extends State<QuestionCard> {
               );
             }).toList(),
             if (widget.showAnswer && widget.selectedAnswer != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Divider(),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Explanation:',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    MarkdownLatex(
-                      data: widget.question.explanation ??
-                          'No explanation available',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
+              ExplanationDisplay(
+                explanation:
+                    widget.question.explanation ?? 'No explanation available',
+                isVisible: false,
+                onClose: () {},
               ),
           ],
         ),

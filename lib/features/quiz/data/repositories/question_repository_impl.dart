@@ -52,11 +52,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
       }
       return isMatch;
     }).toList();
-
-    final start = page * pageSize;
-    final end = start + pageSize;
-
-    return filteredQuestions.skip(start).take(end - start).toList();
+    return filteredQuestions;
   }
 
   @override
