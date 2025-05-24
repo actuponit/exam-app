@@ -1,8 +1,10 @@
 import 'package:exam_app/core/di/injection.dart';
+import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 import '../../domain/repositories/question_repository.dart';
 import '../bloc/question_bloc.dart';
 import '../bloc/question_event.dart';
@@ -51,9 +53,48 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
   final _pageController = PageController();
   int _currentPage = 0;
 
+  final _noScreenshot = NoScreenshot.instance;
+
+  void stopScreenshotListening() async {
+    await _noScreenshot.stopScreenshotListening();
+  }
+
+  void startScreenshot() async {
+    await _noScreenshot.screenshotOn();
+  }
+
+  Future<void> startScreenshotListening() async {
+    await _noScreenshot.startScreenshotListening();
+  }
+
+  void listenForScreenshot() {
+    _noScreenshot.screenshotStream.listen((value) {
+      if (value.wasScreenshotTaken && mounted) {
+        AppSnackBar.warning(
+          context: context,
+          message: 'Screenshots are not allowed on this page',
+        );
+      }
+    });
+  }
+
+  void _startScreenshotListening() async {
+    await _noScreenshot.screenshotOff();
+    await startScreenshotListening();
+    listenForScreenshot();
+  }
+
+  @override
+  void initState() {
+    _startScreenshotListening();
+    super.initState();
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
+    stopScreenshotListening();
+    startScreenshot();
     super.dispose();
   }
 
