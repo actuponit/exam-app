@@ -245,7 +245,58 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                   },
                 ),
               ),
-              if (state.totalPages > 1)
+              if (state.totalPages > 1) ...[
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: _currentPage > 0
+                            ? () {
+                                _pageController.previousPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                        label: const Text('Previous'),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: _currentPage < state.totalPages - 1
+                            ? () {
+                                _pageController.nextPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                        label: const Text('Next'),
+                      ),
+                    ],
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
@@ -266,6 +317,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                     ),
                   ),
                 ),
+              ],
             ],
           );
         },

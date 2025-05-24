@@ -1,5 +1,7 @@
+import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
+import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_bloc.dart';
@@ -10,6 +12,7 @@ import 'package:exam_app/features/quiz/presentation/screens/subject_selection_sc
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../core/presentation/widgets/app_drawer.dart';
 import '../../../../core/theme.dart';
 
@@ -26,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // Start periodic status checking when screen loads
     context.read<SubscriptionBloc>().add(const CheckSubscriptionStatus());
-    context.read<QuestionBloc>().add(FetchQuestions());
+    context.read<QuestionBloc>().add(const FetchQuestions());
   }
 
   @override
@@ -57,9 +60,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.notifications_outlined),
-                  onPressed: () {
-                    // TODO: Implement notifications
+                  icon: const Icon(Icons.share),
+                  onPressed: () async {
+                    final referralCode =
+                        await getIt<LocalAuthDataSource>().getReferralCode();
+                    Share.share(
+                      'Join me on Exam App! Use my referral code: $referralCode to get started and I\'ll earn rewards when you subscribe!',
+                    );
                   },
                 ),
               ],
