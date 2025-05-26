@@ -60,9 +60,14 @@ class AppRouter {
       GoRoute(
         path: '${RoutePaths.years}/:subjectId',
         name: 'Years',
-        builder: (context, state) => YearSelectionScreen(
-          subjectId: state.pathParameters['subjectId']!,
-        ),
+        builder: (context, state) {
+          final subjectId = state.pathParameters['subjectId'] ?? '';
+          final duration = state.extra as int? ?? 2;
+          return YearSelectionScreen(
+            subjectId: subjectId,
+            duration: duration,
+          );
+        },
       ),
       GoRoute(
         path: '${RoutePaths.years}/:subjectId/:year${RoutePaths.questions}',

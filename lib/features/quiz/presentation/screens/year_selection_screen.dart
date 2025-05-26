@@ -10,10 +10,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class YearSelectionScreen extends StatelessWidget {
   final String subjectId;
+  final int duration;
 
   const YearSelectionScreen({
     super.key,
     required this.subjectId,
+    required this.duration,
   });
 
   @override
@@ -142,6 +144,7 @@ class YearSelectionScreen extends StatelessWidget {
       itemBuilder: (context, index) => YearListItem(
         exam: state.exams[index],
         selectedChapter: state.filteredChapter,
+        duration: duration,
       ),
     );
   }
@@ -150,11 +153,13 @@ class YearSelectionScreen extends StatelessWidget {
 class YearListItem extends StatelessWidget {
   final Exam exam;
   final ExamChapter? selectedChapter;
+  final int duration;
 
   const YearListItem({
     super.key,
     required this.exam,
     this.selectedChapter,
+    required this.duration,
   });
 
   @override
@@ -216,8 +221,8 @@ class YearListItem extends StatelessWidget {
           ),
           subtitle: Text(
             selectedChapter == null
-                ? '${exam.totalQuestions} Questions • ${exam.durationMins} mins'
-                : '${selectedChapter?.questionCount} Questions • ${exam.durationMins} mins',
+                ? '${exam.totalQuestions} Questions • ${duration * exam.totalQuestions} mins'
+                : '${selectedChapter?.questionCount} Questions • ${duration * (selectedChapter?.questionCount ?? 0)} mins',
             style: bodyStyle.copyWith(
               color: textLight,
             ),

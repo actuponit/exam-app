@@ -62,9 +62,13 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
         year: event.year,
       );
 
+      final duration =
+          questions.length * (questions.first.subject.duration ?? 2);
+
       emit(state.copyWith(
         status: QuestionStatus.success,
         questions: questions,
+        timeRemaining: event.isQuizMode ? duration : null,
       ));
 
       if (event.isQuizMode) {

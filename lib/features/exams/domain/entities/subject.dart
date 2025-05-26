@@ -9,6 +9,7 @@ class Subject extends Equatable {
   final String? region;
   final int total;
   final int attempted;
+  final int? duration;
 
   const Subject({
     required this.id,
@@ -17,6 +18,7 @@ class Subject extends Equatable {
     this.total = 0,
     this.attempted = 0,
     this.region,
+    this.duration = 2,
   });
 
   double get progress {
@@ -40,6 +42,7 @@ class Subject extends Equatable {
     int? total,
     int? attempted,
     String? region,
+    int? duration,
   }) {
     return Subject(
       id: id ?? this.id,
@@ -48,6 +51,7 @@ class Subject extends Equatable {
       total: total ?? this.total,
       attempted: attempted ?? this.attempted,
       region: region ?? this.region,
+      duration: duration ?? this.duration,
     );
   }
 
@@ -56,6 +60,7 @@ class Subject extends Equatable {
         name: json['name'] as String,
         iconName: json['name'] as String,
         region: json['region'] as String?,
+        duration: int.tryParse(json['default_duration']) ?? 1,
       );
 
   @override
@@ -66,5 +71,6 @@ class Subject extends Equatable {
         total,
         attempted,
         region,
+        duration,
       ];
 }

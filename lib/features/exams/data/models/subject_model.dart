@@ -26,18 +26,24 @@ class SubjectModel extends Subject {
   @override
   final int attempted;
 
+  @HiveField(5)
+  @override
+  final int? duration;
+
   const SubjectModel({
     required this.id,
     required this.name,
     required this.iconName,
     this.total = 0,
     this.attempted = 0,
+    this.duration,
   }) : super(
           id: id,
           name: name,
           iconName: iconName,
           total: total,
           attempted: attempted,
+          duration: duration,
         );
 
   factory SubjectModel.fromEntity(Subject subject) {
