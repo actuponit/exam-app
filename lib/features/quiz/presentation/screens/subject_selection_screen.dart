@@ -74,7 +74,8 @@ class SubjectCard extends StatelessWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(cardRadius),
-          onTap: () => context.push('/years/${subject.id}'),
+          onTap: () =>
+              context.push('/years/${subject.id}', extra: subject.duration),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
             child: Column(

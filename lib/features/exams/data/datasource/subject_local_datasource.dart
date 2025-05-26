@@ -11,7 +11,6 @@ abstract class ISubjectLocalDatasource {
 
 class SubjectLocalDatasource implements ISubjectLocalDatasource {
   final Box<SubjectModel> _subjectsBox;
-  static const String _subjectsKey = 'subjects';
 
   SubjectLocalDatasource({
     required Box<SubjectModel> subjectsBox,

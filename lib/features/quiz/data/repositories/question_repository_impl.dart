@@ -120,6 +120,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
         name: subjectName,
         total: questionsMap[subjectName]?.length ?? 0,
         iconName: subjectName.toLowerCase(),
+        duration: questionsMap[subjectName]?.first.subject.duration,
       ));
     }
     await _subjectLocalDatasource.saveSubjects(subjects);

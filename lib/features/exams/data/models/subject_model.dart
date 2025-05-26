@@ -53,6 +53,7 @@ class SubjectModel extends Subject {
       iconName: subject.iconName,
       total: subject.total,
       attempted: subject.attempted,
+      duration: subject.duration,
     );
   }
 }
