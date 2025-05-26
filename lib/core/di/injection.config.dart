@@ -22,13 +22,18 @@ import '../../features/auth/presentation/blocs/auth_bloc/auth_bloc.dart'
     as _i661;
 import '../../features/exams/data/datasource/exam_local_datasource.dart'
     as _i506;
+import '../../features/exams/data/datasource/recent_exam_local_datasource.dart'
+    as _i123;
 import '../../features/exams/data/datasource/subject_local_datasource.dart'
     as _i156;
 import '../../features/exams/data/models/exam_model.dart' as _i898;
+import '../../features/exams/data/models/recent_exam_model.dart' as _i295;
 import '../../features/exams/data/models/subject_model.dart' as _i238;
 import '../../features/exams/domain/repositories/exam_repository.dart' as _i254;
 import '../../features/exams/domain/repositories/subject_repository.dart'
     as _i634;
+import '../../features/exams/presentation/bloc/recent_exam_bloc/recent_exam_cubit.dart'
+    as _i638;
 import '../../features/payment/data/datasources/subscription_data_source.dart'
     as _i900;
 import '../../features/payment/data/datasources/subscription_local_data_source.dart'
@@ -83,10 +88,10 @@ Future<_i174.GetIt> init(
   final hiveModule = _$HiveModule();
   final paymentModule = _$PaymentModule();
   final authModule = _$AuthModule();
+  final examModule = _$ExamModule();
   final subjectModule = _$SubjectModule();
   final quizModule = _$QuizModule();
   final networkModule = _$NetworkModule();
-  final examModule = _$ExamModule();
   await gh.factoryAsync<_i460.SharedPreferences>(
     () => injectableModule.prefs,
     preResolve: true,
@@ -99,6 +104,10 @@ Future<_i174.GetIt> init(
       () => paymentModule.internetConnectionChecker());
   gh.lazySingleton<_i970.LocalAuthDataSource>(
       () => authModule.localAuthDataSource(gh<_i460.SharedPreferences>()));
+  gh.singleton<_i979.Box<_i295.RecentExamModel>>(
+    () => examModule.recentExamsBox(gh<_i1047.HiveService>()),
+    instanceName: 'recentExams',
+  );
   gh.lazySingleton<_i293.UserPreferencesLocalDataSource>(() =>
       _i424.UserPreferencesLocalDataSourceImpl(gh<_i460.SharedPreferences>()));
   gh.singleton<_i979.Box<_i238.SubjectModel>>(
@@ -131,6 +140,9 @@ Future<_i174.GetIt> init(
       () => paymentModule.networkInfo(gh<_i973.InternetConnectionChecker>()));
   gh.singleton<_i634.SubjectRepository>(() =>
       subjectModule.subjectRepository(gh<_i156.ISubjectLocalDatasource>()));
+  gh.singleton<_i123.IRecentExamLocalDatasource>(() =>
+      examModule.recentExamLocalDatasource(
+          gh<_i979.Box<_i295.RecentExamModel>>(instanceName: 'recentExams')));
   gh.lazySingleton<_i421.UserPreferencesRepository>(
       () => _i429.UserPreferencesRepositoryImpl(
             gh<_i293.UserPreferencesLocalDataSource>(),
@@ -142,8 +154,11 @@ Future<_i174.GetIt> init(
       ));
   gh.factory<_i354.SubjectBloc>(
       () => subjectModule.subjectBloc(gh<_i634.SubjectRepository>()));
-  gh.singleton<_i254.ExamRepository>(
-      () => examModule.examRepository(gh<_i506.IExamLocalDatasource>()));
+  gh.singleton<_i254.ExamRepository>(() => examModule.examRepository(
+        gh<_i506.IExamLocalDatasource>(),
+        gh<_i123.IRecentExamLocalDatasource>(),
+        gh<_i156.ISubjectLocalDatasource>(),
+      ));
   gh.lazySingleton<_i611.SubscriptionRepository>(
       () => paymentModule.subscriptionRepository(
             gh<_i900.SubscriptionDataSource>(),
@@ -166,6 +181,8 @@ Future<_i174.GetIt> init(
       () => authModule.authBloc(gh<_i573.AuthRepository>()));
   gh.factory<_i383.SubscriptionBloc>(
       () => paymentModule.subscriptionBloc(gh<_i611.SubscriptionRepository>()));
+  gh.factory<_i638.RecentExamCubit>(
+      () => examModule.recentExamCubit(gh<_i254.ExamRepository>()));
   return getIt;
 }
 
@@ -177,10 +194,10 @@ class _$PaymentModule extends _i81.PaymentModule {}
 
 class _$AuthModule extends _i4.AuthModule {}
 
+class _$ExamModule extends _i486.ExamModule {}
+
 class _$SubjectModule extends _i143.SubjectModule {}
 
 class _$QuizModule extends _i697.QuizModule {}
 
 class _$NetworkModule extends _i851.NetworkModule {}
-
-class _$ExamModule extends _i486.ExamModule {}

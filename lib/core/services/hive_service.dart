@@ -2,6 +2,7 @@ import 'package:exam_app/core/constants/hive_constants.dart';
 import 'package:exam_app/core/di/cache_item.dart';
 import 'package:exam_app/features/exams/data/models/exam_model.dart';
 import 'package:exam_app/features/exams/data/models/subject_model.dart';
+import 'package:exam_app/features/exams/data/models/recent_exam_model.dart';
 import 'package:exam_app/features/quiz/data/models/question_model.dart';
 import 'package:hive/hive.dart';
 
@@ -13,12 +14,14 @@ class HiveService {
     Hive.registerAdapter(ExamModelAdapter());
     Hive.registerAdapter(ExamChapterModelAdapter());
     Hive.registerAdapter(SubjectModelAdapter());
+    Hive.registerAdapter(RecentExamModelAdapter());
 
     // Open Boxes
     await Hive.openBox<CacheItem>(HiveBoxNames.httpCache);
     await Hive.openBox<ExamModel>(HiveBoxNames.exams);
     await Hive.openBox<SubjectModel>(HiveBoxNames.subjects);
     await Hive.openBox<QuestionModel>(HiveBoxNames.questions);
+    await Hive.openBox<RecentExamModel>(HiveBoxNames.recentExams);
   }
 
   // Helper methods for box access
@@ -28,6 +31,8 @@ class HiveService {
   Box<QuestionModel> get questionsBox =>
       Hive.box<QuestionModel>(HiveBoxNames.questions);
   Box<CacheItem> get cacheBox => Hive.box<CacheItem>(HiveBoxNames.httpCache);
+  Box<RecentExamModel> get recentExamsBox =>
+      Hive.box<RecentExamModel>(HiveBoxNames.recentExams);
 
   // Clean up method
   Future<void> closeBoxes() async {

@@ -1,5 +1,6 @@
 import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
+import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_cubit.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +29,11 @@ class QuestionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<RecentExamCubit>().saveRecentExam(
+          subjectId,
+          year,
+          chapterId,
+        );
     return BlocProvider(
       create: (context) => QuestionBloc(
         repository: getIt<QuestionRepository>(),

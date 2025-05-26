@@ -7,6 +7,7 @@ abstract class ISubjectLocalDatasource {
   Future<void> saveSubjects(List<Subject> subjects);
   Future<void> updateSubject(Subject subject);
   Future<void> clearSubjects();
+  Future<Subject?> getSubject(String subjectId);
 }
 
 class SubjectLocalDatasource implements ISubjectLocalDatasource {
@@ -28,6 +29,11 @@ class SubjectLocalDatasource implements ISubjectLocalDatasource {
     for (final subject in subjects) {
       await _subjectsBox.put(subject.id, SubjectModel.fromEntity(subject));
     }
+  }
+
+  @override
+  Future<Subject?> getSubject(String subjectId) async {
+    return _subjectsBox.get(subjectId);
   }
 
   @override

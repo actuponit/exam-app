@@ -1,7 +1,10 @@
 import 'package:exam_app/core/di/injection.dart';
+import 'package:exam_app/core/presentation/utils/dialog_utils.dart';
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
+import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_cubit.dart';
+import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_state.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_bloc.dart';
@@ -96,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // _buildQuickActions(context),
                     const SizedBox(height: 40),
                     Text(
-                      'Recent Exams',
+                      'Recent Exam',
                       style: titleStyle.copyWith(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -231,45 +234,244 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRecentExams(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(cardRadius),
-        side: BorderSide(color: Colors.grey[200]!),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                'No recent exams',
-                style: titleStyle.copyWith(
-                  fontSize: 16,
-                ),
-              ),
-              subtitle: Text(
-                'Start practicing to see your recent exams here',
-                style: bodyStyle.copyWith(
-                  color: textLight,
-                  fontSize: 14,
-                ),
-              ),
-              trailing: TextButton(
-                onPressed: () {
-                  final sub = context.read<SubjectBloc>().state;
-                  if (sub is SubjectLoaded && sub.subjects.isNotEmpty) {
-                    context.push("/years/${sub.subjects.first.id}");
-                  }
-                },
-                child: const Text('Start Now'),
-              ),
+    return BlocBuilder<RecentExamCubit, RecentExamState>(
+      builder: (context, state) {
+        return Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(cardRadius),
+            side: BorderSide(color: Colors.grey[200]!),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (state is RecentExamLoading)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                else if (state is RecentExamLoaded && state.recentExam != null)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Theme.of(context).primaryColor,
+                                  Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.8),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.history_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Continue Learning',
+                                  style: titleStyle.copyWith(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Pick up where you left off',
+                                  style: bodyStyle.copyWith(
+                                    color: textLight,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey[200]!),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey[200]!,
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.book_rounded,
+                                    size: 20,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    state.recentExam!.subject.name,
+                                    style: titleStyle.copyWith(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_today_rounded,
+                                        size: 18,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Year ${state.recentExam!.year}',
+                                        style: titleStyle.copyWith(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (state.recentExam!.chapter != null) ...[
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.menu_book_rounded,
+                                          size: 18,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            state.recentExam!.chapter!.name,
+                                            style: bodyStyle.copyWith(
+                                              fontSize: 15,
+                                              color: textLight,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            DialogUtils.showModeSelectionDialog(
+                              context,
+                              year: state.recentExam!.year.toString(),
+                              subjectId: state.recentExam!.subject.id,
+                              chapterId:
+                                  state.recentExam!.chapter?.id, // optional
+                              onCancel: () {
+                                // Handle cancel if needed
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.play_arrow_rounded),
+                          label: const Text('Continue Learning'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      'No recent exams',
+                      style: titleStyle.copyWith(
+                        fontSize: 16,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Start practicing to see your recent exams here',
+                      style: bodyStyle.copyWith(
+                        color: textLight,
+                        fontSize: 14,
+                      ),
+                    ),
+                    trailing: TextButton(
+                      onPressed: () {
+                        context.push('/subjects');
+                      },
+                      child: const Text('Start Now'),
+                    ),
+                  ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

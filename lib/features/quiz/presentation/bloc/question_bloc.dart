@@ -51,7 +51,6 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
       currentPage: 0,
       isSubmitted: false,
       scoreResult: null,
-      timeRemaining: event.isQuizMode ? quizDurationMinutes * 60 : null,
       startTime: event.isQuizMode ? DateTime.now() : null,
     ));
 
@@ -68,7 +67,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
       emit(state.copyWith(
         status: QuestionStatus.success,
         questions: questions,
-        timeRemaining: event.isQuizMode ? duration : null,
+        timeRemaining: event.isQuizMode ? duration * 60 : null,
       ));
 
       if (event.isQuizMode) {
