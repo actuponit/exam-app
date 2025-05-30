@@ -11,6 +11,7 @@ class QuestionCard extends StatefulWidget {
   final bool showAnswer;
   final Function(String) onAnswerSelected;
   final bool celebrate;
+  final int index;
 
   const QuestionCard({
     super.key,
@@ -19,6 +20,7 @@ class QuestionCard extends StatefulWidget {
     required this.showAnswer,
     this.celebrate = false,
     required this.onAnswerSelected,
+    required this.index,
   });
 
   @override
@@ -61,71 +63,63 @@ class _QuestionCardState extends State<QuestionCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final question = widget.question;
+    final questionIndex = widget.index + 1;
     return Card(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            MarkdownLatex(
-              data: widget.question.text,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 16),
-            ...widget.question.options.map((option) {
-              final isSelected = widget.selectedAnswer == option.id;
-              final isCorrect = widget.question.correctOption == option.id;
-
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Stack(
-                  key: _optionKeys[option.id],
-                  children: [
-                    OptionCard(
-                      option: option.text,
-                      isSelected: isSelected,
-                      isCorrect:
-                          widget.showAnswer && widget.selectedAnswer != null
-                              ? isCorrect
-                              : null,
-                      onTap: () => widget.onAnswerSelected(option.id),
-                    ),
-                    if (widget.showAnswer &&
-                        isCorrect &&
-                        widget.selectedAnswer == widget.question.correctOption)
-                      Positioned.fill(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: ConfettiWidget(
-                            emissionFrequency: 0.05,
-                            confettiController: _confettiController,
-                            blastDirectionality: BlastDirectionality.explosive,
-                            numberOfParticles: 7,
-                            maxBlastForce: 10,
-                            minBlastForce: 5,
-                            gravity: 0.2,
-                            shouldLoop: false,
-                            colors: const [
-                              Colors.green,
-                              Colors.lightGreen,
-                              Colors.lightBlue,
-                              Colors.purple,
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
+            Row(
+              children: [
+                Text(
+                  'Q$questionIndex',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Divider(
+                    color: theme.colorScheme.primary.withOpacity(0.2),
+                    thickness: 1.2,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            MarkdownLatex(
+              data: question.text,
+              style: theme.textTheme.titleMedium,
+            ),
+            const SizedBox(height: 18),
+            ...question.options.map((option) {
+              final isSelected = widget.selectedAnswer == option.id;
+              final isCorrect =
+                  widget.showAnswer && widget.selectedAnswer != null
+                      ? question.correctOption == option.id
+                      : null;
+              return OptionCard(
+                option: option.text,
+                isSelected: isSelected,
+                isCorrect: isCorrect,
+                onTap: () => widget.onAnswerSelected(option.id),
               );
             }).toList(),
-            if (widget.showAnswer && widget.selectedAnswer != null)
+            if (widget.showAnswer && widget.selectedAnswer != null) ...[
+              const SizedBox(height: 10),
               ExplanationDisplay(
-                explanation:
-                    widget.question.explanation ?? 'No explanation available',
-                isVisible: false,
-                onClose: () {},
+                explanation: question.explanation ?? 'No explanation available',
               ),
+            ],
           ],
         ),
       ),

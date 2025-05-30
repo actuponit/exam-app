@@ -149,50 +149,21 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
               if (!state.isQuizMode) return const SizedBox();
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                child: ElevatedButton.icon(
+                child: IconButton(
+                  icon: Icon(
+                    state.canSubmit
+                        ? Icons.check_circle
+                        : Icons.radio_button_unchecked,
+                    color: state.canSubmit
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey.shade400,
+                  ),
                   onPressed: state.canSubmit
                       ? () => context
                           .read<QuestionBloc>()
                           .add(const QuizSubmitted())
                       : null,
-                  style: ElevatedButton.styleFrom(
-                    disabledBackgroundColor: Colors.grey.shade200,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                    backgroundColor: state.canSubmit
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.grey.shade200,
-                    foregroundColor:
-                        state.canSubmit ? Colors.white : Colors.grey.shade700,
-                    elevation: state.canSubmit ? 4 : 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        color: state.canSubmit
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey.shade400,
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                  icon: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: Icon(
-                      state.canSubmit
-                          ? Icons.check_circle
-                          : Icons.radio_button_unchecked,
-                      key: ValueKey<bool>(state.canSubmit),
-                      size: 24,
-                    ),
-                  ),
-                  label: const Text(
-                    'Submit',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
+                  tooltip: 'Submit',
                 ),
               );
             },
@@ -286,6 +257,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                                   ),
                                 );
                           },
+                          index: (state.currentPage * 3) + index,
                         );
                       },
                     );
@@ -299,7 +271,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ElevatedButton.icon(
+                      ElevatedButton(
                         onPressed: _currentPage > 0
                             ? () {
                                 _pageController.previousPage(
@@ -310,17 +282,27 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                             : null,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
+                            horizontal: 18,
+                            vertical: 10,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(16),
                           ),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
                         ),
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-                        label: const Text('Previous'),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.arrow_back_ios_new, size: 18),
+                            SizedBox(width: 6),
+                            Text('Previous'),
+                          ],
+                        ),
                       ),
-                      ElevatedButton.icon(
+                      ElevatedButton(
                         onPressed: _currentPage < state.totalPages - 1
                             ? () {
                                 _pageController.nextPage(
@@ -331,21 +313,31 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                             : null,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
+                            horizontal: 18,
+                            vertical: 10,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(16),
                           ),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
                         ),
-                        icon: const Icon(Icons.arrow_forward_ios, size: 18),
-                        label: const Text('Next'),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Next'),
+                            SizedBox(width: 6),
+                            Icon(Icons.arrow_forward_ios, size: 18),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.only(bottom: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
@@ -357,7 +349,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: index == _currentPage
-                              ? Theme.of(context).primaryColor
+                              ? Theme.of(context).colorScheme.primary
                               : Colors.grey[300],
                         ),
                       ),
