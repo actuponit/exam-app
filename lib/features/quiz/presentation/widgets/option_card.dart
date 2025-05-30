@@ -109,11 +109,11 @@ class OptionCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(14),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: borderColor, width: 1.5),
+          // border: Border.all(color: borderColor, width: 1.5),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -132,7 +132,7 @@ class OptionCard extends StatelessWidget {
             ),
             if (trailingIcon != null) ...[
               const SizedBox(width: 10),
-              trailingIcon!,
+              trailingIcon,
             ],
           ],
         ),

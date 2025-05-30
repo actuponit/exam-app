@@ -149,39 +149,58 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
               if (!state.isQuizMode) return const SizedBox();
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                child: IconButton(
-                  icon: Icon(
-                    state.canSubmit
-                        ? Icons.check_circle
-                        : Icons.radio_button_unchecked,
+                child: Container(
+                  decoration: BoxDecoration(
                     color: state.canSubmit
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.grey.shade400,
+                        ? Theme.of(context).colorScheme.secondary
+                        : Theme.of(context).colorScheme.surfaceVariant,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      if (state.canSubmit)
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .secondary
+                              .withOpacity(0.25),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                    ],
+                    border: Border.all(
+                      color: state.canSubmit
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).colorScheme.outline,
+                      width: 1.5,
+                    ),
                   ),
-                  onPressed: state.canSubmit
-                      ? () => context
-                          .read<QuestionBloc>()
-                          .add(const QuizSubmitted())
-                      : null,
-                  tooltip: 'Submit',
+                  child: IconButton(
+                    icon: Icon(
+                      state.canSubmit
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                      color: state.canSubmit
+                          ? Theme.of(context).colorScheme.onSecondary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    onPressed: state.canSubmit
+                        ? () => context
+                            .read<QuestionBloc>()
+                            .add(const QuizSubmitted())
+                        : null,
+                    tooltip: 'Submit',
+                  ),
                 ),
               );
             },
           ),
         ],
       ),
-      body: BlocConsumer<QuestionBloc, QuestionState>(
+      body: BlocListener<QuestionBloc, QuestionState>(
+        listenWhen: (previous, current) =>
+            previous.status != current.status &&
+            current.isQuizMode &&
+            previous.scoreResult != current.scoreResult,
         listener: (context, state) {
-          if (state.status == QuestionStatus.success &&
-              state.currentPage != _currentPage) {
-            _pageController.animateToPage(
-              state.currentPage,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            );
-          }
-
-          // Show result dialog when quiz is submitted
           if (state.status == QuestionStatus.submitted &&
               state.isQuizMode &&
               state.scoreResult != null) {
@@ -195,171 +214,185 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
             );
           }
         },
-        builder: (context, state) {
-          if (state.status == QuestionStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        child: BlocConsumer<QuestionBloc, QuestionState>(
+          listener: (context, state) {
+            if (state.status == QuestionStatus.success &&
+                state.currentPage != _currentPage) {
+              _pageController.animateToPage(
+                state.currentPage,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state.status == QuestionStatus.loading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (state.status == QuestionStatus.error) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Error loading questions'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<QuestionBloc>().add(
-                            QuestionStarted(
-                              subjectId: state.subjectId,
-                              chapterId: state.chapterId,
-                              year: state.year,
-                              isQuizMode: state.isQuizMode,
-                            ),
-                          );
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return Column(
-            children: [
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: (page) {
-                    setState(() => _currentPage = page);
-                    context.read<QuestionBloc>().add(QuestionPageChanged(page));
-                  },
-                  itemCount: state.totalPages,
-                  itemBuilder: (context, pageIndex) {
-                    final pageQuestions =
-                        state.questions.skip(pageIndex * 3).take(3).toList();
-
-                    return ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      itemCount: pageQuestions.length,
-                      itemBuilder: (context, index) {
-                        final question = pageQuestions[index];
-                        return QuestionCard(
-                          question: question,
-                          selectedAnswer: state.answers[question.id],
-                          showAnswer: !state.isQuizMode || state.isSubmitted,
-                          celebrate: !state.isQuizMode,
-                          onAnswerSelected: (answer) {
-                            context.read<QuestionBloc>().add(
-                                  QuestionAnswered(
-                                    question: question,
-                                    selectedOption: answer,
-                                  ),
-                                );
-                          },
-                          index: (state.currentPage * 3) + index,
-                        );
+            if (state.status == QuestionStatus.error) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Error loading questions'),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<QuestionBloc>().add(
+                              QuestionStarted(
+                                subjectId: state.subjectId,
+                                chapterId: state.chapterId,
+                                year: state.year,
+                                isQuizMode: state.isQuizMode,
+                              ),
+                            );
                       },
-                    );
-                  },
+                      child: const Text('Retry'),
+                    ),
+                  ],
                 ),
-              ),
-              if (state.totalPages > 1) ...[
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        onPressed: _currentPage > 0
-                            ? () {
-                                _pageController.previousPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 10,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.arrow_back_ios_new, size: 18),
-                            SizedBox(width: 6),
-                            Text('Previous'),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: _currentPage < state.totalPages - 1
-                            ? () {
-                                _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 10,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('Next'),
-                            SizedBox(width: 6),
-                            Icon(Icons.arrow_forward_ios, size: 18),
-                          ],
-                        ),
-                      ),
-                    ],
+              );
+            }
+
+            return Column(
+              children: [
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: (page) {
+                      setState(() => _currentPage = page);
+                      context
+                          .read<QuestionBloc>()
+                          .add(QuestionPageChanged(page));
+                    },
+                    itemCount: state.totalPages,
+                    itemBuilder: (context, pageIndex) {
+                      final pageQuestions =
+                          state.questions.skip(pageIndex * 3).take(3).toList();
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        itemCount: pageQuestions.length,
+                        itemBuilder: (context, index) {
+                          final question = pageQuestions[index];
+                          return QuestionCard(
+                            question: question,
+                            selectedAnswer: state.answers[question.id],
+                            showAnswer: !state.isQuizMode || state.isSubmitted,
+                            celebrate: !state.isQuizMode,
+                            onAnswerSelected: (answer) {
+                              context.read<QuestionBloc>().add(
+                                    QuestionAnswered(
+                                      question: question,
+                                      selectedOption: answer,
+                                    ),
+                                  );
+                            },
+                            index: (state.currentPage * 3) + index,
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      state.totalPages,
-                      (index) => Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: index == _currentPage
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey[300],
+                if (state.totalPages > 1) ...[
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          onPressed: _currentPage > 0
+                              ? () {
+                                  _pageController.previousPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.arrow_back_ios_new, size: 18),
+                              SizedBox(width: 6),
+                              Text('Previous'),
+                            ],
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: _currentPage < state.totalPages - 1
+                              ? () {
+                                  _pageController.nextPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('Next'),
+                              SizedBox(width: 6),
+                              Icon(Icons.arrow_forward_ios, size: 18),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        state.totalPages,
+                        (index) => Container(
+                          width: 8,
+                          height: 8,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: index == _currentPage
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey[300],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ],
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

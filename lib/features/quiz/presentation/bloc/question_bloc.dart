@@ -138,7 +138,11 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     if (!state.canSubmit && !state.hasTimeExpired) return;
 
     _timer?.cancel();
-
+    emit(state.copyWith(
+      status: QuestionStatus.success,
+      isSubmitted: false,
+      scoreResult: null,
+    ));
     final scoreResult = ScoreCalculator.calculateScore(
       state.questions,
       state.answers,
