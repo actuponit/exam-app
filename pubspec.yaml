@@ -58,9 +58,11 @@ dependencies:
   lottie: ^3.3.1
   flutter_svg: ^2.1.0
   smooth_page_indicator: ^1.2.1
-  flutter_markdown: ^0.7.7
   share_plus: ^7.2.1
   no_screenshot: ^0.3.1
+  flutter_secure_storage: ^4.2.1
+  uuid: ^4.5.1
+  android_id: ^0.4.0
 
 dev_dependencies:
   flutter_test:

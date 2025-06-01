@@ -29,6 +29,8 @@ class RemoteAuthDataSource implements AuthDataSource {
     required String institutionType,
     required String institutionName,
     required int examType,
+    required String password,
+    required String deviceId,
     String? referralCode,
   }) async {
     final response = await _dio.post('/register', data: {
@@ -38,8 +40,24 @@ class RemoteAuthDataSource implements AuthDataSource {
       'institution_type': institutionType,
       'institution_name': institutionName,
       'type_id': examType,
+      'password': password,
+      'device_id': deviceId,
       if (referralCode != null && referralCode.isNotEmpty)
         'referral_code': referralCode,
+    });
+    return response.data;
+  }
+
+  @override
+  Future<Map<String, dynamic>> login({
+    required String phone,
+    required String password,
+    required String deviceId,
+  }) async {
+    final response = await _dio.post('/login', data: {
+      'phone_number': phone,
+      'password': password,
+      'device_id': deviceId,
     });
     return response.data;
   }

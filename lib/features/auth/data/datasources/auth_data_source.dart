@@ -11,7 +11,15 @@ abstract class AuthDataSource {
     required String institutionType,
     required String institutionName,
     required int examType,
+    required String password,
+    required String deviceId,
     String? referralCode,
+  });
+
+  Future<Map<String, dynamic>> login({
+    required String phone,
+    required String password,
+    required String deviceId,
   });
 }
 

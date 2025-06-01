@@ -9,6 +9,7 @@ class RegisterUser extends AuthEvent {
   final String lastName;
   final String phone;
   final String email;
+  final String password;
   final String institutionType;
   final String institutionName;
   final ExamType examType;
@@ -19,9 +20,10 @@ class RegisterUser extends AuthEvent {
     required this.lastName,
     required this.phone,
     required this.email,
+    required this.password,
     required this.institutionType,
     required this.institutionName,
     required this.examType,
     this.referralCode,
   });
-} 
+}

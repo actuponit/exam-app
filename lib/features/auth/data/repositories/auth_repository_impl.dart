@@ -3,7 +3,7 @@ import 'package:exam_app/core/error/exceptions.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/auth/data/models/exam_type.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
-import 'package:exam_app/features/exams/domain/entities/exam.dart';
+import 'package:exam_app/features/auth/data/utils/device_manager.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthDataSource _remoteDataSource;
@@ -30,9 +30,11 @@ class AuthRepositoryImpl implements AuthRepository {
     required String institutionName,
     required ExamType examType,
     String? referralCode,
+    required String password,
   }) async {
     try {
       // Register user with remote data source
+      final deviceId = await DeviceManager.getDeviceId();
       final user = await _remoteDataSource.register(
         firstName: firstName,
         lastName: lastName,
@@ -42,6 +44,8 @@ class AuthRepositoryImpl implements AuthRepository {
         institutionName: institutionName,
         examType: examType.id,
         referralCode: referralCode,
+        deviceId: deviceId,
+        password: password,
       );
 
       // If registration is successful and a referral code was provided, save it locally
@@ -95,6 +99,27 @@ class AuthRepositoryImpl implements AuthRepository {
       userInfo['referralCode'] = referralCode;
 
       return userInfo;
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final message = e.response?.data["message"];
+        throw ServerException(
+            message ?? "An unexpected error ocured during registration");
+      }
+      throw ServerException("Server Error: ${e.message}");
+    } catch (e) {
+      throw ServerException("An unexpected error ocured during registration");
+    }
+  }
+
+  @override
+  Future<void> login({required String phone, required String password}) async {
+    try {
+      final deviceId = await DeviceManager.getDeviceId();
+      await _remoteDataSource.login(
+        phone: phone,
+        password: password,
+        deviceId: deviceId,
+      );
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final message = e.response?.data["message"];

@@ -72,6 +72,10 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         return form.copyWith(phone: event.value);
       case 'email':
         return form.copyWith(email: event.value);
+      case 'password':
+        return form.copyWith(password: event.value);
+      case 'confirmPassword':
+        return form.copyWith(confirmPassword: event.value);
       default:
         return form;
     }

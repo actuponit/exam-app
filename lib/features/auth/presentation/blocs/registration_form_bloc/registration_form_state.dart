@@ -53,28 +53,37 @@ class PersonalInfoForm extends Equatable {
   final String lastName;
   final String phone;
   final String email;
+  final String password;
+  final String confirmPassword;
 
   const PersonalInfoForm({
     this.firstName = '',
     this.lastName = '',
     this.phone = '',
     this.email = '',
+    this.password = '',
+    this.confirmPassword = '',
   });
 
   @override
-  List<Object?> get props => [firstName, lastName, phone, email];
+  List<Object?> get props =>
+      [firstName, lastName, phone, email, password, confirmPassword];
 
   PersonalInfoForm copyWith({
     String? firstName,
     String? lastName,
     String? phone,
     String? email,
+    String? password,
+    String? confirmPassword,
   }) {
     return PersonalInfoForm(
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       phone: phone ?? this.phone,
       email: email ?? this.email,
+      password: password ?? this.password,
+      confirmPassword: confirmPassword ?? this.confirmPassword,
     );
   }
 }

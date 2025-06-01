@@ -11,6 +11,12 @@ abstract class AuthRepository {
     required String institutionName,
     required ExamType examType,
     String? referralCode,
+    required String password,
+  });
+
+  Future<void> login({
+    required String phone,
+    required String password,
   });
 
   // Profile methods

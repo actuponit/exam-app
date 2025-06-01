@@ -5,6 +5,8 @@ import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.da
 import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
 import 'package:exam_app/features/auth/presentation/utils/form_validator.dart';
 import 'package:exam_app/features/auth/presentation/widgets/exam_selection_widget.dart';
+import 'package:exam_app/features/auth/presentation/widgets/password_text_field.dart';
+import 'package:exam_app/features/auth/presentation/widgets/phone_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -145,6 +147,9 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   // Add form key for validation
   final _formKey = GlobalKey<FormState>();
@@ -154,6 +159,8 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
   String? lastNameError;
   String? phoneError;
   String? emailError;
+  String? passwordError;
+  String? confirmPasswordError;
 
   @override
   void initState() {
@@ -163,6 +170,8 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
     lastNameController.text = state.personalInfo.lastName;
     phoneController.text = state.personalInfo.phone;
     emailController.text = state.personalInfo.email;
+    passwordController.text = state.personalInfo.password;
+    confirmPasswordController.text = state.personalInfo.confirmPassword;
   }
 
   @override
@@ -171,6 +180,8 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
     lastNameController.dispose();
     phoneController.dispose();
     emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -179,10 +190,14 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
         lastNameError == null &&
         phoneError == null &&
         emailError == null &&
+        passwordError == null &&
+        confirmPasswordError == null &&
         firstNameController.text.isNotEmpty &&
         lastNameController.text.isNotEmpty &&
         phoneController.text.isNotEmpty &&
-        emailController.text.isNotEmpty;
+        emailController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty &&
+        confirmPasswordController.text.isNotEmpty;
   }
 
   void _validateAndUpdateField(String field, String value) {
@@ -205,6 +220,22 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
           break;
         case 'email':
           emailError = FormValidator.validateEmail(value);
+          break;
+        case 'password':
+          passwordError = FormValidator.validatePassword(value);
+          // Re-validate confirm password if it has a value
+          if (confirmPasswordController.text.isNotEmpty) {
+            confirmPasswordError = FormValidator.validateConfirmPassword(
+              confirmPasswordController.text,
+              value,
+            );
+          }
+          break;
+        case 'confirmPassword':
+          confirmPasswordError = FormValidator.validateConfirmPassword(
+            value,
+            passwordController.text,
+          );
           break;
       }
     });
@@ -257,15 +288,14 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
                   controller: lastNameController,
                   errorText: lastNameError,
                 ),
-                _buildTextField(
-                  context: context,
+                PhoneTextField(
                   label: 'Phone Number',
-                  field: 'phone',
-                  keyboardType: TextInputType.phone,
-                  autofillHints: const [AutofillHints.telephoneNumber],
+                  hintText: 'Enter your phone number',
                   controller: phoneController,
+                  onChanged: (value) => _validateAndUpdateField('phone', value),
                   errorText: phoneError,
-                  prefixText: '+ 251 ',
+                  autofillHints: const [AutofillHints.telephoneNumber],
+                  textInputAction: TextInputAction.next,
                 ),
                 _buildTextField(
                   context: context,
@@ -275,6 +305,24 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
                   autofillHints: const [AutofillHints.email],
                   controller: emailController,
                   errorText: emailError,
+                ),
+                PasswordTextField(
+                  label: 'Password',
+                  controller: passwordController,
+                  onChanged: (value) =>
+                      _validateAndUpdateField('password', value),
+                  errorText: passwordError,
+                  textInputAction: TextInputAction.next,
+                ),
+                PasswordTextField(
+                  label: 'Confirm Password',
+                  controller: confirmPasswordController,
+                  onChanged: (value) =>
+                      _validateAndUpdateField('confirmPassword', value),
+                  errorText: confirmPasswordError,
+                  isConfirmPassword: true,
+                  originalPassword: passwordController.text,
+                  textInputAction: TextInputAction.done,
                 ),
                 const SizedBox(height: 30),
                 SizedBox(
@@ -551,6 +599,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
         lastName: state.personalInfo.lastName,
         phone: state.personalInfo.phone,
         email: state.personalInfo.email,
+        password: state.personalInfo.password,
         institutionType: state.institutionInfo.institutionType.name,
         institutionName: state.institutionInfo.institutionName,
         examType: state.institutionInfo.examType,

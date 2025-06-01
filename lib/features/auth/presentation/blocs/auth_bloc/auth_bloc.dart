@@ -58,6 +58,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         institutionName: event.institutionName,
         examType: event.examType,
         referralCode: event.referralCode,
+        password: event.password,
       );
 
       emit(state.copyWith(
