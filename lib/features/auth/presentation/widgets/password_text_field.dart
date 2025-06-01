@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:exam_app/features/auth/presentation/utils/form_validator.dart';
 
 class PasswordTextField extends StatefulWidget {
   final String label;

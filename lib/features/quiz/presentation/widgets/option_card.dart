@@ -1,4 +1,7 @@
+import 'package:exam_app/features/quiz/presentation/widgets/latex.dart';
 import 'package:flutter/material.dart';
+import 'package:markdown_widget/config/configs.dart';
+import 'package:markdown_widget/config/markdown_generator.dart';
 import '../widgets/markdown_latex.dart';
 
 class OptionCard extends StatelessWidget {
@@ -21,7 +24,6 @@ class OptionCard extends StatelessWidget {
     final isAnswered = isCorrect != null;
 
     Color backgroundColor;
-    Color borderColor;
     Color textColor;
     Widget? leadingIcon;
     Widget? trailingIcon;
@@ -30,8 +32,6 @@ class OptionCard extends StatelessWidget {
       backgroundColor = isSelected
           ? theme.colorScheme.primaryContainer
           : theme.colorScheme.surface;
-      borderColor =
-          isSelected ? theme.colorScheme.primary : theme.colorScheme.outline;
       textColor = isSelected
           ? theme.colorScheme.onPrimaryContainer
           : theme.colorScheme.onSurface;
@@ -47,7 +47,7 @@ class OptionCard extends StatelessWidget {
             width: 2,
           ),
           color: isSelected
-              ? theme.colorScheme.primary.withOpacity(0.15)
+              ? theme.colorScheme.primary.withAlpha(38)
               : Colors.transparent,
         ),
         child: isSelected
@@ -64,8 +64,7 @@ class OptionCard extends StatelessWidget {
             : null,
       );
     } else if (isCorrect == true) {
-      backgroundColor = theme.colorScheme.primary.withOpacity(0.15);
-      borderColor = theme.colorScheme.primary;
+      backgroundColor = theme.colorScheme.primary.withAlpha(38);
       textColor = theme.colorScheme.primary;
       leadingIcon = Container(
         width: 22,
@@ -80,8 +79,7 @@ class OptionCard extends StatelessWidget {
           const Icon(Icons.check_circle, color: Colors.green, size: 20);
     } else {
       backgroundColor =
-          isSelected ? Colors.red.withOpacity(0.12) : theme.colorScheme.surface;
-      borderColor = isSelected ? Colors.red : theme.colorScheme.outline;
+          isSelected ? Colors.red.withAlpha(30) : theme.colorScheme.surface;
       textColor =
           isSelected ? Colors.red.shade800 : theme.colorScheme.onSurface;
       leadingIcon = Container(
@@ -121,12 +119,21 @@ class OptionCard extends StatelessWidget {
             leadingIcon!,
             const SizedBox(width: 14),
             Expanded(
-              child: MarkdownLatex(
+              child: MarkdownWidget(
                 data: option,
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                  fontSize: 16,
+                config: MarkdownConfig.defaultConfig,
+                markdownGenerator: MarkdownGenerator(
+                  generators: [latexGenerator],
+                  inlineSyntaxList: [LatexSyntax()],
+                  richTextBuilder: (span) => Text.rich(
+                    span,
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.normal,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
             ),

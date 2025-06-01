@@ -1,5 +1,8 @@
 import 'package:confetti/confetti.dart';
+import 'package:exam_app/features/quiz/presentation/widgets/latex.dart';
 import 'package:flutter/material.dart';
+import 'package:markdown_widget/config/configs.dart';
+import 'package:markdown_widget/config/markdown_generator.dart';
 import '../../domain/models/question.dart';
 import 'markdown_latex.dart';
 import 'option_card.dart';
@@ -96,9 +99,17 @@ class _QuestionCardState extends State<QuestionCard> {
               ],
             ),
             const SizedBox(height: 10),
-            MarkdownLatex(
+            MarkdownWidget(
               data: question.text,
-              style: theme.textTheme.titleMedium,
+              config: MarkdownConfig.defaultConfig,
+              markdownGenerator: MarkdownGenerator(
+                generators: [latexGenerator],
+                inlineSyntaxList: [LatexSyntax()],
+                richTextBuilder: (span) => Text.rich(
+                  span,
+                  style: theme.textTheme.titleMedium,
+                ),
+              ),
             ),
             const SizedBox(height: 18),
             ...question.options.map((option) {
