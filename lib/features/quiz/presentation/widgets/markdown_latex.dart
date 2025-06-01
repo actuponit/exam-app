@@ -79,6 +79,7 @@ class MarkdownWidgetState extends State<MarkdownWidget> {
   ///when we've got the data, we need update data without setState() to avoid the flicker of the view
   void updateState() {
     indexTreeSet.clear();
+    _widgets.clear();
     markdownGenerator = widget.markdownGenerator ?? MarkdownGenerator();
     final result = markdownGenerator.buildWidgets(
       widget.data,
@@ -168,7 +169,7 @@ Widget wrapByAutoScroll(
     key: Key(index.toString()),
     controller: controller,
     index: index,
-    highlightColor: Colors.black.toOpacity(0.1),
+    highlightColor: Colors.black.withAlpha(26),
     child: child,
   );
 }

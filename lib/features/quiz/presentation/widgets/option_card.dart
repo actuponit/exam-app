@@ -116,7 +116,7 @@ class OptionCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            leadingIcon!,
+            leadingIcon,
             const SizedBox(width: 14),
             Expanded(
               child: MarkdownWidget(
