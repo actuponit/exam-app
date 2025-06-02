@@ -1,8 +1,6 @@
 import 'package:exam_app/core/constants/hive_constants.dart';
 import 'package:exam_app/features/exams/data/models/exam_model.dart';
 import 'package:exam_app/features/exams/data/models/subject_model.dart';
-import 'package:exam_app/features/exams/domain/entities/exam.dart';
-import 'package:exam_app/features/exams/domain/entities/subject.dart';
 import 'package:exam_app/features/quiz/domain/models/question.dart';
 import 'package:hive/hive.dart';
 

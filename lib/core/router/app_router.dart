@@ -1,5 +1,7 @@
 import 'package:exam_app/features/auth/presentation/screens/home_screen.dart';
+import 'package:exam_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/registration_screen.dart';
+import 'package:exam_app/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:exam_app/features/payment/presentation/screens/transaction_verification_screen.dart';
 import 'package:exam_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
@@ -13,6 +15,7 @@ import 'package:flutter/material.dart';
 
 class RoutePaths {
   static const String splash = '/splash';
+  static const String welcome = '/welcome';
   static const String login = '/login';
   static const String signUp = '/signup';
   static const String home = '/home';
@@ -41,6 +44,16 @@ class AppRouter {
         path: RoutePaths.splash,
         name: 'Splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.welcome,
+        name: 'Welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.login,
+        name: 'Login',
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: RoutePaths.signUp,

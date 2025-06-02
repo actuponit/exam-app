@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -58,7 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             if (state.isLoggedIn) {
               context.go(RoutePaths.home);
             } else {
-              context.go(RoutePaths.signUp);
+              context.go(RoutePaths.welcome);
             }
           }
         },

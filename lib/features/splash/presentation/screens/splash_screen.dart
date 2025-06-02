@@ -63,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen>
       _fadeController.forward();
     } else {
       // If onboarding was completed before, navigate to home
-      context.go(RoutePaths.signUp);
+      context.go(RoutePaths.welcome);
     }
   }
 

@@ -1,7 +1,7 @@
 // import 'package:example/state/root_state.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/markdown_widget.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
+// import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:markdown/markdown.dart' as m;
 
 SpanNodeGeneratorWithTag latexGenerator = SpanNodeGeneratorWithTag(
@@ -53,29 +53,29 @@ class LatexNode extends SpanNode {
     final isInline = attributes['isInline'] == 'true';
     final style = parentStyle ?? config.p.textStyle;
     if (content.isEmpty) return TextSpan(style: style, text: textContent);
-    final latex = Math.tex(
-      content,
-      mathStyle: MathStyle.text,
-      textStyle: style.copyWith(
-        color: style.color,
-      ),
-      textScaleFactor: 1,
-      onErrorFallback: (error) {
-        return Text(
-          textContent,
-          style: style.copyWith(color: Colors.red),
-        );
-      },
-    );
+    // final latex = Math.tex(
+    //   content,
+    //   mathStyle: MathStyle.text,
+    //   textStyle: style.copyWith(
+    //     color: style.color,
+    //   ),
+    //   textScaleFactor: 1,
+    //   onErrorFallback: (error) {
+    //     return Text(
+    //       textContent,
+    //       style: style.copyWith(color: Colors.red),
+    //     );
+    //   },
+    // );
     return WidgetSpan(
       alignment: PlaceholderAlignment.middle,
       child: !isInline
           ? Container(
               width: double.infinity,
               margin: const EdgeInsets.symmetric(vertical: 16),
-              child: Center(child: latex),
+              child: Center(child: Text(content)),
             )
-          : latex,
+          : Text(content),
     );
   }
 }

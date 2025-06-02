@@ -1,12 +1,16 @@
+import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:exam_app/features/auth/presentation/utils/form_validator.dart';
 import 'package:exam_app/features/auth/presentation/widgets/phone_text_field.dart';
 import 'package:exam_app/features/auth/presentation/widgets/password_text_field.dart';
+import 'package:exam_app/core/theme.dart';
+import 'package:exam_app/core/router/app_router.dart';
 
 class LoginScreen extends StatefulWidget {
+  static const String routeName = '/login';
+
   const LoginScreen({super.key});
 
   @override
@@ -18,6 +22,8 @@ class _LoginScreenState extends State<LoginScreen>
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   // Animation controllers
   late AnimationController _fadeController;
@@ -97,16 +103,64 @@ class _LoginScreenState extends State<LoginScreen>
     });
   }
 
-  void _login() {
-    if (_isFormValid) {
-      // TODO: Implement login logic with AuthBloc
-      // context.read<AuthBloc>().add(LoginRequested(
-      //   phone: _phoneController.text,
-      //   password: _passwordController.text,
-      // ));
+  Future<void> _handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
 
-      // For now, just navigate to home
-      context.go('/home');
+      // Simulate login process
+      await Future.delayed(const Duration(seconds: 2));
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Navigate to home on success
+      if (mounted) {
+        context.go(RoutePaths.home);
+      }
+    }
+  }
+
+  void _validateAndUpdateField(String field, String value) {
+    setState(() {
+      switch (field) {
+        case 'phone':
+          // Format phone number before validation
+          final formattedPhone = FormValidator.formatPhoneNumber(value);
+          _phoneController.text = formattedPhone;
+          _phoneController.selection = TextSelection.fromPosition(
+            TextPosition(offset: formattedPhone.length),
+          );
+          phoneError = FormValidator.validatePhone(formattedPhone);
+          break;
+
+        case 'password':
+          passwordError = FormValidator.validatePassword(value);
+          // Re-validate confirm password if it has a value
+
+          break;
+      }
+    });
+
+    // Only update the bloc if there are no errors
+    if (field == 'phone') {
+      context.read<RegistrationBloc>().add(
+            RegistrationFormFieldUpdated(
+              step: RegistrationStep.personalInfo,
+              field: field,
+              value: FormValidator.formatPhoneNumber(value),
+            ),
+          );
+    } else {
+      context.read<RegistrationBloc>().add(
+            RegistrationFormFieldUpdated(
+              step: RegistrationStep.personalInfo,
+              field: field,
+              value: value,
+            ),
+          );
     }
   }
 
@@ -117,217 +171,94 @@ class _LoginScreenState extends State<LoginScreen>
 
     return Scaffold(
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              theme.colorScheme.primary.withOpacity(0.05),
-              theme.colorScheme.surface,
-              theme.colorScheme.secondary.withOpacity(0.05),
+              primaryColor.withOpacity(0.1),
+              Colors.white,
+              secondaryColor.withOpacity(0.05),
             ],
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
 
-                  // Back Button and Title
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => context.pop(),
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const Spacer(),
-                    ],
+                  // Back Button
+                  IconButton(
+                    onPressed: () => context.pop(),
+                    icon: const Icon(Icons.arrow_back_ios_rounded),
+                    color: primaryColor,
                   ),
 
                   const SizedBox(height: 20),
 
-                  // Logo Section
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Container(
-                      height: size.height * 0.12,
-                      width: size.height * 0.12,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            theme.colorScheme.primary,
-                            theme.colorScheme.secondary,
-                          ],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.primary.withOpacity(0.3),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.school,
-                        size: size.height * 0.05,
-                        color: Colors.white,
-                      ),
+                  // Header
+                  Text(
+                    'Welcome Back!',
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      color: textDark,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-
-                  const SizedBox(height: 32),
-
-                  // Welcome Back Text
-                  SlideTransition(
-                    position: _slideAnimation,
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Column(
-                        children: [
-                          Text(
-                            'Welcome Back!',
-                            style: theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Please sign in to your account',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color:
-                                  theme.colorScheme.onSurface.withOpacity(0.7),
-                            ),
-                          ),
-                        ],
-                      ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Sign in to continue your exam preparation',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: textLight,
                     ),
                   ),
 
                   const SizedBox(height: 48),
 
-                  // Login Form
-                  SlideTransition(
-                    position: _slideAnimation,
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            // Phone Field
-                            PhoneTextField(
-                              label: 'Phone Number',
-                              hintText: 'Enter your phone number',
-                              controller: _phoneController,
-                              onChanged: (value) =>
-                                  _validateField('phone', value),
-                              errorText: phoneError,
-                              autofillHints: const [
-                                AutofillHints.telephoneNumber
-                              ],
-                              textInputAction: TextInputAction.next,
-                            ),
+                  // Email Field
+                  PhoneTextField(
+                    label: 'Phone Number',
+                    hintText: 'Enter your phone number',
+                    controller: _phoneController,
+                    onChanged: (value) =>
+                        _validateAndUpdateField('phone', value),
+                    errorText: phoneError,
+                    autofillHints: const [AutofillHints.telephoneNumber],
+                    textInputAction: TextInputAction.next,
+                  ),
 
-                            // Password Field
-                            PasswordTextField(
-                              label: 'Password',
-                              hintText: 'Enter your password',
-                              controller: _passwordController,
-                              onChanged: (value) =>
-                                  _validateField('password', value),
-                              errorText: passwordError,
-                              autofillHints: const [AutofillHints.password],
-                              textInputAction: TextInputAction.done,
-                            ),
+                  const SizedBox(height: 24),
 
-                            // Forgot Password Link
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () {
-                                  // TODO: Navigate to forgot password screen
-                                },
-                                child: Text(
-                                  'Forgot Password?',
-                                  style: TextStyle(
-                                    color: theme.colorScheme.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
+                  // Password Field
+                  PasswordTextField(
+                    label: 'Password',
+                    controller: _passwordController,
+                    onChanged: (value) =>
+                        _validateAndUpdateField('password', value),
+                    errorText: passwordError,
+                    textInputAction: TextInputAction.done,
+                  ),
 
-                            const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
-                            // Login Button
-                            BlocBuilder<AuthBloc, AuthState>(
-                              builder: (context, state) {
-                                return SizedBox(
-                                  width: double.infinity,
-                                  height: 56,
-                                  child: ElevatedButton(
-                                    onPressed: _isFormValid &&
-                                            !state.isRegistrationLoading
-                                        ? _login
-                                        : null,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          theme.colorScheme.primary,
-                                      foregroundColor:
-                                          theme.colorScheme.onPrimary,
-                                      elevation: 8,
-                                      shadowColor: theme.colorScheme.primary
-                                          .withOpacity(0.4),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      disabledBackgroundColor:
-                                          theme.colorScheme.surfaceVariant,
-                                    ),
-                                    child: state.isRegistrationLoading
-                                        ? SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                theme.colorScheme.onPrimary,
-                                              ),
-                                            ),
-                                          )
-                                        : Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              const Icon(Icons.login, size: 20),
-                                              const SizedBox(width: 8),
-                                              Text(
-                                                'LOGIN',
-                                                style: theme
-                                                    .textTheme.titleMedium
-                                                    ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                  letterSpacing: 1.2,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                  // Forgot Password
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        // Handle forgot password
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: primaryColor,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -335,65 +266,64 @@ class _LoginScreenState extends State<LoginScreen>
 
                   const SizedBox(height: 32),
 
-                  // Divider
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            color: theme.colorScheme.outline.withOpacity(0.5),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'OR',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  theme.colorScheme.onSurface.withOpacity(0.6),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            color: theme.colorScheme.outline.withOpacity(0.5),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Login Button
+                  _buildLoginButton(),
 
                   const SizedBox(height: 24),
 
+                  // Divider
+                  // Row(
+                  //   children: [
+                  //     const Expanded(child: Divider()),
+                  //     Padding(
+                  //       padding: const EdgeInsets.symmetric(horizontal: 16),
+                  //       child: Text(
+                  //         'or',
+                  //         style: theme.textTheme.bodyMedium?.copyWith(
+                  //           color: textLight,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     const Expanded(child: Divider()),
+                  //   ],
+                  // ),
+
+                  const SizedBox(height: 24),
+
+                  // Google Login Button
+                  // _buildGoogleLoginButton(),
+
+                  const SizedBox(height: 32),
+
                   // Sign Up Link
-                  FadeTransition(
-                    opacity: _fadeAnimation,
+                  Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           "Don't have an account? ",
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            color: textLight,
                           ),
                         ),
                         TextButton(
-                          onPressed: () => context.push('/register'),
+                          onPressed: () => context.push(RoutePaths.signUp),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
                           child: Text(
                             'Sign Up',
-                            style: TextStyle(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.bold,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: primaryColor,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 32),
                 ],
               ),
             ),
@@ -401,5 +331,191 @@ class _LoginScreenState extends State<LoginScreen>
         ),
       ),
     );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData prefixIcon,
+    TextInputType? keyboardType,
+    bool isPassword = false,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: textDark,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          obscureText: isPassword && !_isPasswordVisible,
+          validator: validator,
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(prefixIcon, color: textLight),
+            suffixIcon: isPassword
+                ? IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: textLight,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  )
+                : null,
+            filled: true,
+            fillColor: Colors.grey[50],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(inputFieldRadius),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(inputFieldRadius),
+              borderSide: BorderSide(color: Colors.grey[200]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(inputFieldRadius),
+              borderSide: const BorderSide(color: primaryColor, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(inputFieldRadius),
+              borderSide: const BorderSide(color: Colors.red),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginButton() {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [primaryColor, secondaryColor],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(buttonRadius),
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: _isLoading ? null : _handleLogin,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(buttonRadius),
+          ),
+        ),
+        child: _isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Text(
+                'Login',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildGoogleLoginButton() {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(buttonRadius),
+        border: Border.all(color: Colors.grey[300]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: () {
+          // Handle Google login
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: textDark,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(buttonRadius),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/google.png',
+              width: 24,
+              height: 24,
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Continue with Google',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your email';
+    }
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+      return 'Please enter a valid email';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your password';
+    }
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+    return null;
   }
 }

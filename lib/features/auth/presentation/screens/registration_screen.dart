@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:exam_app/core/router/app_router.dart';
+import 'package:exam_app/core/theme.dart';
 import 'package:exam_app/features/auth/domain/models/institution_type.dart';
 import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
@@ -18,12 +19,55 @@ class RegistrationScreen extends StatefulWidget {
   State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen>
+    with TickerProviderStateMixin {
   final PageController _pageController = PageController();
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupAnimations();
+  }
+
+  void _setupAnimations() {
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeInOut,
+    ));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _fadeController.forward();
+    _slideController.forward();
+  }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _fadeController.dispose();
+    _slideController.dispose();
     super.dispose();
   }
 
@@ -48,89 +92,271 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: BlocBuilder<RegistrationBloc, RegistrationState>(
-            buildWhen: (previous, current) =>
-                previous.currentStep != current.currentStep,
-            builder: (context, state) {
-              return Text(
-                state.currentStep == RegistrationStep.personalInfo
-                    ? 'Personal Information'
-                    : 'Institution Information',
-              );
-            },
-          ),
-          centerTitle: true,
-          elevation: 0,
-          leading: BlocBuilder<RegistrationBloc, RegistrationState>(
-            builder: (context, state) {
-              return state.currentStep == RegistrationStep.institutionInfo
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () {
-                        context.read<RegistrationBloc>().add(
-                              const RegistrationStepChanged(
-                                RegistrationStep.personalInfo,
-                              ),
-                            );
-                      },
-                    )
-                  : const SizedBox.shrink();
-            },
-          ),
-        ),
-        body: Column(
-          children: [
-            _buildProgressIndicator(),
-            const SizedBox(height: 20),
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (page) {
-                  // Update the current step based on the page
-                  final step = page == 0
-                      ? RegistrationStep.personalInfo
-                      : RegistrationStep.institutionInfo;
-
-                  // Only update if step is different to avoid loops
-                  if (context.read<RegistrationBloc>().state.currentStep !=
-                      step) {
-                    context
-                        .read<RegistrationBloc>()
-                        .add(RegistrationStepChanged(step));
-                  }
-                },
-                children: const [
-                  _PersonalInfoPage(),
-                  _InstitutionInfoPage(),
-                ],
-              ),
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                primaryColor.withOpacity(0.1),
+                Colors.white,
+                secondaryColor.withOpacity(0.05),
+              ],
             ),
-          ],
+          ),
+          child: SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                _buildCreativeHeader(),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    onPageChanged: (page) {
+                      final step = page == 0
+                          ? RegistrationStep.personalInfo
+                          : RegistrationStep.institutionInfo;
+
+                      if (context.read<RegistrationBloc>().state.currentStep !=
+                          step) {
+                        context
+                            .read<RegistrationBloc>()
+                            .add(RegistrationStepChanged(step));
+                      }
+                    },
+                    children: const [
+                      _PersonalInfoPage(),
+                      _InstitutionInfoPage(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildProgressIndicator() {
+  Widget _buildCreativeHeader() {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       buildWhen: (previous, current) =>
           previous.currentStep != current.currentStep,
       builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          child: LinearProgressIndicator(
-            value: state.currentStep == RegistrationStep.personalInfo ? 0.5 : 1,
-            minHeight: 8,
-            backgroundColor:
-                Theme.of(context).colorScheme.surfaceContainerHighest,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).colorScheme.primary,
+        final isStep1 = state.currentStep == RegistrationStep.personalInfo;
+        final progress = isStep1 ? 0.5 : 1.0;
+
+        return FadeTransition(
+          opacity: _fadeAnimation,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: primaryColor.withOpacity(0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Back Button and Close
+                  Row(
+                    children: [
+                      if (!isStep1)
+                        GestureDetector(
+                          onTap: () {
+                            context.read<RegistrationBloc>().add(
+                                  const RegistrationStepChanged(
+                                    RegistrationStep.personalInfo,
+                                  ),
+                                );
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: primaryColor,
+                              size: 20,
+                            ),
+                          ),
+                        )
+                      else
+                        GestureDetector(
+                          onTap: () => context.pop(),
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.close_rounded,
+                              color: Colors.grey[600],
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      const Spacer(),
+                      Text(
+                        '${isStep1 ? 1 : 2} of 2',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: textLight,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Creative Step Indicator
+                  Row(
+                    children: [
+                      _buildStepCircle(1, isStep1, true),
+                      Expanded(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 600),
+                          height: 4,
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(2),
+                            gradient: LinearGradient(
+                              colors: progress > 0.5
+                                  ? [primaryColor, secondaryColor]
+                                  : [Colors.grey[300]!, Colors.grey[300]!],
+                            ),
+                          ),
+                        ),
+                      ),
+                      _buildStepCircle(2, !isStep1, progress == 1.0),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Title and Description
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    child: Column(
+                      key: ValueKey(isStep1),
+                      children: [
+                        Text(
+                          isStep1
+                              ? 'Tell us about yourself'
+                              : 'Institution Details',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                color: textDark,
+                                fontWeight: FontWeight.bold,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          isStep1
+                              ? 'Let\'s start with your basic information to create your account'
+                              : 'Help us understand your educational background',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: textLight,
+                                    height: 1.4,
+                                  ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Progress Bar
+                  Container(
+                    width: double.infinity,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 600),
+                      width: MediaQuery.of(context).size.width * progress,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [primaryColor, secondaryColor],
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildStepCircle(int step, bool isActive, bool isCompleted) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: isActive || isCompleted
+            ? const LinearGradient(colors: [primaryColor, secondaryColor])
+            : null,
+        color: isActive || isCompleted ? null : Colors.grey[300],
+        boxShadow: isActive || isCompleted
+            ? [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
+      ),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: isCompleted && !isActive
+            ? const Icon(
+                Icons.check_rounded,
+                color: Colors.white,
+                size: 24,
+                key: ValueKey('check'),
+              )
+            : Text(
+                step.toString(),
+                key: ValueKey('number_$step'),
+                style: TextStyle(
+                  color:
+                      isActive || isCompleted ? Colors.white : Colors.grey[600],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+      ),
     );
   }
 }
@@ -325,24 +551,16 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
                   textInputAction: TextInputAction.done,
                 ),
                 const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: _isFormValid()
-                        ? () {
-                            bloc.add(const RegistrationStepChanged(
-                              RegistrationStep.institutionInfo,
-                            ));
-                          }
-                        : null,
-                    child: const Text('Continue'),
-                  ),
+                _buildGradientButton(
+                  context: context,
+                  text: 'Continue',
+                  onPressed: _isFormValid()
+                      ? () {
+                          bloc.add(const RegistrationStepChanged(
+                            RegistrationStep.institutionInfo,
+                          ));
+                        }
+                      : null,
                 ),
               ],
             ),
@@ -390,6 +608,55 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
               : null,
         ),
         onChanged: (value) => _validateAndUpdateField(field, value),
+      ),
+    );
+  }
+
+  Widget _buildGradientButton({
+    required BuildContext context,
+    required String text,
+    VoidCallback? onPressed,
+  }) {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: onPressed != null
+            ? const LinearGradient(
+                colors: [primaryColor, secondaryColor],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              )
+            : null,
+        color: onPressed == null ? Colors.grey[300] : null,
+        borderRadius: BorderRadius.circular(buttonRadius),
+        boxShadow: onPressed != null
+            ? [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(buttonRadius),
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: onPressed != null ? Colors.white : Colors.grey[600],
+          ),
+        ),
       ),
     );
   }
@@ -536,50 +803,93 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
               ],
               const SizedBox(height: 24),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(buttonRadius),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(buttonRadius),
+                          ),
+                        ),
+                        onPressed: state.isRegistrationLoading
+                            ? null
+                            : () {
+                                Navigator.of(context).pop();
+                              },
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: textDark,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                      onPressed: state.isRegistrationLoading
-                          ? null
-                          : () {
-                              // Clear the referral code if the user skips
-                              Navigator.of(context).pop();
-                            },
-                      child: const Text('Cancel'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: state.isRegistrationLoading
-                          ? null
-                          : () {
-                              // Navigator.of(context).pop();
-                              _completeRegistration();
-                            },
-                      child: state.isRegistrationLoading
-                          ? SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Theme.of(context).colorScheme.onPrimary,
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: state.isRegistrationLoading
+                            ? null
+                            : const LinearGradient(
+                                colors: [primaryColor, secondaryColor],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
                               ),
-                            )
-                          : const Text('Confirm'),
+                        color: state.isRegistrationLoading
+                            ? Colors.grey[300]
+                            : null,
+                        borderRadius: BorderRadius.circular(buttonRadius),
+                        boxShadow: !state.isRegistrationLoading
+                            ? [
+                                BoxShadow(
+                                  color: primaryColor.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(buttonRadius),
+                          ),
+                        ),
+                        onPressed: state.isRegistrationLoading
+                            ? null
+                            : () {
+                                _completeRegistration();
+                              },
+                        child: state.isRegistrationLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Confirm',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                      ),
                     ),
                   ),
                 ],
@@ -645,24 +955,16 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
               const SizedBox(height: 30),
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, authState) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: _isFormValid() &&
-                              state.institutionInfo.examType.id != -1 &&
-                              !authState.isRegistrationLoading
-                          ? () {
-                              _showReferralDialog();
-                            }
-                          : null,
-                      child: const Text('Complete Registration'),
-                    ),
+                  return _buildGradientButton(
+                    context: context,
+                    text: 'Complete Registration',
+                    onPressed: _isFormValid() &&
+                            state.institutionInfo.examType.id != -1 &&
+                            !authState.isRegistrationLoading
+                        ? () {
+                            _showReferralDialog();
+                          }
+                        : null,
                   );
                 },
               ),
@@ -702,6 +1004,55 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
               );
         }
       },
+    );
+  }
+
+  Widget _buildGradientButton({
+    required BuildContext context,
+    required String text,
+    VoidCallback? onPressed,
+  }) {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: onPressed != null
+            ? const LinearGradient(
+                colors: [primaryColor, secondaryColor],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              )
+            : null,
+        color: onPressed == null ? Colors.grey[300] : null,
+        borderRadius: BorderRadius.circular(buttonRadius),
+        boxShadow: onPressed != null
+            ? [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(buttonRadius),
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: onPressed != null ? Colors.white : Colors.grey[600],
+          ),
+        ),
+      ),
     );
   }
 }
