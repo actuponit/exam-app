@@ -107,7 +107,7 @@ class OptionCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(14),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(14),
@@ -121,6 +121,7 @@ class OptionCard extends StatelessWidget {
             Expanded(
               child: MarkdownWidget(
                 data: option,
+                shrinkWrap: true,
                 config: MarkdownConfig.defaultConfig,
                 markdownGenerator: MarkdownGenerator(
                   generators: [latexGenerator],

@@ -91,7 +91,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
   ) async {
     // Start watching for status updates with the repository stream
     final statusStream = repository.watchSubscriptionStatus(
-      interval: event.interval ?? const Duration(minutes: 5),
+      interval: event.interval ?? const Duration(minutes: 2),
       stopWhenApproved: true,
     );
 

@@ -101,6 +101,7 @@ class _ExplanationDisplayState extends State<ExplanationDisplay> {
             const SizedBox(height: 8),
             MarkdownWidget(
               data: widget.explanation,
+              shrinkWrap: true,
               config: MarkdownConfig.defaultConfig,
               markdownGenerator: MarkdownGenerator(
                 generators: [latexGenerator],

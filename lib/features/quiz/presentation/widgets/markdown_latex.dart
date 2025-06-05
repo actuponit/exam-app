@@ -32,16 +32,16 @@ class MarkdownWidget extends StatefulWidget {
   final MarkdownGenerator? markdownGenerator;
 
   const MarkdownWidget({
-    Key? key,
+    super.key,
     required this.data,
     this.tocController,
     this.physics,
     this.shrinkWrap = false,
     this.selectable = true,
-    this.padding,
+    this.padding = const EdgeInsets.all(0),
     this.config,
     this.markdownGenerator,
-  }) : super(key: key);
+  });
 
   @override
   MarkdownWidgetState createState() => MarkdownWidgetState();

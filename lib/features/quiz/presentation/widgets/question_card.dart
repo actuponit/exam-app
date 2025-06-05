@@ -101,6 +101,7 @@ class _QuestionCardState extends State<QuestionCard> {
             const SizedBox(height: 10),
             MarkdownWidget(
               data: question.text,
+              shrinkWrap: true,
               config: MarkdownConfig.defaultConfig,
               markdownGenerator: MarkdownGenerator(
                 generators: [latexGenerator],
@@ -124,7 +125,7 @@ class _QuestionCardState extends State<QuestionCard> {
                 isCorrect: isCorrect,
                 onTap: () => widget.onAnswerSelected(option.id),
               );
-            }).toList(),
+            }),
             if (widget.showAnswer && widget.selectedAnswer != null) ...[
               const SizedBox(height: 10),
               ExplanationDisplay(
