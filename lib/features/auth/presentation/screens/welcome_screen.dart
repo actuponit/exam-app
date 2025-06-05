@@ -127,7 +127,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         ),
                         const SizedBox(height: 24),
                         Text(
-                          'ExamAce',
+                          'ExamHub',
                           style: theme.textTheme.displayMedium?.copyWith(
                             color: primaryColor,
                             fontWeight: FontWeight.bold,
@@ -185,9 +185,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 32),
-
-                          // Features
-                          _buildFeaturesList(theme),
                         ],
                       ),
                     ),
@@ -204,7 +201,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         children: [
                           _buildPrimaryButton(
                             context: context,
-                            text: 'Get Started',
+                            text: 'Register',
                             onPressed: () => context.push(RoutePaths.signUp),
                           ),
                           const SizedBox(height: 16),

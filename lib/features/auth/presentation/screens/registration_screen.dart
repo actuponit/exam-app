@@ -838,6 +838,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                   Expanded(
                     child: Container(
                       height: 48,
+                      padding: const EdgeInsets.all(0),
                       decoration: BoxDecoration(
                         gradient: state.isRegistrationLoading
                             ? null
@@ -864,6 +865,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.all(0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(buttonRadius),
                           ),
@@ -886,6 +888,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                                 'Confirm',
                                 style: TextStyle(
                                   color: Colors.white,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),

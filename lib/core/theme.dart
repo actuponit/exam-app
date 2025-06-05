@@ -144,13 +144,6 @@ ThemeData getAppTheme() {
         textStyle: titleStyle,
       ),
     ),
-    cardTheme: CardTheme(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(cardRadius),
-        side: BorderSide(color: Colors.grey[200]!),
-      ),
-    ),
     fontFamily: 'Poppins',
     textTheme: const TextTheme(
       displayLarge: AppTypography.displayLarge,
