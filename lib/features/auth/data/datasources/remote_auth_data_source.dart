@@ -55,7 +55,7 @@ class RemoteAuthDataSource implements AuthDataSource {
     required String deviceId,
   }) async {
     final response = await _dio.post('/login', data: {
-      'phone_number': phone,
+      'login': phone,
       'password': password,
       'device_id': deviceId,
     });

@@ -12,6 +12,38 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._authRepository) : super(const AuthState()) {
     on<LoadExamTypes>(_onLoadExamTypes);
     on<RegisterUser>(_onRegisterUser);
+    on<LoginUser>(_onLoginUser);
+  }
+
+  Future<void> _onLoginUser(
+    LoginUser event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(
+        loginStatus: LoadingStatus.loading,
+        loginError: '',
+      ));
+
+      await _authRepository.login(
+        phone: event.phone,
+        password: event.password,
+      );
+
+      emit(state.copyWith(
+        loginStatus: LoadingStatus.loaded,
+      ));
+    } on ServerException catch (e) {
+      emit(state.copyWith(
+        loginStatus: LoadingStatus.error,
+        loginError: e.message,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        loginStatus: LoadingStatus.error,
+        loginError: "Something went wrong",
+      ));
+    }
   }
 
   Future<void> _onLoadExamTypes(
@@ -30,10 +62,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         examTypesStatus: LoadingStatus.loaded,
         examTypes: examTypes,
       ));
+    } on ServerException catch (e) {
+      emit(state.copyWith(
+        examTypesStatus: LoadingStatus.error,
+        examTypesError: e.message,
+      ));
     } catch (e) {
       emit(state.copyWith(
         examTypesStatus: LoadingStatus.error,
-        examTypesError: e.toString(),
+        examTypesError: "Something went wrong",
       ));
     }
   }

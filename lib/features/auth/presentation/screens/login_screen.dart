@@ -1,4 +1,5 @@
-import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
+import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
+import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -22,8 +23,6 @@ class _LoginScreenState extends State<LoginScreen>
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isPasswordVisible = false;
-  bool _isLoading = false;
 
   // Animation controllers
   late AnimationController _fadeController;
@@ -90,37 +89,11 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  void _validateField(String field, String value) {
-    setState(() {
-      switch (field) {
-        case 'phone':
-          phoneError = FormValidator.validatePhone(value);
-          break;
-        case 'password':
-          passwordError = value.isEmpty ? 'Password is required' : null;
-          break;
-      }
-    });
-  }
-
   Future<void> _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      // Simulate login process
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      // Navigate to home on success
-      if (mounted) {
-        context.go(RoutePaths.home);
-      }
-    }
+    context.read<AuthBloc>().add(LoginUser(
+          phone: _phoneController.text,
+          password: _passwordController.text,
+        ));
   }
 
   void _validateAndUpdateField(String field, String value) {
@@ -143,31 +116,11 @@ class _LoginScreenState extends State<LoginScreen>
           break;
       }
     });
-
-    // Only update the bloc if there are no errors
-    if (field == 'phone') {
-      context.read<RegistrationBloc>().add(
-            RegistrationFormFieldUpdated(
-              step: RegistrationStep.personalInfo,
-              field: field,
-              value: FormValidator.formatPhoneNumber(value),
-            ),
-          );
-    } else {
-      context.read<RegistrationBloc>().add(
-            RegistrationFormFieldUpdated(
-              step: RegistrationStep.personalInfo,
-              field: field,
-              value: value,
-            ),
-          );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Container(
@@ -271,28 +224,6 @@ class _LoginScreenState extends State<LoginScreen>
 
                   const SizedBox(height: 24),
 
-                  // Divider
-                  // Row(
-                  //   children: [
-                  //     const Expanded(child: Divider()),
-                  //     Padding(
-                  //       padding: const EdgeInsets.symmetric(horizontal: 16),
-                  //       child: Text(
-                  //         'or',
-                  //         style: theme.textTheme.bodyMedium?.copyWith(
-                  //           color: textLight,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     const Expanded(child: Divider()),
-                  //   ],
-                  // ),
-
-                  const SizedBox(height: 24),
-
-                  // Google Login Button
-                  // _buildGoogleLoginButton(),
-
                   const SizedBox(height: 32),
 
                   // Sign Up Link
@@ -334,51 +265,74 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildLoginButton() {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [primaryColor, secondaryColor],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(buttonRadius),
-        boxShadow: [
-          BoxShadow(
-            color: primaryColor.withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _handleLogin,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.loginStatus == LoadingStatus.loaded) {
+          context.go(RoutePaths.home);
+          AppSnackBar.show(
+            context: context,
+            message: 'Login successful',
+            type: SnackBarType.success,
+            duration: const Duration(seconds: 6),
+          );
+        } else if (state.loginStatus == LoadingStatus.error) {
+          AppSnackBar.show(
+            context: context,
+            message: state.loginError,
+            type: SnackBarType.error,
+            duration: const Duration(seconds: 6),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Container(
+          width: double.infinity,
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [primaryColor, secondaryColor],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
             borderRadius: BorderRadius.circular(buttonRadius),
-          ),
-        ),
-        child: _isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : const Text(
-                'Login',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+            boxShadow: [
+              BoxShadow(
+                color: primaryColor.withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
-      ),
+            ],
+          ),
+          child: ElevatedButton(
+            onPressed:
+                state.isLoginLoading || !_isFormValid ? null : _handleLogin,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(buttonRadius),
+              ),
+            ),
+            child: state.isLoginLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+          ),
+        );
+      },
     );
   }
 }

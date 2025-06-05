@@ -20,7 +20,7 @@ class MarkdownWidget extends StatefulWidget {
   final bool shrinkWrap;
 
   /// [ListView] padding
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry padding;
 
   ///make text selectable
   final bool selectable;

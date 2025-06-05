@@ -27,3 +27,13 @@ class RegisterUser extends AuthEvent {
     this.referralCode,
   });
 }
+
+class LoginUser extends AuthEvent {
+  final String phone;
+  final String password;
+
+  LoginUser({
+    required this.phone,
+    required this.password,
+  });
+}
