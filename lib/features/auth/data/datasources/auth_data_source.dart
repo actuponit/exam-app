@@ -39,4 +39,5 @@ abstract class LocalAuthDataSource {
     required String institutionType,
     required String institutionName,
   });
+  Future<void> clearUserData();
 }

@@ -59,6 +59,6 @@ class RemoteAuthDataSource implements AuthDataSource {
       'password': password,
       'device_id': deviceId,
     });
-    return response.data;
+    return response.data['user'];
   }
 }

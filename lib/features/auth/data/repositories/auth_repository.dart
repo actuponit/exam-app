@@ -21,4 +21,7 @@ abstract class AuthRepository {
 
   // Profile methods
   Future<Map<String, dynamic>> getUserProfile();
+
+  // Logout method
+  Future<void> logout();
 }

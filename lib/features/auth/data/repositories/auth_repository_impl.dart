@@ -115,20 +115,54 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> login({required String phone, required String password}) async {
     try {
       final deviceId = await DeviceManager.getDeviceId();
-      await _remoteDataSource.login(
+      final user = await _remoteDataSource.login(
         phone: phone,
         password: password,
         deviceId: deviceId,
+      );
+      final int? userId = user['id'];
+      final String? code = user['referral_code'];
+      if (userId != null) {
+        await _localDataSource.saveUserId(userId);
+      }
+      if (code != null) {
+        await _localDataSource.saveReferralCode(code);
+      }
+
+      final examTypes = await _remoteDataSource.getExamTypes();
+      final examType =
+          examTypes.firstWhere((e) => e.id.toString() == user['type_id']);
+
+      // Save exam type info
+      await _localDataSource.saveExamInfo(examType.name, examType.price);
+      await _localDataSource.setAllUserInfo(
+        firstName: user['name'],
+        lastName: '',
+        phone: phone,
+        email: user['email'],
+        institutionType: user['institution_type'],
+        institutionName: user['institution_name'],
       );
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final message = e.response?.data["message"];
         throw ServerException(
-            message ?? "An unexpected error ocured during registration");
+            message ?? "An unexpected error ocured during login");
       }
-      throw ServerException("Server Error: ${e.message}");
+      throw ServerException(
+          e.message ?? "An unexpected error ocured during login");
     } catch (e) {
-      throw ServerException("An unexpected error ocured during registration");
+      throw ServerException("An unexpected error ocured during login");
+    }
+  }
+
+  @override
+  Future<void> logout() async {
+    try {
+      // Clear user data from local storage
+      await _localDataSource.clearUserData();
+    } catch (e) {
+      throw ServerException("An error occurred during logout");
     }
   }
 }

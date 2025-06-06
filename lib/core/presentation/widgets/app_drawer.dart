@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
+import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:exam_app/features/profile/presentation/bloc/profile_cubit.dart';
 import 'package:exam_app/features/profile/presentation/bloc/profile_state.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +133,70 @@ class AppDrawer extends StatelessWidget {
         children: [
           const Divider(),
           const SizedBox(height: 8),
+          BlocProvider(
+            create: (context) => AuthBloc(getIt<AuthRepository>()),
+            child: BlocConsumer<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state.logoutStatus == LoadingStatus.loaded) {
+                  // Navigate to welcome/login screen after successful logout
+                  context.go('/welcome');
+                } else if (state.hasLogoutError) {
+                  // Show error message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.logoutError),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                return _DrawerListTile(
+                  icon: Icons.logout,
+                  title: state.isLogoutLoading ? 'Logging out...' : 'Logout',
+                  textColor: Colors.red.shade700,
+                  iconColor: Colors.red.shade700,
+                  onTap: state.isLogoutLoading
+                      ? () {}
+                      : () {
+                          // Show confirmation dialog
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) => BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                              child: AlertDialog(
+                                title: const Text('Logout'),
+                                content: const Text(
+                                    'Are you sure you want to logout?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(dialogContext).pop(),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop();
+                                      context
+                                          .read<AuthBloc>()
+                                          .add(LogoutUser());
+                                    },
+                                    child: Text(
+                                      'Logout',
+                                      style:
+                                          TextStyle(color: Colors.red.shade700),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
           Text(
             'Version 1.0.0',
             style: bodyStyle.copyWith(

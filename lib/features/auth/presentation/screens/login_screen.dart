@@ -268,13 +268,15 @@ class _LoginScreenState extends State<LoginScreen>
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.loginStatus == LoadingStatus.loaded) {
-          context.go(RoutePaths.home);
+          final c =
+              GoRouter.of(context).routerDelegate.navigatorKey.currentContext!;
           AppSnackBar.show(
-            context: context,
-            message: 'Login successful',
+            context: c,
+            message: 'Login successfully',
             type: SnackBarType.success,
             duration: const Duration(seconds: 6),
           );
+          context.go(RoutePaths.home);
         } else if (state.loginStatus == LoadingStatus.error) {
           AppSnackBar.show(
             context: context,

@@ -86,4 +86,9 @@ class LocalAuthDataSourceImpl implements LocalAuthDataSource {
     await _prefs.setString('institutionType', institutionType);
     await _prefs.setString('institutionName', institutionName);
   }
+
+  @override
+  Future<void> clearUserData() async {
+    _prefs.clear();
+  }
 }

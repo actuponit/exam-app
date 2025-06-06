@@ -56,15 +56,10 @@ class _PhoneTextFieldState extends State<PhoneTextField> {
             borderRadius: BorderRadius.circular(12),
           ),
           prefixIcon: Container(
-            padding: const EdgeInsets.all(12),
-            child: Image.asset(
-              'assets/images/ethiopia_flag.png', // You can add this later
-              width: 24,
-              height: 16,
-              errorBuilder: (context, error, stackTrace) => Icon(
-                Icons.phone,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+            padding: const EdgeInsets.all(6),
+            child: const Text(
+              '🇪🇹',
+              style: TextStyle(fontSize: 28),
             ),
           ),
         ),

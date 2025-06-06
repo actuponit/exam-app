@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:exam_app/core/di/cache_interceptor.dart';
 import 'package:exam_app/core/services/hive_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
 @module
@@ -21,14 +22,15 @@ abstract class NetworkModule {
 
     // Add interceptors
     dio.interceptors.addAll([
-      LogInterceptor(
-        request: true,
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        responseBody: true,
-        error: true,
-      ),
+      if (kDebugMode)
+        LogInterceptor(
+          request: true,
+          requestHeader: true,
+          requestBody: true,
+          responseHeader: true,
+          responseBody: true,
+          error: true,
+        ),
       CacheInterceptor(cacheBox: cacheBox),
       InterceptorsWrapper(
         onError: (error, handler) {

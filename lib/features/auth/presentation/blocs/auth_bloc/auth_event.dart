@@ -37,3 +37,5 @@ class LoginUser extends AuthEvent {
     required this.password,
   });
 }
+
+class LogoutUser extends AuthEvent {}

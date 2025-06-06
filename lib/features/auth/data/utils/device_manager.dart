@@ -13,9 +13,9 @@ class DeviceManager {
     if (storedId != null) return storedId;
 
     if (Platform.isAndroid) {
-      const _androidIdPlugin = AndroidId();
+      const androidIdPlugin = AndroidId();
 
-      final String? androidId = await _androidIdPlugin.getId();
+      final String? androidId = await androidIdPlugin.getId();
       return _storeDeviceId(androidId ?? const Uuid().v4());
     } else if (Platform.isIOS) {
       final String? iosId = await _storage.read(key: _deviceKey);

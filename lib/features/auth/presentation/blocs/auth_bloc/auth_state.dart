@@ -11,6 +11,8 @@ class AuthState {
   final bool isRegistrationSuccessful;
   final LoadingStatus loginStatus;
   final String loginError;
+  final LoadingStatus logoutStatus;
+  final String logoutError;
 
   const AuthState({
     this.examTypes = const [],
@@ -21,6 +23,8 @@ class AuthState {
     this.isRegistrationSuccessful = false,
     this.loginStatus = LoadingStatus.initial,
     this.loginError = '',
+    this.logoutStatus = LoadingStatus.initial,
+    this.logoutError = '',
   });
 
   AuthState copyWith({
@@ -32,6 +36,8 @@ class AuthState {
     bool? isRegistrationSuccessful,
     LoadingStatus? loginStatus,
     String? loginError,
+    LoadingStatus? logoutStatus,
+    String? logoutError,
   }) {
     return AuthState(
       examTypes: examTypes ?? this.examTypes,
@@ -43,6 +49,8 @@ class AuthState {
           isRegistrationSuccessful ?? this.isRegistrationSuccessful,
       loginStatus: loginStatus ?? this.loginStatus,
       loginError: loginError ?? '',
+      logoutStatus: logoutStatus ?? this.logoutStatus,
+      logoutError: logoutError ?? '',
     );
   }
 
@@ -52,4 +60,6 @@ class AuthState {
   bool get hasRegistrationError => registrationStatus == LoadingStatus.error;
   bool get isLoginLoading => loginStatus == LoadingStatus.loading;
   bool get hasLoginError => loginStatus == LoadingStatus.error;
+  bool get isLogoutLoading => logoutStatus == LoadingStatus.loading;
+  bool get hasLogoutError => logoutStatus == LoadingStatus.error;
 }
