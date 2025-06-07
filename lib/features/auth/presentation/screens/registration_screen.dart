@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/core/theme.dart';
 import 'package:exam_app/features/auth/domain/models/institution_type.dart';
@@ -673,6 +674,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
   final TextEditingController institutionNameController =
       TextEditingController();
   final TextEditingController referralCodeController = TextEditingController();
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -686,6 +688,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
   void dispose() {
     institutionNameController.dispose();
     referralCodeController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -927,32 +930,14 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
+          controller: _pageController,
           child: Column(
             children: [
               const SizedBox(height: 20),
               _buildInstitutionTypeDropdown(
                   context: context, currentValue: institutionType),
               const SizedBox(height: 30),
-              TextField(
-                controller: institutionNameController,
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Institution Name',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onChanged: (value) {
-                  context.read<RegistrationBloc>().add(
-                        RegistrationFormFieldUpdated(
-                          step: RegistrationStep.institutionInfo,
-                          field: 'institutionName',
-                          value: value,
-                        ),
-                      );
-                  setState(() {}); // Refresh UI to update button state
-                },
-              ),
+              _buildInstitutionNameField(context, institutionType),
               const SizedBox(height: 30),
               const ExamSelectionWidget(),
               const SizedBox(height: 30),
@@ -965,7 +950,20 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                             state.institutionInfo.examType.id != -1 &&
                             !authState.isRegistrationLoading
                         ? () {
-                            _showReferralDialog();
+                            if (institutionType == InstitutionType.none) {
+                              AppSnackBar.show(
+                                context: context,
+                                message: 'Please select an institution type',
+                                type: SnackBarType.error,
+                              );
+                              _pageController.animateToPage(
+                                0,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            } else {
+                              _showReferralDialog();
+                            }
                           }
                         : null,
                   );
@@ -1008,6 +1006,138 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
         }
       },
     );
+  }
+
+  Widget _buildInstitutionNameField(
+      BuildContext context, InstitutionType institutionType) {
+    if (institutionType == InstitutionType.university) {
+      return Autocomplete<String>(
+        optionsBuilder: (TextEditingValue textEditingValue) {
+          if (textEditingValue.text.isEmpty) {
+            return const Iterable<String>.empty();
+          }
+          return _getUniversitySuggestions(textEditingValue.text);
+        },
+        onSelected: (String selection) {
+          institutionNameController.text = selection;
+          context.read<RegistrationBloc>().add(
+                RegistrationFormFieldUpdated(
+                  step: RegistrationStep.institutionInfo,
+                  field: 'institutionName',
+                  value: selection,
+                ),
+              );
+          setState(() {});
+        },
+        fieldViewBuilder:
+            (context, textEditingController, focusNode, onFieldSubmitted) {
+          // Sync the controller with our main controller only once
+          if (textEditingController.text != institutionNameController.text) {
+            textEditingController.text = institutionNameController.text;
+          }
+
+          return TextField(
+            controller: textEditingController,
+            focusNode: focusNode,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              labelText: 'University Name',
+              hintText: 'Type to search universities...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              suffixIcon: const Icon(Icons.search),
+            ),
+            onChanged: (value) {
+              institutionNameController.text = value;
+              context.read<RegistrationBloc>().add(
+                    RegistrationFormFieldUpdated(
+                      step: RegistrationStep.institutionInfo,
+                      field: 'institutionName',
+                      value: value,
+                    ),
+                  );
+            },
+          );
+        },
+      );
+    } else {
+      return TextField(
+        controller: institutionNameController,
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          labelText: 'Institution Name',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onChanged: (value) {
+          context.read<RegistrationBloc>().add(
+                RegistrationFormFieldUpdated(
+                  step: RegistrationStep.institutionInfo,
+                  field: 'institutionName',
+                  value: value,
+                ),
+              );
+          setState(() {}); // Refresh UI to update button state
+        },
+      );
+    }
+  }
+
+  Iterable<String> _getUniversitySuggestions(String query) {
+    final universities = [
+      'Addis Ababa Science and Technology University',
+      'Addis Ababa University',
+      'Adigrat University',
+      'Ambo University',
+      'Arba Minch University',
+      'Arsi University',
+      'Adama Science and Technology University',
+      'Axum University',
+      'Bahir Dar University',
+      'Bonga University',
+      'Bule Hora University',
+      'Dambi Dollo University',
+      'Debark University',
+      'Debre Berhan University',
+      'Debre Markos University',
+      'Debre Tabor University',
+      'Defence University',
+      'Dilla University',
+      'Dire Dawa University',
+      'Gambella University',
+      'Gondar University',
+      'Haramaya University',
+      'Hawassa University',
+      'Injibara University',
+      'Jijiga University',
+      'Jimma University',
+      'Jinka University',
+      'Kebri Dehar University',
+      'Kotebe Metropolitan University',
+      'Madda Walabu University',
+      'Mekdela Amba University',
+      'Mekelle University',
+      'Mettu University',
+      'Mizan Tepi University',
+      'Oda Bultum University',
+      'Raya University',
+      'Salale University',
+      'Semera University',
+      'Wachamo University',
+      'Werabe University',
+      'Wolaita Sodo University',
+      'Woldia University',
+      'Wollega University',
+      'Wollo University',
+      'Wolkite University',
+    ];
+
+    return universities
+        .where((university) =>
+            university.toLowerCase().contains(query.toLowerCase()))
+        .toList();
   }
 
   Widget _buildGradientButton({
