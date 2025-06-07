@@ -95,7 +95,7 @@ class InstitutionInfoForm extends Equatable {
   final String referralCode;
 
   const InstitutionInfoForm({
-    this.institutionType = InstitutionType.elementary,
+    this.institutionType = InstitutionType.none,
     this.institutionName = '',
     this.examType = const ExamType(id: -1, name: '', description: '', price: 0),
     this.referralCode = '',

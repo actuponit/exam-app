@@ -37,7 +37,7 @@ class MarkdownWidget extends StatefulWidget {
     this.tocController,
     this.physics,
     this.shrinkWrap = false,
-    this.selectable = true,
+    this.selectable = false,
     this.padding = const EdgeInsets.all(0),
     this.config,
     this.markdownGenerator,

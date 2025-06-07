@@ -1,10 +1,10 @@
 enum InstitutionType {
+  none,
   elementary,
   high_school,
   preparatory,
   university,
-  college,
-  other;
+  college;
 
   String get displayName {
     switch (this) {
@@ -18,8 +18,8 @@ enum InstitutionType {
         return 'University';
       case InstitutionType.college:
         return 'College';
-      case InstitutionType.other:
-        return 'Other';
+      case InstitutionType.none:
+        return 'None';
     }
   }
-} 
+}
