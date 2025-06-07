@@ -215,6 +215,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     ),
                   ),
 
+                  const SizedBox(height: 24),
+                  _buildPrivacyPolicyButton(),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -222,82 +224,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildFeaturesList(ThemeData theme) {
-    final features = [
-      {
-        'icon': Icons.quiz_rounded,
-        'title': 'Interactive Practice',
-        'description': 'Practice with real exam questions',
-      },
-      {
-        'icon': Icons.track_changes_rounded,
-        'title': 'Progress Tracking',
-        'description': 'Monitor your improvement over time',
-      },
-      {
-        'icon': Icons.school_rounded,
-        'title': 'Expert Content',
-        'description': 'Questions by education professionals',
-      },
-    ];
-
-    return Row(
-      children: features.map((feature) {
-        return Expanded(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    feature['icon'] as IconData,
-                    color: primaryColor,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  feature['title'] as String,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: textDark,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  feature['description'] as String,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: textLight,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
     );
   }
 
@@ -361,6 +287,34 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               color: primaryColor,
               fontWeight: FontWeight.w500,
             ),
+      ),
+    );
+  }
+
+  Widget _buildPrivacyPolicyButton() {
+    return Center(
+      child: TextButton.icon(
+        onPressed: () => context.push(RoutePaths.privacyPolicy),
+        icon: Icon(
+          Icons.privacy_tip_outlined,
+          size: 16,
+          color: primaryColor.withOpacity(0.7),
+        ),
+        label: Text(
+          'Privacy Policy & Terms of Service',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: primaryColor.withOpacity(0.8),
+                fontWeight: FontWeight.w500,
+                decoration: TextDecoration.underline,
+                decorationColor: primaryColor.withOpacity(0.3),
+              ),
+        ),
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
       ),
     );
   }
