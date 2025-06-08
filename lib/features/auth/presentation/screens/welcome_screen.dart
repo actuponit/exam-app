@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:exam_app/core/theme.dart';
 import 'package:exam_app/core/router/app_router.dart';
 
@@ -294,7 +295,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Widget _buildPrivacyPolicyButton() {
     return Center(
       child: TextButton.icon(
-        onPressed: () => context.push(RoutePaths.privacyPolicy),
+        onPressed: () => _openPrivacyPolicy(),
         icon: Icon(
           Icons.privacy_tip_outlined,
           size: 16,
@@ -316,6 +317,58 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _openPrivacyPolicy() async {
+    final Uri url = Uri.parse('https://your-website.com/privacy-policy');
+
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(
+          url,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        // Fallback: show dialog if URL can't be opened
+        if (mounted) {
+          _showPrivacyPolicyDialog();
+        }
+      }
+    } catch (e) {
+      // Fallback: show dialog if there's an error
+      if (mounted) {
+        _showPrivacyPolicyDialog();
+      }
+    }
+  }
+
+  void _showPrivacyPolicyDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Privacy Policy'),
+          content: const SingleChildScrollView(
+            child: Text(
+              'For our complete Privacy Policy and Terms of Service, please visit our website at:\n\nhttps://your-website.com/privacy-policy\n\nOr contact us directly for more information.',
+              style: TextStyle(height: 1.5),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Close',
+                style: TextStyle(color: primaryColor),
+              ),
+            ),
+          ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        );
+      },
     );
   }
 }

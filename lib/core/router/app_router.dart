@@ -1,6 +1,5 @@
 import 'package:exam_app/features/auth/presentation/screens/home_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/login_screen.dart';
-import 'package:exam_app/features/auth/presentation/screens/privacy_policy_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/registration_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:exam_app/features/payment/presentation/screens/transaction_verification_screen.dart';
@@ -29,7 +28,6 @@ class RoutePaths {
   static const String about = '/about';
   static const String settings = '/settings';
   static const String transactionVerification = '/transaction-verification';
-  static const String privacyPolicy = '/privacy-policy';
 
   // Deep link paths
   static const String deepLinkQuestions = '/questions/:questionId';
@@ -138,11 +136,6 @@ class AppRouter {
         path: RoutePaths.transactionVerification,
         name: 'TransactionVerification',
         builder: (context, state) => const TransactionVerificationScreen(),
-      ),
-      GoRoute(
-        path: RoutePaths.privacyPolicy,
-        name: 'PrivacyPolicy',
-        builder: (context, state) => const PrivacyPolicyScreen(),
       ),
     ],
     initialLocation: RoutePaths.splash,
