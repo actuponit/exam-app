@@ -118,7 +118,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Last updated: ${DateTime.now().toString().split(' ')[0]}',
+                      'Last updated: 2025-06-7', // Update this when privacy policy changes
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: textLight,
                           ),
@@ -257,6 +257,7 @@ We want to be completely transparent about our use of your device identifier (De
 • No Advertising: We DO NOT use your device ID for advertising, marketing, or tracking purposes
 • No Sharing: Your device ID is never shared with third parties or advertising networks
 • Secure Storage: Device IDs are encrypted and stored securely in our protected systems
+• Data Retention: Device IDs are retained only as long as your account is active
 
 Your device ID helps us maintain the integrity and security of your account while ensuring your privacy is fully protected.''';
   }
@@ -315,9 +316,8 @@ To exercise any of these rights, please contact us using the information provide
     return '''If you have any questions about this Privacy Policy or our data practices, please don't hesitate to contact us:
 
 • Email: privacy@examhub.et
-• Phone: +251-11-XXX-XXXX
+• Phone: +251-940855439
 • Address: Addis Ababa, Ethiopia
-• Support Hours: Monday - Friday, 9:00 AM - 6:00 PM (EAT)
 
 We are committed to addressing your privacy concerns promptly and transparently. Your privacy matters to us, and we're here to help with any questions you may have.''';
   }
