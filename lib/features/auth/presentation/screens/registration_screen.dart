@@ -950,6 +950,8 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                             state.institutionInfo.examType.id != -1 &&
                             !authState.isRegistrationLoading
                         ? () {
+                            final institutionType =
+                                state.institutionInfo.institutionType;
                             if (institutionType == InstitutionType.none) {
                               AppSnackBar.show(
                                 context: context,
@@ -963,6 +965,29 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                               );
                             } else {
                               _showReferralDialog();
+                              // Ethio Exam Hub – Access previous first-year exam questions and study smarter!
+//                               """
+// 📚 Ethio Exam Hub is the ultimate study companion for Ethiopian first-year students!
+// Access a wide collection of past exam questions from all Ethiopian universities, all in one easy-to-use app. Whether you're preparing for midterms, finals, or COC exams, Ethio Exam Hub helps you study efficiently and confidently.
+
+// 🔍 Key Features:
+// 📝 Previous Exam Questions: Organised by subject, chapter and year for quick access.
+
+// 🎓 Freshman Focused: Specifically designed for Ethiopian first-year students.
+
+// 📖 Simple & Modern Interface: Easy to navigate with a clean and engaging design.
+
+// 📥 Offline Access: Download questions and study anytime, anywhere.
+
+// 🎯 Why choose Ethio Exam Hub?
+// Covers multiple subjects, including Natural Sciences, Social Sciences, Engineering, and more.
+
+// Helps you prepare with real, exam-tested questions.
+// Designed with your academic success in mind.
+
+// Start learning the smart way.
+// Download Ethio Exam Hub today and boost your exam performance!
+// """
                             }
                           }
                         : null,

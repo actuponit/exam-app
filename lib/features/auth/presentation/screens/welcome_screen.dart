@@ -321,7 +321,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   Future<void> _openPrivacyPolicy() async {
-    final Uri url = Uri.parse('https://your-website.com/privacy-policy');
+    final Uri url = Uri.parse('https://ethioexamhub.com/privacy-policy');
 
     try {
       if (await canLaunchUrl(url)) {
