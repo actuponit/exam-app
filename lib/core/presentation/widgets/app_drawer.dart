@@ -32,61 +32,57 @@ class AppDrawer extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          ProfileCubit(authRepository: getIt<AuthRepository>())..loadProfile(),
-      child: Builder(builder: (context) {
-        return Container(
-          padding:
-              const EdgeInsets.only(top: 50, bottom: 20, left: 10, right: 10),
-          decoration: const BoxDecoration(
-            color: primaryColor,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(cardRadius),
-              bottomRight: Radius.circular(cardRadius),
-            ),
+    return Builder(builder: (context) {
+      return Container(
+        padding:
+            const EdgeInsets.only(top: 50, bottom: 20, left: 10, right: 10),
+        decoration: const BoxDecoration(
+          color: primaryColor,
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(cardRadius),
+            bottomRight: Radius.circular(cardRadius),
           ),
-          child: BlocBuilder<ProfileCubit, ProfileState>(
-            builder: (context, state) {
-              return Column(
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                      color: Colors.white.withOpacity(0.2),
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      size: 40,
-                      color: Colors.white.withOpacity(0.9),
-                    ),
+        ),
+        child: BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                    color: Colors.white.withOpacity(0.2),
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    state.firstName ?? 'Guest User',
-                    style: titleStyle.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Icon(
+                    Icons.person,
+                    size: 40,
+                    color: Colors.white.withOpacity(0.9),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    state.email ?? 'guest@example.com',
-                    style: bodyStyle.copyWith(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 14,
-                    ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  state.firstName ?? 'Guest User',
+                  style: titleStyle.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
                   ),
-                ],
-              );
-            },
-          ),
-        );
-      }),
-    );
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  state.email ?? 'guest@example.com',
+                  style: bodyStyle.copyWith(
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+    });
   }
 
   Widget _buildNavigationItems(BuildContext context) {

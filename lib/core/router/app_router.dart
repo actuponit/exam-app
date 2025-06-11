@@ -104,7 +104,7 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.profile,
         name: 'Profile',
-        builder: (context, state) => ProfileScreen.route,
+        builder: (context, state) => ProfileScreen(),
       ),
       GoRoute(
         path: RoutePaths.faq,

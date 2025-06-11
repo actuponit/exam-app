@@ -55,7 +55,11 @@ class ProfileScreen extends StatelessWidget {
                             radius: 45,
                             backgroundColor: Colors.white.withOpacity(0.2),
                             child: Text(
-                              '${state.firstName?[0] ?? ''}${state.lastName?[0] ?? ''}',
+                              '${state.firstName ?? ''} ${state.lastName ?? ''}'
+                                  .trim()
+                                  .split(' ')
+                                  .map((e) => e[0])
+                                  .join(''),
                               style: displayStyle.copyWith(
                                 fontSize: 36,
                                 color: Colors.white,
