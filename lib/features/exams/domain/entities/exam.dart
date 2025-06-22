@@ -8,6 +8,7 @@ class Exam extends Equatable {
   final int totalQuestions;
   final int durationMins;
   final List<ExamChapter> chapters;
+  final String? region;
 
   const Exam({
     required this.id,
@@ -17,6 +18,7 @@ class Exam extends Equatable {
     required this.totalQuestions,
     required this.durationMins,
     required this.chapters,
+    this.region,
   });
 
   factory Exam.fromJson(Map<String, dynamic> json) {
@@ -30,6 +32,7 @@ class Exam extends Equatable {
       chapters: (json['chapters'] as List)
           .map((c) => ExamChapter.fromJson(c))
           .toList(),
+      region: json['region'],
     );
   }
 

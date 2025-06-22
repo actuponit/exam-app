@@ -9,22 +9,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class YearSelectionScreen extends StatelessWidget {
   final String subjectId;
   final int duration;
+  final String? region;
 
   const YearSelectionScreen({
     super.key,
     required this.subjectId,
     required this.duration,
+    this.region,
   });
 
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ExamBloc>().add(LoadExams(subjectId));
+      context.read<ExamBloc>().add(LoadExams(subjectId, region: region));
     });
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Select Chapter',
+          title: Text('Select Year and Chapter',
               style: displayStyle.copyWith(color: Colors.white)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -48,6 +50,12 @@ class YearSelectionScreen extends StatelessWidget {
           if (state is ExamLoaded) {
             return Column(
               children: [
+                if (region != null) ...[
+                  Text(
+                    'Region: $region',
+                    style: bodyStyle.copyWith(color: textLight),
+                  ),
+                ],
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -103,7 +111,9 @@ class YearSelectionScreen extends StatelessWidget {
                               onSelected: (selected) {
                                 context
                                     .read<ExamBloc>()
-                                    .add(FilterExamsByChapter(chapter.id));
+                                    .add(FilterExamsByChapter(
+                                      chapter.id,
+                                    ));
                               },
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
@@ -143,6 +153,7 @@ class YearSelectionScreen extends StatelessWidget {
         exam: state.exams[index],
         selectedChapter: state.filteredChapter,
         duration: duration,
+        region: region,
       ),
     );
   }
@@ -152,12 +163,14 @@ class YearListItem extends StatelessWidget {
   final Exam exam;
   final ExamChapter? selectedChapter;
   final int duration;
+  final String? region;
 
   const YearListItem({
     super.key,
     required this.exam,
     this.selectedChapter,
     required this.duration,
+    this.region,
   });
 
   @override
@@ -234,6 +247,7 @@ class YearListItem extends StatelessWidget {
             year: exam.year.toString(),
             subjectId: exam.subjectId,
             chapterId: selectedChapter?.id,
+            region: region,
             onCancel: () {
               // Handle cancel if needed
             },

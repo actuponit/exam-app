@@ -59,6 +59,7 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
         subjectId: event.subjectId,
         chapterId: event.chapterId,
         year: event.year,
+        region: event.region,
       );
 
       final duration =

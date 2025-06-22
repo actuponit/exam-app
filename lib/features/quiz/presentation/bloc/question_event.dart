@@ -22,16 +22,18 @@ class QuestionStarted extends QuestionEvent {
   final String? chapterId;
   final int year;
   final bool isQuizMode;
+  final String? region;
 
   const QuestionStarted({
     required this.subjectId,
     required this.year,
     this.chapterId,
     this.isQuizMode = false,
+    this.region,
   });
 
   @override
-  List<Object?> get props => [subjectId, chapterId, year, isQuizMode];
+  List<Object?> get props => [subjectId, chapterId, year, isQuizMode, region];
 }
 
 class QuestionPageChanged extends QuestionEvent {

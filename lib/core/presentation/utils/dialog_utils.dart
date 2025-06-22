@@ -7,6 +7,7 @@ class DialogUtils {
     required String year,
     required String subjectId,
     String? chapterId,
+    String? region,
     VoidCallback? onCancel,
   }) {
     return showDialog(
@@ -16,6 +17,7 @@ class DialogUtils {
         year: year,
         subjectId: subjectId,
         chapterId: chapterId,
+        region: region,
         onCancel: onCancel,
       ),
     );

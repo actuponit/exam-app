@@ -34,6 +34,10 @@ class ExamModel extends Exam {
   @override
   final List<ExamChapterModel> chapters;
 
+  @HiveField(7)
+  @override
+  final String? region;
+
   const ExamModel({
     required this.id,
     required this.subjectId,
@@ -42,6 +46,7 @@ class ExamModel extends Exam {
     required this.totalQuestions,
     required this.durationMins,
     required this.chapters,
+    this.region,
   }) : super(
             id: id,
             subjectId: subjectId,
@@ -49,7 +54,8 @@ class ExamModel extends Exam {
             title: title,
             totalQuestions: totalQuestions,
             durationMins: durationMins,
-            chapters: chapters);
+            chapters: chapters,
+            region: region);
 
   factory ExamModel.fromEntity(Exam exam) {
     return ExamModel(
@@ -61,6 +67,7 @@ class ExamModel extends Exam {
       durationMins: exam.durationMins,
       chapters:
           exam.chapters.map((e) => ExamChapterModel.fromEntity(e)).toList(),
+      region: exam.region,
     );
   }
 }

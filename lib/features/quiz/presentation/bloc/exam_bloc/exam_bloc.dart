@@ -20,7 +20,10 @@ class ExamBloc extends Bloc<ExamEvent, ExamState> {
   void _onLoadExams(LoadExams event, Emitter<ExamState> emit) async {
     emit(ExamLoading());
     try {
-      _allExams = await examRepository.fetchExamsBySubject(event.subjectId);
+      _allExams = await examRepository.fetchExamsBySubject(
+        event.subjectId,
+        region: event.region,
+      );
 
       _allChapters = _extractChapters(_allExams);
 

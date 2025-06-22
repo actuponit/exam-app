@@ -9,6 +9,7 @@ class ModeSelectionDialog extends StatelessWidget {
   final String year;
   final String subjectId;
   final String? chapterId;
+  final String? region;
   final VoidCallback? onCancel;
 
   const ModeSelectionDialog({
@@ -16,6 +17,7 @@ class ModeSelectionDialog extends StatelessWidget {
     required this.year,
     required this.subjectId,
     this.chapterId,
+    this.region,
     this.onCancel,
   });
 
@@ -68,6 +70,7 @@ class ModeSelectionDialog extends StatelessWidget {
                     extra: {
                       'mode': QuestionMode.practice,
                       'chapterId': chapterId,
+                      'region': region,
                     },
                   );
                 },

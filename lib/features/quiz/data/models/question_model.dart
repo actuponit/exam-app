@@ -48,6 +48,10 @@ class QuestionModel extends Question {
   @override
   final SubjectModel subject;
 
+  @HiveField(10)
+  @override
+  final String? region;
+
   const QuestionModel({
     required this.id,
     required this.text,
@@ -59,6 +63,7 @@ class QuestionModel extends Question {
     this.isAttempted = false,
     required this.chapter,
     required this.subject,
+    this.region,
   }) : super(
           id: id,
           text: text,
@@ -70,6 +75,7 @@ class QuestionModel extends Question {
           isAttempted: isAttempted,
           chapter: chapter,
           subject: subject,
+          region: region,
         );
 
   factory QuestionModel.fromEntity(Question question) {
@@ -84,6 +90,7 @@ class QuestionModel extends Question {
       isAttempted: question.isAttempted,
       chapter: ExamChapterModel.fromEntity(question.chapter),
       subject: SubjectModel.fromEntity(question.subject),
+      region: question.region,
     );
   }
 }

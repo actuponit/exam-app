@@ -18,13 +18,14 @@ class QuestionScreen extends StatelessWidget {
   final String? chapterId;
   final int year;
   final bool isQuizMode;
-
+  final String? region;
   const QuestionScreen({
     super.key,
     required this.subjectId,
     required this.year,
     this.chapterId,
     this.isQuizMode = false,
+    this.region,
   });
 
   @override
@@ -33,6 +34,7 @@ class QuestionScreen extends StatelessWidget {
           subjectId,
           year,
           chapterId,
+          region,
         );
     return BlocProvider(
       create: (context) => QuestionBloc(
@@ -42,6 +44,7 @@ class QuestionScreen extends StatelessWidget {
           chapterId: chapterId,
           year: year,
           isQuizMode: isQuizMode,
+          region: region,
         )),
       child: const QuestionScreenContent(),
     );

@@ -13,6 +13,7 @@ class Question extends Equatable {
   final bool isAttempted;
   final ExamChapter chapter;
   final Subject subject;
+  final String? region;
 
   const Question({
     required this.id,
@@ -25,6 +26,7 @@ class Question extends Equatable {
     this.isAttempted = false,
     required this.chapter,
     required this.subject,
+    this.region,
   });
 
   @override
@@ -50,6 +52,7 @@ class Question extends Equatable {
     DateTime? createdAt,
     bool? isAttempted,
     Subject? subject,
+    String? region,
   }) {
     return Question(
       id: id ?? this.id,
@@ -62,6 +65,7 @@ class Question extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       isAttempted: isAttempted ?? this.isAttempted,
       subject: subject ?? this.subject,
+      region: region ?? this.region,
     );
   }
 }

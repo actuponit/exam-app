@@ -9,10 +9,11 @@ sealed class ExamEvent extends Equatable {
 
 class LoadExams extends ExamEvent {
   final String subjectId;
-  const LoadExams(this.subjectId);
+  final String? region;
+  const LoadExams(this.subjectId, {this.region});
 
   @override
-  List<Object> get props => [subjectId];
+  List<Object> get props => [subjectId, region ?? ''];
 }
 
 class FilterExamsByChapter extends ExamEvent {

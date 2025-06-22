@@ -4,12 +4,17 @@ import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/auth/data/models/exam_type.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:exam_app/features/auth/data/utils/device_manager.dart';
+import 'package:exam_app/features/exams/data/datasource/recent_exam_local_datasource.dart';
+import 'package:exam_app/features/quiz/data/datasource/questions_local_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthDataSource _remoteDataSource;
   final LocalAuthDataSource _localDataSource;
+  final IQuestionsLocalDatasource _questionsLocalDatasource;
+  final IRecentExamLocalDatasource _recentExamLocalDatasource;
 
-  AuthRepositoryImpl(this._remoteDataSource, this._localDataSource);
+  AuthRepositoryImpl(this._remoteDataSource, this._localDataSource,
+      this._questionsLocalDatasource, this._recentExamLocalDatasource);
 
   @override
   Future<List<ExamType>> getExamTypes() async {
@@ -161,6 +166,8 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       // Clear user data from local storage
       await _localDataSource.clearUserData();
+      await _questionsLocalDatasource.clearQuestions();
+      await _recentExamLocalDatasource.clearRecentExams();
     } catch (e) {
       throw ServerException("An error occurred during logout");
     }

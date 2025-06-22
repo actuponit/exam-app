@@ -8,3 +8,9 @@ abstract class SubjectEvent extends Equatable {
 }
 
 class LoadSubjects extends SubjectEvent {}
+
+class FilterSubjects extends SubjectEvent {
+  final String region;
+
+  const FilterSubjects(this.region);
+}

@@ -6,13 +6,15 @@ class RecentExam extends Equatable {
   final Subject subject;
   final int year;
   final ExamChapter? chapter;
+  final String? region;
 
   const RecentExam({
     required this.subject,
     required this.year,
     this.chapter,
+    this.region,
   });
 
   @override
-  List<Object?> get props => [subject, year, chapter];
+  List<Object?> get props => [subject, year, chapter, region];
 }

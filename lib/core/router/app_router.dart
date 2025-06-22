@@ -75,10 +75,13 @@ class AppRouter {
         name: 'Years',
         builder: (context, state) {
           final subjectId = state.pathParameters['subjectId'] ?? '';
-          final duration = state.extra as int? ?? 2;
+          final extra = state.extra as (int, String?)? ?? (2, null);
+          final duration = extra.$1;
+          final region = extra.$2;
           return YearSelectionScreen(
             subjectId: subjectId,
             duration: duration,
+            region: region,
           );
         },
       ),
@@ -92,12 +95,14 @@ class AppRouter {
           final extra = state.extra as Map<String, dynamic>? ?? {};
           final chapterId = extra['chapterId'];
           final mode = extra['mode'] ?? QuestionMode.practice;
+          final region = extra['region'];
 
           return QuestionScreen(
             subjectId: subjectId,
             chapterId: chapterId,
             year: year,
             isQuizMode: mode == QuestionMode.quiz,
+            region: region,
           );
         },
       ),

@@ -312,6 +312,7 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
       year: int.tryParse(json['subject']?['year']),
       createdAt: DateTime.parse(json['created_at']),
       subject: subject,
+      region: json['subject']?['region'],
     );
   }
 }

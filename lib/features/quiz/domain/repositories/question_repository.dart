@@ -6,8 +6,7 @@ abstract class QuestionRepository {
     required String subjectId,
     String? chapterId,
     required int year,
-    int page = 1,
-    int pageSize = 3,
+    String? region,
   });
 
   Future<void> saveAnswer(models.Answer answer);

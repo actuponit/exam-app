@@ -35,8 +35,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
     required String subjectId,
     String? chapterId,
     required int year,
-    int page = 0,
-    int pageSize = 3,
+    String? region,
   }) async {
     final localQuestions = await _localDatasource.getQuestions();
     final filteredQuestions = localQuestions.where((q) {
@@ -49,6 +48,9 @@ class QuestionRepositoryImpl implements QuestionRepository {
       }
       if (year > 0) {
         isMatch = isMatch && q.year == year;
+      }
+      if (region != null && region.isNotEmpty) {
+        isMatch = isMatch && q.region == region;
       }
       return isMatch;
     }).toList();
@@ -105,7 +107,11 @@ class QuestionRepositoryImpl implements QuestionRepository {
           questionsMap.values.expand((questions) => questions).toList();
       await _localDatasource.saveQuestions(allQuestions);
       await saveSubjects(allQuestions, questionsMap);
-      await createExamsFromQuestions(allQuestions);
+      if (allQuestions.first.region == null) {
+        await createExamsFromQuestions(allQuestions);
+      } else {
+        await createExamsFromQuestionsByRegion(allQuestions);
+      }
     } catch (e) {
       rethrow;
     }
@@ -123,6 +129,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
         duration: questionsMap[subjectName]?.first.subject.duration,
       ));
     }
+    await _subjectLocalDatasource.clearSubjects();
     await _subjectLocalDatasource.saveSubjects(subjects);
   }
 
@@ -178,7 +185,73 @@ class QuestionRepositoryImpl implements QuestionRepository {
         exams.add(exam);
       });
     });
+    await _examLocalDatasource.clearExams();
+    // Save exams to local storage
+    await _examLocalDatasource.saveExams(exams);
+  }
 
+  Future<void> createExamsFromQuestionsByRegion(
+      List<Question> questions) async {
+    // Group questions by year and subject
+    final Map<String, Map<int, Map<String, List<Question>>>> groupedQuestions =
+        {};
+
+    for (final question in questions) {
+      if (question.year == null) continue;
+
+      final subjectId = question.subject.name;
+      final year = question.year!;
+      final region = question.region;
+
+      if (region == null) continue;
+
+      groupedQuestions.putIfAbsent(subjectId, () => {});
+      groupedQuestions[subjectId]!.putIfAbsent(year, () => {});
+      groupedQuestions[subjectId]![year]!.putIfAbsent(region, () => []);
+      groupedQuestions[subjectId]![year]![region]!.add(question);
+    }
+
+    // Create exams for each year-subject combination
+    final List<Exam> exams = [];
+
+    groupedQuestions.forEach((subjectId, yearQuestions) {
+      yearQuestions.forEach((year, questions) {
+        questions.forEach((region, questions) {
+          // Group questions by chapter
+          final Map<String, List<Question>> chapterQuestions = {};
+          for (final question in questions) {
+            final chapterId = question.chapter.id;
+            chapterQuestions.putIfAbsent(chapterId, () => []);
+            chapterQuestions[chapterId]!.add(question);
+          }
+
+          // Create exam chapters
+          final chapters = chapterQuestions.entries.map((entry) {
+            return ExamChapter(
+              id: entry.key,
+              name: entry.value.first.chapter.name,
+              questionCount: entry.value.length,
+            );
+          }).toList()
+            ..sort((a, b) => a.id.compareTo(b.id));
+
+          // Create exam
+          final exam = Exam(
+            id: 'exam_${subjectId}_$year _ $region',
+            subjectId: subjectId,
+            year: year,
+            title: '${questions.first.subject.name} Exam',
+            totalQuestions: questions.length,
+            durationMins: 60,
+            chapters: chapters,
+            region: region,
+          );
+
+          exams.add(exam);
+        });
+      });
+    });
+    await _examLocalDatasource.clearExams();
     // Save exams to local storage
     await _examLocalDatasource.saveExams(exams);
   }

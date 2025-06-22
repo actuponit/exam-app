@@ -14,9 +14,29 @@ class ExamRepoImpl implements ExamRepository {
       this._subjectLocalDatasource);
 
   @override
-  Future<List<Exam>> fetchExamsBySubject(String subjectId) async {
+  Future<List<Exam>> fetchExamsBySubject(
+    String subjectId, {
+    String? region,
+  }) async {
     final exams = await _localDatasource.getExams();
-    return exams.where((exam) => exam.subjectId == subjectId).toList();
+    if (region == null) {
+      return exams.where((exam) => exam.subjectId == subjectId).toList();
+    } else {
+      return exams
+          .where((exam) => exam.subjectId == subjectId && exam.region == region)
+          .toList();
+    }
+  }
+
+  @override
+  Future<Map<String, Set<String>>> fetchRegions() async {
+    final exams = await _localDatasource.getExams();
+    Map<String, Set<String>> regions = {};
+    for (var exam in exams) {
+      regions.putIfAbsent(exam.region ?? "", () => <String>{});
+      regions[exam.region!]!.add(exam.subjectId);
+    }
+    return regions;
   }
 
   @override
@@ -26,7 +46,7 @@ class ExamRepoImpl implements ExamRepository {
 
   @override
   Future<RecentExam> saveRecentExam(
-      String subjectId, int year, String? chapterId) async {
+      String subjectId, int year, String? chapterId, String? region) async {
     final subject = await _subjectLocalDatasource.getSubject(subjectId);
     final exams = await fetchExamsBySubject(subjectId);
     final ExamChapter? chapter = chapterId != null
@@ -39,6 +59,7 @@ class ExamRepoImpl implements ExamRepository {
       subject: subject!,
       year: year,
       chapter: chapter,
+      region: region,
     );
     await _recentExamLocalDatasource.saveRecentExam(recentExam);
     return recentExam;

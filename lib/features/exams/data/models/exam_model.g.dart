@@ -24,13 +24,14 @@ class ExamModelAdapter extends TypeAdapter<ExamModel> {
       totalQuestions: fields[4] as int,
       durationMins: fields[5] as int,
       chapters: (fields[6] as List).cast<ExamChapterModel>(),
+      region: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ExamModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class ExamModelAdapter extends TypeAdapter<ExamModel> {
       ..writeByte(5)
       ..write(obj.durationMins)
       ..writeByte(6)
-      ..write(obj.chapters);
+      ..write(obj.chapters)
+      ..writeByte(7)
+      ..write(obj.region);
   }
 
   @override

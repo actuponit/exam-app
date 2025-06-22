@@ -13,11 +13,13 @@ class SubjectLoading extends SubjectState {}
 
 class SubjectLoaded extends SubjectState {
   final List<Subject> subjects;
+  final String region;
+  final List<String> regionSubjects;
 
-  const SubjectLoaded(this.subjects);
+  const SubjectLoaded(this.subjects, this.region, this.regionSubjects);
 
   @override
-  List<Object?> get props => [subjects];
+  List<Object?> get props => [subjects, region, regionSubjects];
 }
 
 class SubjectError extends SubjectState {
