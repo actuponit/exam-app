@@ -18,11 +18,11 @@ class RecentExamCubit extends Cubit<RecentExamState> {
   }
 
   Future<void> saveRecentExam(
-      String subjectId, int year, String? chapterId) async {
+      String subjectId, int year, String? chapterId, String? region) async {
     try {
       emit(RecentExamLoading());
       final recentExam =
-          await examRepo.saveRecentExam(subjectId, year, chapterId);
+          await examRepo.saveRecentExam(subjectId, year, chapterId, region);
       emit(RecentExamLoaded(recentExam: recentExam));
     } catch (e) {
       emit(RecentExamError(e.toString()));

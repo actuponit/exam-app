@@ -20,19 +20,22 @@ class RecentExamModelAdapter extends TypeAdapter<RecentExamModel> {
       subject: fields[0] as SubjectModel,
       year: fields[1] as int,
       chapter: fields[2] as ExamChapterModel?,
+      region: fields[3] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecentExamModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.subject)
       ..writeByte(1)
       ..write(obj.year)
       ..writeByte(2)
-      ..write(obj.chapter);
+      ..write(obj.chapter)
+      ..writeByte(3)
+      ..write(obj.region);
   }
 
   @override

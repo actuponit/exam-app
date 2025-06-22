@@ -34,7 +34,7 @@ class ExamRepoImpl implements ExamRepository {
     Map<String, Set<String>> regions = {};
     for (var exam in exams) {
       regions.putIfAbsent(exam.region ?? "", () => <String>{});
-      regions[exam.region!]!.add(exam.subjectId);
+      regions[exam.region ?? ""]!.add(exam.subjectId);
     }
     return regions;
   }

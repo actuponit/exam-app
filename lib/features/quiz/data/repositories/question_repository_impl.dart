@@ -129,7 +129,6 @@ class QuestionRepositoryImpl implements QuestionRepository {
         duration: questionsMap[subjectName]?.first.subject.duration,
       ));
     }
-    await _subjectLocalDatasource.clearSubjects();
     await _subjectLocalDatasource.saveSubjects(subjects);
   }
 

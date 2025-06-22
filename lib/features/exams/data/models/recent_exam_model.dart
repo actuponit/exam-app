@@ -20,14 +20,20 @@ class RecentExamModel extends RecentExam {
   @override
   final ExamChapterModel? chapter;
 
+  @HiveField(3)
+  @override
+  final String? region;
+
   const RecentExamModel({
     required this.subject,
     required this.year,
     this.chapter,
+    this.region,
   }) : super(
           subject: subject,
           year: year,
           chapter: chapter,
+          region: region,
         );
 
   factory RecentExamModel.fromEntity(RecentExam exam) {
@@ -37,6 +43,7 @@ class RecentExamModel extends RecentExam {
       chapter: exam.chapter != null
           ? ExamChapterModel.fromEntity(exam.chapter!)
           : null,
+      region: exam.region,
     );
   }
 }

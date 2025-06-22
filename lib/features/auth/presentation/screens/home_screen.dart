@@ -354,7 +354,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
-                                    state.recentExam!.subject.name,
+                                    state.recentExam!.region != null
+                                        ? "${state.recentExam!.subject.name} (${state.recentExam!.region})"
+                                        : state.recentExam!.subject.name,
                                     style: titleStyle.copyWith(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -428,6 +430,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               subjectId: state.recentExam!.subject.id,
                               chapterId:
                                   state.recentExam!.chapter?.id, // optional
+                              region: state.recentExam!.region,
                               onCancel: () {
                                 // Handle cancel if needed
                               },
