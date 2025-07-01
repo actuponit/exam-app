@@ -60,10 +60,10 @@ class ExamChapter extends Chapter {
   final int questionCount;
 
   ExamChapter({
-    required String id,
+    required super.id,
     required this.questionCount,
-    required String name,
-  }) : super(id: id, name: name);
+    required super.name,
+  });
 
   @override
   factory ExamChapter.fromJson(Map<String, dynamic> json) {

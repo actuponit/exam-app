@@ -151,7 +151,11 @@ class YearSelectionScreen extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) => YearListItem(
         exam: state.exams[index],
-        selectedChapter: state.filteredChapter,
+        selectedChapter: state.filteredChapter != null
+            ? state.exams[index].chapters.firstWhere(
+                (chapter) => chapter.id == state.filteredChapter?.id,
+              )
+            : null,
         duration: duration,
         region: region,
       ),

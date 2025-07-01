@@ -13,6 +13,7 @@ class Question extends Equatable {
   final bool isAttempted;
   final ExamChapter chapter;
   final Subject subject;
+  final String? image;
   final String? region;
 
   const Question({
@@ -26,6 +27,7 @@ class Question extends Equatable {
     this.isAttempted = false,
     required this.chapter,
     required this.subject,
+    this.image,
     this.region,
   });
 
@@ -39,6 +41,8 @@ class Question extends Equatable {
         chapter,
         year,
         createdAt,
+        image,
+        region,
       ];
 
   Question copyWith({
@@ -53,6 +57,7 @@ class Question extends Equatable {
     bool? isAttempted,
     Subject? subject,
     String? region,
+    String? image,
   }) {
     return Question(
       id: id ?? this.id,
@@ -66,6 +71,7 @@ class Question extends Equatable {
       isAttempted: isAttempted ?? this.isAttempted,
       subject: subject ?? this.subject,
       region: region ?? this.region,
+      image: image ?? this.image,
     );
   }
 }
@@ -73,10 +79,12 @@ class Question extends Equatable {
 class Option extends Equatable {
   final String id;
   final String text;
+  final String? image;
 
   const Option({
     required this.id,
     required this.text,
+    this.image,
   });
 
   @override
