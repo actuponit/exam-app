@@ -10,6 +10,7 @@ import 'package:exam_app/features/quiz/presentation/screens/subject_selection_sc
 import 'package:exam_app/features/quiz/presentation/screens/year_selection_screen.dart';
 import 'package:exam_app/features/faq/presentation/screens/faq_screen.dart';
 import 'package:exam_app/features/splash/presentation/screens/splash_screen.dart';
+import 'package:exam_app/features/settings/presentation/settings_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
@@ -133,9 +134,7 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.settings,
         name: 'Settings',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Settings Screen - Coming Soon')),
-        ),
+        builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
         path: RoutePaths.transactionVerification,

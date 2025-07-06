@@ -189,6 +189,86 @@ ThemeData getAppTheme() {
   );
 }
 
+ThemeData getDarkAppTheme() {
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: primaryColor,
+      brightness: Brightness.dark,
+      secondary: secondaryColor,
+      surface: const Color(0xFF23272F),
+    ),
+    scaffoldBackgroundColor: const Color(0xFF181A20),
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(inputFieldRadius),
+        borderSide: BorderSide.none,
+      ),
+      fillColor: const Color(0xFF23272F),
+      filled: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(buttonRadius),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 18),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: accentColor,
+        textStyle: titleStyle.copyWith(color: Colors.white),
+      ),
+    ),
+    fontFamily: 'Poppins',
+    textTheme: TextTheme(
+      displayLarge: AppTypography.displayLarge.copyWith(color: Colors.white),
+      displayMedium: AppTypography.displayMedium.copyWith(color: Colors.white),
+      displaySmall: AppTypography.displaySmall.copyWith(color: Colors.white),
+      headlineLarge: AppTypography.headlineLarge.copyWith(color: Colors.white),
+      headlineMedium: AppTypography.headlineMedium.copyWith(color: Colors.white),
+      headlineSmall: AppTypography.headlineSmall.copyWith(color: Colors.white),
+      titleLarge: AppTypography.titleLarge.copyWith(color: Colors.white),
+      titleMedium: AppTypography.titleMedium.copyWith(color: Colors.white),
+      titleSmall: AppTypography.titleSmall.copyWith(color: Colors.white),
+      labelLarge: AppTypography.labelLarge.copyWith(color: Colors.white),
+      labelMedium: AppTypography.labelMedium.copyWith(color: Colors.white),
+      labelSmall: AppTypography.labelSmall.copyWith(color: Colors.white),
+      bodyLarge: AppTypography.bodyLarge.copyWith(color: Colors.white),
+      bodyMedium: AppTypography.bodyMedium.copyWith(color: Colors.white),
+      bodySmall: AppTypography.bodySmall.copyWith(color: Colors.white),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF23272F),
+      elevation: 0,
+      centerTitle: true,
+      iconTheme: IconThemeData(color: Colors.white),
+      titleTextStyle: TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+      ),
+    ),
+    iconTheme: const IconThemeData(
+      color: Colors.white,
+      size: 24,
+    ),
+    dividerTheme: const DividerThemeData(
+      space: 16,
+      thickness: 1,
+      color: Colors.white24,
+    ),
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: Color(0xFF23272F),
+    ),
+  );
+}
+
 // Colors
 const primaryColor = Color(0xFF6C5CE7);
 const secondaryColor = Color(0xFFA8A5E6);

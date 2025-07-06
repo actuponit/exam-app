@@ -10,9 +10,10 @@ class DialogUtils {
     String? region,
     VoidCallback? onCancel,
   }) {
+    final theme = Theme.of(context);
     return showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: theme.colorScheme.background.withOpacity(0.7),
       builder: (context) => ModeSelectionDialog(
         year: year,
         subjectId: subjectId,

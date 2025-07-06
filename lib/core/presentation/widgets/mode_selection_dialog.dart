@@ -23,6 +23,9 @@ class ModeSelectionDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
@@ -31,11 +34,11 @@ class ModeSelectionDialog extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: colorScheme.surface,
             borderRadius: BorderRadius.circular(cardRadius),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: colorScheme.shadow.withOpacity(0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -46,16 +49,18 @@ class ModeSelectionDialog extends StatelessWidget {
             children: [
               Text(
                 'Select Mode',
-                style: displayStyle.copyWith(
+                style: textTheme.titleLarge?.copyWith(
                   fontSize: 24,
-                  color: textDark,
+                  fontWeight: FontWeight.w800,
+                  color: colorScheme.onSurface,
+                  letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Choose how you want to take this exam',
-                style: bodyStyle.copyWith(
-                  color: textLight,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface.withOpacity(0.7),
                 ),
               ),
               const SizedBox(height: 24),
@@ -99,8 +104,8 @@ class ModeSelectionDialog extends StatelessWidget {
                 },
                 child: Text(
                   'Cancel',
-                  style: titleStyle.copyWith(
-                    color: textLight,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: colorScheme.onSurface.withOpacity(0.7),
                     fontSize: 16,
                   ),
                 ),
@@ -128,6 +133,9 @@ class _ModeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -137,7 +145,7 @@ class _ModeButton extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             border: Border.all(
-              color: Colors.grey[200]!,
+              color: colorScheme.outline.withOpacity(0.15),
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(cardRadius),
@@ -147,12 +155,12 @@ class _ModeButton extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.1),
+                  color: colorScheme.primary.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
-                  color: primaryColor,
+                  color: colorScheme.primary,
                   size: 24,
                 ),
               ),
@@ -163,25 +171,26 @@ class _ModeButton extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: titleStyle.copyWith(
+                      style: textTheme.titleMedium?.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       description,
-                      style: bodyStyle.copyWith(
-                        color: textLight,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.7),
                         fontSize: 14,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right,
-                color: textLight,
+                color: colorScheme.onSurface.withOpacity(0.7),
               ),
             ],
           ),

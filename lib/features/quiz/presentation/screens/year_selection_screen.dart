@@ -59,10 +59,10 @@ class YearSelectionScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey[200]!,
+                        color: Theme.of(context).shadowColor.withOpacity(0.05),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -73,10 +73,13 @@ class YearSelectionScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Filter by Chapter',
-                        style: titleStyle.copyWith(
-                          fontSize: 16,
-                          color: textLight,
-                        ),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontSize: 16,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.7),
+                            ),
                       ),
                       const SizedBox(height: 12),
                       Container(
@@ -101,13 +104,25 @@ class YearSelectionScreen extends StatelessWidget {
                             return FilterChip(
                               selected: selected,
                               label: Text(chapter.name),
-                              labelStyle: bodyStyle.copyWith(
-                                color: selected ? Colors.white : textDark,
-                                fontSize: 14,
-                              ),
-                              backgroundColor: Colors.grey[100],
-                              selectedColor: primaryColor,
-                              checkmarkColor: Colors.white,
+                              labelStyle: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: selected
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                    fontSize: 14,
+                                  ),
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.surface,
+                              selectedColor:
+                                  Theme.of(context).colorScheme.primary,
+                              checkmarkColor:
+                                  Theme.of(context).colorScheme.onPrimary,
                               onSelected: (selected) {
                                 context
                                     .read<ExamBloc>()
@@ -188,9 +203,9 @@ class YearListItem extends StatelessWidget {
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(cardRadius),
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: Colors.grey[200]!,
+            color: Theme.of(context).dividerColor,
             width: 1.5,
           ),
         ),
@@ -202,7 +217,7 @@ class YearListItem extends StatelessWidget {
             height: 60,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: secondaryColor.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Column(
@@ -210,18 +225,21 @@ class YearListItem extends StatelessWidget {
               children: [
                 Text(
                   exam.year.toString(),
-                  style: titleStyle.copyWith(
-                    color: primaryColor,
-                    fontSize: 18,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 18,
+                      ),
                 ),
                 if (selectedChapter != null)
                   Text(
                     'Unit',
-                    style: bodyStyle.copyWith(
-                      color: textLight,
-                      fontSize: 12,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.7),
+                          fontSize: 12,
+                        ),
                   ),
               ],
             ),
@@ -230,21 +248,23 @@ class YearListItem extends StatelessWidget {
             selectedChapter == null
                 ? '${exam.title} (${exam.year})'
                 : '${selectedChapter?.name} (${exam.year})',
-            style: titleStyle.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
           ),
           subtitle: Text(
             selectedChapter == null
                 ? '${exam.totalQuestions} Questions • ${duration * exam.totalQuestions} mins'
                 : '${selectedChapter?.questionCount} Questions • ${duration * (selectedChapter?.questionCount ?? 0)} mins',
-            style: bodyStyle.copyWith(
-              color: textLight,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                ),
           ),
-          trailing: const Icon(
+          trailing: Icon(
             Icons.chevron_right,
-            color: textLight,
+            color: Theme.of(context).iconTheme.color?.withOpacity(0.7),
           ),
           onTap: () => DialogUtils.showModeSelectionDialog(
             context,

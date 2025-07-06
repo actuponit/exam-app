@@ -3,21 +3,24 @@ import 'dart:ui';
 import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
+import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_cubit.dart';
 import 'package:exam_app/features/profile/presentation/bloc/profile_cubit.dart';
 import 'package:exam_app/features/profile/presentation/bloc/profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme.dart';
+import '../../theme.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Drawer(
       child: Container(
-        color: Colors.white,
+        color: colorScheme.surface,
         child: Column(
           children: [
             _buildHeader(context),
@@ -33,12 +36,14 @@ class AppDrawer extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     return Builder(builder: (context) {
+      final theme = Theme.of(context);
+      final colorScheme = theme.colorScheme;
       return Container(
         padding:
             const EdgeInsets.only(top: 50, bottom: 20, left: 10, right: 10),
-        decoration: const BoxDecoration(
-          color: primaryColor,
-          borderRadius: BorderRadius.only(
+        decoration: BoxDecoration(
+          color: colorScheme.primary,
+          borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(cardRadius),
             bottomRight: Radius.circular(cardRadius),
           ),
@@ -52,20 +57,20 @@ class AppDrawer extends StatelessWidget {
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                    color: Colors.white.withOpacity(0.2),
+                    border: Border.all(color: colorScheme.onPrimary, width: 2),
+                    color: colorScheme.onPrimary.withOpacity(0.2),
                   ),
                   child: Icon(
                     Icons.person,
                     size: 40,
-                    color: Colors.white.withOpacity(0.9),
+                    color: colorScheme.onPrimary.withOpacity(0.9),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   state.firstName ?? 'Guest User',
                   style: titleStyle.copyWith(
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -73,7 +78,7 @@ class AppDrawer extends StatelessWidget {
                 Text(
                   state.email ?? 'guest@example.com',
                   style: bodyStyle.copyWith(
-                    color: Colors.white.withOpacity(0.9),
+                    color: colorScheme.onPrimary.withOpacity(0.9),
                     fontSize: 14,
                   ),
                 ),
@@ -223,17 +228,19 @@ class _DrawerListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return ListTile(
       leading: Icon(
         icon,
-        color: iconColor ?? primaryColor,
+        color: iconColor ?? colorScheme.primary,
         size: 24,
       ),
       title: Text(
         title,
         style: titleStyle.copyWith(
           fontSize: 16,
-          color: textColor ?? textDark,
+          color: textColor ?? colorScheme.onSurface,
         ),
       ),
       onTap: onTap,

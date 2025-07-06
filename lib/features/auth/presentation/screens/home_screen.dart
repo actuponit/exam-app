@@ -19,6 +19,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/presentation/widgets/app_drawer.dart';
 import '../../../../core/theme.dart';
+import '../../../../core/theme_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -74,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
+                // Theme toggle button removed from here. Now in Settings.
               ],
             ),
             drawer: const AppDrawer(),
@@ -85,8 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       'Welcome back!',
-                      style: displayStyle.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontSize: 28,
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -102,9 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 40),
                     Text(
                       'Recent Exam',
-                      style: titleStyle.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -242,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(cardRadius),
-            side: BorderSide(color: Colors.grey[200]!),
+            side: BorderSide(color: Theme.of(context).dividerColor),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -286,9 +289,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.history_rounded,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onPrimary,
                               size: 24,
                             ),
                           ),
@@ -299,16 +302,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(
                                   'Continue Learning',
-                                  style: titleStyle.copyWith(
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,
+                                    color: Theme.of(context).colorScheme.onBackground,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Pick up where you left off',
-                                  style: bodyStyle.copyWith(
-                                    color: textLight,
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                                     fontSize: 14,
                                   ),
                                 ),
@@ -321,12 +325,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey[200]!),
+                          border: Border.all(color: Theme.of(context).dividerColor),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey[200]!,
+                              color: Theme.of(context).shadowColor.withOpacity(0.05),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -357,9 +361,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     state.recentExam!.region != null
                                         ? "${state.recentExam!.subject.name} (${state.recentExam!.region})"
                                         : state.recentExam!.subject.name,
-                                    style: titleStyle.copyWith(
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
+                                      color: Theme.of(context).colorScheme.onBackground,
                                     ),
                                   ),
                                 ),
@@ -369,7 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.grey[50],
+                                color: Theme.of(context).colorScheme.background,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Column(
@@ -384,9 +389,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const SizedBox(width: 12),
                                       Text(
                                         'Year ${state.recentExam!.year}',
-                                        style: titleStyle.copyWith(
+                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w500,
+                                          color: Theme.of(context).colorScheme.onBackground,
                                         ),
                                       ),
                                     ],
@@ -404,9 +410,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Expanded(
                                           child: Text(
                                             state.recentExam!.chapter!.name,
-                                            style: bodyStyle.copyWith(
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               fontSize: 15,
-                                              color: textLight,
+                                              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                                             ),
                                           ),
                                         ),
@@ -436,8 +442,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             );
                           },
-                          icon: const Icon(Icons.play_arrow_rounded),
-                          label: const Text('Continue Learning'),
+                          icon: Icon(Icons.play_arrow_rounded, color: Theme.of(context).colorScheme.onPrimary),
+                          label: Text('Continue Learning', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimary)),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
@@ -454,14 +460,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     contentPadding: EdgeInsets.zero,
                     title: Text(
                       'No recent exams',
-                      style: titleStyle.copyWith(
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontSize: 16,
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                     ),
                     subtitle: Text(
                       'Start practicing to see your recent exams here',
-                      style: bodyStyle.copyWith(
-                        color: textLight,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
                         fontSize: 14,
                       ),
                     ),
