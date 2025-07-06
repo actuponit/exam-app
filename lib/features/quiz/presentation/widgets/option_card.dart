@@ -6,7 +6,6 @@ class OptionCard extends StatelessWidget {
   final bool isSelected;
   final bool? isCorrect;
   final VoidCallback? onTap;
-  final String? imageUrl;
 
   const OptionCard({
     super.key,
@@ -14,7 +13,6 @@ class OptionCard extends StatelessWidget {
     required this.isSelected,
     this.isCorrect,
     this.onTap,
-    this.imageUrl,
   });
 
   @override
