@@ -72,33 +72,6 @@ class MarkdownLatexWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: CachedImage(
             imageUrl: url,
-            placeholder: (context, url) => Container(
-              height: 100,
-              width: double.infinity,
-              color: Colors.grey[300],
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            errorWidget: (context, url, error) => Container(
-              height: 100,
-              width: double.infinity,
-              color: Colors.grey[300],
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.broken_image, color: Colors.grey),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Image failed to load',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
             fit: BoxFit.cover,
           ),
         ),
