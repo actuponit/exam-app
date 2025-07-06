@@ -1,8 +1,5 @@
-import 'package:exam_app/features/quiz/presentation/widgets/latex.dart';
 import 'package:exam_app/features/quiz/presentation/widgets/markdown_latex.dart';
 import 'package:flutter/material.dart';
-import 'package:markdown_widget/config/configs.dart';
-import 'package:markdown_widget/config/markdown_generator.dart';
 
 class ExplanationDisplay extends StatefulWidget {
   final String explanation;
@@ -99,20 +96,12 @@ class _ExplanationDisplayState extends State<ExplanationDisplay> {
               ],
             ),
             const SizedBox(height: 8),
-            MarkdownWidget(
+            MarkdownLatexWidget(
               data: widget.explanation,
               shrinkWrap: true,
-              config: MarkdownConfig.defaultConfig,
-              markdownGenerator: MarkdownGenerator(
-                generators: [latexGenerator],
-                inlineSyntaxList: [LatexSyntax()],
-                richTextBuilder: (span) => Text.rich(
-                  span,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontSize: 15,
-                    height: 1.5,
-                  ),
-                ),
+              textStyle: theme.textTheme.bodyMedium?.copyWith(
+                fontSize: 15,
+                height: 1.5,
               ),
             ),
           ],

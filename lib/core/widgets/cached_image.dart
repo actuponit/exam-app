@@ -5,9 +5,15 @@ import 'package:flutter/material.dart';
 class CachedImage extends StatelessWidget {
   final String imageUrl;
   final BoxFit fit;
+  final Widget Function(BuildContext, String)? placeholder;
+  final Widget Function(BuildContext, String, Object)? errorWidget;
 
-  const CachedImage({Key? key, required this.imageUrl, this.fit = BoxFit.cover})
-      : super(key: key);
+  const CachedImage(
+      {super.key,
+      required this.imageUrl,
+      this.fit = BoxFit.cover,
+      this.placeholder,
+      this.errorWidget});
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +21,8 @@ class CachedImage extends StatelessWidget {
       imageUrl: imageUrl,
       fit: fit,
       cacheManager: MyAppCacheManager(),
-      placeholder: (context, url) =>
-          const Center(child: CircularProgressIndicator()),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
+      placeholder: placeholder,
+      errorWidget: errorWidget,
     );
   }
 }

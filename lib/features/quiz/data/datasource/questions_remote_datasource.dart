@@ -41,22 +41,42 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
   }
 
   Question _mapToQuestion(Map<String, dynamic> json) {
-    final choices = (json['choices'] as List)
-        .map((c) => Option(
-              id: c['id'].toString(),
-              text: c['choice_text'],
-              image: c['choice_image_path'],
-            ))
-        .toList();
+    final choices = (json['choices'] as List).map((c) {
+      if (c['choice_image_path'] != null &&
+          c['choice_image_path'].toString().isNotEmpty) {
+        c['choice_text'] += '\n\n![Question Image](${c['choice_image_path']})';
+      }
+      return Option(
+        id: c['id'].toString(),
+        text: c['choice_text'],
+        image: c['choice_image_path'],
+      );
+    }).toList();
 
     final chapter = ExamChapter.fromJson(json['chapter']);
     final subject = Subject.fromJson(json['subject']);
+
+    // Build question text with image if present
+    String questionText = json['question_text'] ?? '';
+    final questionImagePath = json['question_image_path'];
+    if (questionImagePath != null && questionImagePath.toString().isNotEmpty) {
+      questionText += '\n\n![Question Image]($questionImagePath)';
+    }
+
+    // Build explanation text with image if present
+    String explanationText = json['explanation'] ?? '';
+    final explanationImagePath = json['explanation_image_path'];
+    if (explanationImagePath != null &&
+        explanationImagePath.toString().isNotEmpty) {
+      explanationText += '\n\n![Explanation Image]($explanationImagePath)';
+    }
+
     return Question(
       id: json['id'].toString(),
-      text: json['question_text'],
+      text: questionText,
       options: choices,
       correctOption: json['correct_choice_id'].toString(),
-      explanation: json['explanation'],
+      explanation: explanationText,
       chapter: chapter,
       year: int.tryParse(json['subject']?['year']),
       createdAt: DateTime.parse(json['created_at']),

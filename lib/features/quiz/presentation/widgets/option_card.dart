@@ -1,7 +1,4 @@
-import 'package:exam_app/features/quiz/presentation/widgets/latex.dart';
 import 'package:flutter/material.dart';
-import 'package:markdown_widget/config/configs.dart';
-import 'package:markdown_widget/config/markdown_generator.dart';
 import '../widgets/markdown_latex.dart';
 
 class OptionCard extends StatelessWidget {
@@ -9,6 +6,7 @@ class OptionCard extends StatelessWidget {
   final bool isSelected;
   final bool? isCorrect;
   final VoidCallback? onTap;
+  final String? imageUrl;
 
   const OptionCard({
     super.key,
@@ -16,6 +14,7 @@ class OptionCard extends StatelessWidget {
     required this.isSelected,
     this.isCorrect,
     this.onTap,
+    this.imageUrl,
   });
 
   @override
@@ -119,22 +118,13 @@ class OptionCard extends StatelessWidget {
             leadingIcon,
             const SizedBox(width: 14),
             Expanded(
-              child: MarkdownWidget(
+              child: MarkdownLatexWidget(
                 data: option,
                 shrinkWrap: true,
-                config: MarkdownConfig.defaultConfig,
-                markdownGenerator: MarkdownGenerator(
-                  generators: [latexGenerator],
-                  inlineSyntaxList: [LatexSyntax()],
-                  richTextBuilder: (span) => Text.rich(
-                    span,
-                    style: TextStyle(
-                      color: textColor,
-                      fontWeight:
-                          isSelected ? FontWeight.w600 : FontWeight.normal,
-                      fontSize: 16,
-                    ),
-                  ),
+                textStyle: TextStyle(
+                  color: textColor,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  fontSize: 16,
                 ),
               ),
             ),

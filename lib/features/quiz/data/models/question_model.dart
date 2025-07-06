@@ -52,6 +52,10 @@ class QuestionModel extends Question {
   @override
   final String? region;
 
+  @HiveField(11)
+  @override
+  final String? image;
+
   const QuestionModel({
     required this.id,
     required this.text,
@@ -64,6 +68,7 @@ class QuestionModel extends Question {
     required this.chapter,
     required this.subject,
     this.region,
+    this.image,
   }) : super(
           id: id,
           text: text,
@@ -76,6 +81,7 @@ class QuestionModel extends Question {
           chapter: chapter,
           subject: subject,
           region: region,
+          image: image,
         );
 
   factory QuestionModel.fromEntity(Question question) {
@@ -91,6 +97,7 @@ class QuestionModel extends Question {
       chapter: ExamChapterModel.fromEntity(question.chapter),
       subject: SubjectModel.fromEntity(question.subject),
       region: question.region,
+      image: question.image,
     );
   }
 }
@@ -105,15 +112,21 @@ class OptionModel extends Option {
   @override
   final String text;
 
+  @HiveField(12)
+  @override
+  final String? image;
+
   const OptionModel({
     required this.id,
     required this.text,
-  }) : super(id: id, text: text);
+    this.image,
+  }) : super(id: id, text: text, image: image);
 
   factory OptionModel.fromEntity(Option option) {
     return OptionModel(
       id: option.id,
       text: option.text,
+      image: option.image,
     );
   }
 }
