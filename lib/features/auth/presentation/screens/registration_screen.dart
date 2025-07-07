@@ -101,9 +101,12 @@ class _RegistrationScreenState extends State<RegistrationScreen>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                primaryColor.withOpacity(0.1),
-                Colors.white,
-                secondaryColor.withOpacity(0.05),
+                Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                Theme.of(context).colorScheme.surface,
+                Theme.of(context)
+                    .colorScheme
+                    .secondaryContainer
+                    .withOpacity(0.2),
               ],
             ),
           ),
@@ -159,11 +162,12 @@ class _RegistrationScreenState extends State<RegistrationScreen>
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: primaryColor.withOpacity(0.1),
+                    color:
+                        Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 5),
                   ),
@@ -187,12 +191,14 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.1),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.arrow_back_ios_rounded,
-                              color: primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                               size: 20,
                             ),
                           ),
@@ -204,12 +210,15 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: Colors.grey[100],
+                              color:
+                                  Theme.of(context).colorScheme.surfaceVariant,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
                               Icons.close_rounded,
-                              color: Colors.grey[600],
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               size: 20,
                             ),
                           ),
@@ -218,7 +227,9 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                       Text(
                         '${isStep1 ? 1 : 2} of 2',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: textLight,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               fontWeight: FontWeight.w500,
                             ),
                       ),
@@ -240,8 +251,18 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                             borderRadius: BorderRadius.circular(2),
                             gradient: LinearGradient(
                               colors: progress > 0.5
-                                  ? [primaryColor, secondaryColor]
-                                  : [Colors.grey[300]!, Colors.grey[300]!],
+                                  ? [
+                                      Theme.of(context).colorScheme.primary,
+                                      Theme.of(context).colorScheme.secondary,
+                                    ]
+                                  : [
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .surfaceVariant,
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .surfaceVariant,
+                                    ],
                             ),
                           ),
                         ),
@@ -266,7 +287,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                               .textTheme
                               .headlineSmall
                               ?.copyWith(
-                                color: textDark,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.bold,
                               ),
                           textAlign: TextAlign.center,
@@ -278,7 +299,9 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                               : 'Help us understand your educational background',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: textLight,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
                                     height: 1.4,
                                   ),
                           textAlign: TextAlign.center,
@@ -294,15 +317,18 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                     width: double.infinity,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 600),
                       width: MediaQuery.of(context).size.width * progress,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [primaryColor, secondaryColor],
+                        gradient: LinearGradient(
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.secondary,
+                          ],
                         ),
                         borderRadius: BorderRadius.circular(4),
                       ),
@@ -325,13 +351,18 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: isActive || isCompleted
-            ? const LinearGradient(colors: [primaryColor, secondaryColor])
+            ? LinearGradient(colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.secondary,
+              ])
             : null,
-        color: isActive || isCompleted ? null : Colors.grey[300],
+        color: isActive || isCompleted
+            ? null
+            : Theme.of(context).colorScheme.surfaceVariant,
         boxShadow: isActive || isCompleted
             ? [
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -341,18 +372,19 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: isCompleted && !isActive
-            ? const Icon(
+            ? Icon(
                 Icons.check_rounded,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 size: 24,
-                key: ValueKey('check'),
+                key: const ValueKey('check'),
               )
             : Text(
                 step.toString(),
                 key: ValueKey('number_$step'),
                 style: TextStyle(
-                  color:
-                      isActive || isCompleted ? Colors.white : Colors.grey[600],
+                  color: isActive || isCompleted
+                      ? Theme.of(context).colorScheme.onPrimary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
@@ -623,18 +655,23 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
       height: 56,
       decoration: BoxDecoration(
         gradient: onPressed != null
-            ? const LinearGradient(
-                colors: [primaryColor, secondaryColor],
+            ? LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.secondary,
+                ],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               )
             : null,
-        color: onPressed == null ? Colors.grey[300] : null,
+        color: onPressed == null
+            ? Theme.of(context).colorScheme.surfaceVariant
+            : null,
         borderRadius: BorderRadius.circular(buttonRadius),
         boxShadow: onPressed != null
             ? [
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -655,7 +692,9 @@ class _PersonalInfoPageState extends State<_PersonalInfoPage> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: onPressed != null ? Colors.white : Colors.grey[600],
+            color: onPressed != null
+                ? Theme.of(context).colorScheme.onPrimary
+                : Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ),
@@ -811,9 +850,10 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                     child: Container(
                       height: 48,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(buttonRadius),
-                        border: Border.all(color: Colors.grey[300]!),
+                        border: Border.all(
+                            color: Theme.of(context).colorScheme.outline),
                       ),
                       child: TextButton(
                         style: TextButton.styleFrom(
@@ -830,7 +870,7 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                         child: Text(
                           'Cancel',
                           style: TextStyle(
-                            color: textDark,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -845,19 +885,25 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                       decoration: BoxDecoration(
                         gradient: state.isRegistrationLoading
                             ? null
-                            : const LinearGradient(
-                                colors: [primaryColor, secondaryColor],
+                            : LinearGradient(
+                                colors: [
+                                  Theme.of(context).colorScheme.primary,
+                                  Theme.of(context).colorScheme.secondary,
+                                ],
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
                               ),
                         color: state.isRegistrationLoading
-                            ? Colors.grey[300]
+                            ? Theme.of(context).colorScheme.surfaceVariant
                             : null,
                         borderRadius: BorderRadius.circular(buttonRadius),
                         boxShadow: !state.isRegistrationLoading
                             ? [
                                 BoxShadow(
-                                  color: primaryColor.withOpacity(0.3),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withOpacity(0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -879,18 +925,21 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
                                 _completeRegistration();
                               },
                         child: state.isRegistrationLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Colors.white,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               )
-                            : const Text(
+                            : Text(
                                 'Confirm',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -1175,18 +1224,23 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
       height: 56,
       decoration: BoxDecoration(
         gradient: onPressed != null
-            ? const LinearGradient(
-                colors: [primaryColor, secondaryColor],
+            ? LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.secondary,
+                ],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               )
             : null,
-        color: onPressed == null ? Colors.grey[300] : null,
+        color: onPressed == null
+            ? Theme.of(context).colorScheme.surfaceVariant
+            : null,
         borderRadius: BorderRadius.circular(buttonRadius),
         boxShadow: onPressed != null
             ? [
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -1207,7 +1261,9 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: onPressed != null ? Colors.white : Colors.grey[600],
+            color: onPressed != null
+                ? Theme.of(context).colorScheme.onPrimary
+                : Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ),

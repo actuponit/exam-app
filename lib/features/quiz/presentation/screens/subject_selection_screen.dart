@@ -72,8 +72,8 @@ class SubjectCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            primaryColor.withOpacity(0.1),
-            secondaryColor.withOpacity(0.05),
+            Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.2),
           ],
         ),
       ),
@@ -97,13 +97,13 @@ class SubjectCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.primaryContainer,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     subject.icon,
                     size: 28,
-                    color: primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -111,9 +111,10 @@ class SubjectCard extends StatelessWidget {
                   child: Text(
                     subject.name.toUpperCase(),
                     overflow: TextOverflow.ellipsis,
-                    style: titleStyle.copyWith(
-                      fontSize: 18,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 ClipRRect(
@@ -121,16 +122,19 @@ class SubjectCard extends StatelessWidget {
                   child: LinearProgressIndicator(
                     minHeight: 8,
                     value: subject.progress,
-                    backgroundColor: secondaryColor.withOpacity(0.2),
-                    valueColor: const AlwaysStoppedAnimation(primaryColor),
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceVariant,
+                    valueColor: AlwaysStoppedAnimation(
+                      Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
                 Text(
                   '${(subject.progress * 100).toInt()}% Completed',
-                  style: bodyStyle.copyWith(
-                    color: textLight,
-                    fontSize: 12,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 12,
+                      ),
                 ),
               ],
             ),
@@ -173,12 +177,12 @@ class _RegionFilterWidgetState extends State<RegionFilterWidget> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            primaryColor.withValues(alpha: 0.05),
-            secondaryColor.withValues(alpha: 0.03),
+            Theme.of(context).colorScheme.primaryContainer.withOpacity(0.15),
+            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.1),
           ],
         ),
         border: Border.all(
-          color: primaryColor.withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -189,11 +193,11 @@ class _RegionFilterWidgetState extends State<RegionFilterWidget> {
             padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
             child: Text(
               'Filter by Region',
-              style: titleStyle.copyWith(
-                fontSize: 16,
-                color: primaryColor,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ),
           SizedBox(
@@ -211,12 +215,14 @@ class _RegionFilterWidgetState extends State<RegionFilterWidget> {
                     selected: isSelected,
                     label: Text(
                       region,
-                      style: bodyStyle.copyWith(
-                        color: isSelected ? Colors.white : primaryColor,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w500,
-                        fontSize: 13,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Theme.of(context).colorScheme.primary,
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w500,
+                            fontSize: 13,
+                          ),
                     ),
                     onSelected: (bool selected) {
                       setState(() {
@@ -226,15 +232,18 @@ class _RegionFilterWidgetState extends State<RegionFilterWidget> {
                           .read<SubjectBloc>()
                           .add(FilterSubjects(selectedRegion));
                     },
-                    backgroundColor: Colors.white,
-                    selectedColor: primaryColor,
-                    checkmarkColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    selectedColor: Theme.of(context).colorScheme.primary,
+                    checkmarkColor: Theme.of(context).colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                       side: BorderSide(
                         color: isSelected
-                            ? primaryColor
-                            : primaryColor.withValues(alpha: 0.3),
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withOpacity(0.5),
                         width: 1.5,
                       ),
                     ),
@@ -242,7 +251,8 @@ class _RegionFilterWidgetState extends State<RegionFilterWidget> {
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     elevation: isSelected ? 2 : 0,
-                    shadowColor: primaryColor.withValues(alpha: 0.3),
+                    shadowColor:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.3),
                   ),
                 );
               },

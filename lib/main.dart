@@ -23,8 +23,29 @@ void main() async {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  late ThemeCubit themeCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    themeCubit = ThemeCubit();
+    // Initialize theme from saved preferences
+    themeCubit.initializeTheme();
+  }
+
+  @override
+  void dispose() {
+    themeCubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +82,8 @@ class MainApp extends StatelessWidget {
           create: (context) =>
               ProfileCubit(authRepository: getIt<AuthRepository>()),
         ),
-        BlocProvider(
-          create: (context) => ThemeCubit(),
+        BlocProvider.value(
+          value: themeCubit,
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(

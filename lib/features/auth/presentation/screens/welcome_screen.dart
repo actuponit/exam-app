@@ -87,9 +87,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              primaryColor.withOpacity(0.1),
-              Colors.white,
-              secondaryColor.withOpacity(0.05),
+              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+              Theme.of(context).colorScheme.surface,
+              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.2),
             ],
           ),
         ),
@@ -110,27 +110,30 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            color: primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: primaryColor.withOpacity(0.3),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.3),
                                 blurRadius: 15,
                                 offset: const Offset(0, 5),
                               ),
                             ],
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.school_rounded,
                             size: 50,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                         const SizedBox(height: 24),
                         Text(
                           'ExamHub',
                           style: theme.textTheme.displayMedium?.copyWith(
-                            color: primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -138,7 +141,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         Text(
                           'Master Your National Exams',
                           style: theme.textTheme.titleMedium?.copyWith(
-                            color: textLight,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -171,7 +175,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           Text(
                             'Prepare with Confidence',
                             style: theme.textTheme.headlineSmall?.copyWith(
-                              color: textDark,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
@@ -180,7 +184,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           Text(
                             'Practice with thousands of questions, track your progress, and ace your exams with our comprehensive study platform.',
                             style: theme.textTheme.bodyLarge?.copyWith(
-                              color: textLight,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               height: 1.6,
                             ),
                             textAlign: TextAlign.center,
@@ -237,15 +243,18 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       width: double.infinity,
       height: 56,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [primaryColor, secondaryColor],
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.secondary,
+          ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(buttonRadius),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -262,10 +271,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         ),
         child: Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
       ),
@@ -285,7 +294,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       child: Text(
         text,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: primaryColor,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.w500,
             ),
       ),
@@ -299,15 +308,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         icon: Icon(
           Icons.privacy_tip_outlined,
           size: 16,
-          color: primaryColor.withOpacity(0.7),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
         ),
         label: Text(
           'Privacy Policy & Terms of Service',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: primaryColor.withOpacity(0.8),
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
                 fontWeight: FontWeight.w500,
                 decoration: TextDecoration.underline,
-                decorationColor: primaryColor.withOpacity(0.3),
+                decorationColor:
+                    Theme.of(context).colorScheme.primary.withOpacity(0.3),
               ),
         ),
         style: TextButton.styleFrom(
@@ -360,7 +370,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
                 'Close',
-                style: TextStyle(color: primaryColor),
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
             ),
           ],

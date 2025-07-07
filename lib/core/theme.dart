@@ -230,7 +230,8 @@ ThemeData getDarkAppTheme() {
       displayMedium: AppTypography.displayMedium.copyWith(color: Colors.white),
       displaySmall: AppTypography.displaySmall.copyWith(color: Colors.white),
       headlineLarge: AppTypography.headlineLarge.copyWith(color: Colors.white),
-      headlineMedium: AppTypography.headlineMedium.copyWith(color: Colors.white),
+      headlineMedium:
+          AppTypography.headlineMedium.copyWith(color: Colors.white),
       headlineSmall: AppTypography.headlineSmall.copyWith(color: Colors.white),
       titleLarge: AppTypography.titleLarge.copyWith(color: Colors.white),
       titleMedium: AppTypography.titleMedium.copyWith(color: Colors.white),
@@ -270,7 +271,7 @@ ThemeData getDarkAppTheme() {
 }
 
 // Colors
-const primaryColor = Color(0xFF6C5CE7);
+const primaryColor = Color.fromARGB(255, 85, 66, 232);
 const secondaryColor = Color(0xFFA8A5E6);
 const accentColor = Color(0xFFFFD700);
 const backgroundColor = Color(0xFFF8F9FA);
