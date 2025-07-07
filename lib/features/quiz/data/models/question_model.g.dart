@@ -28,13 +28,14 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       chapter: fields[8] as ExamChapterModel,
       subject: fields[9] as SubjectModel,
       region: fields[10] as String?,
+      image: fields[11] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, QuestionModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +57,9 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       ..writeByte(9)
       ..write(obj.subject)
       ..writeByte(10)
-      ..write(obj.region);
+      ..write(obj.region)
+      ..writeByte(11)
+      ..write(obj.image);
   }
 
   @override
@@ -83,17 +86,20 @@ class OptionModelAdapter extends TypeAdapter<OptionModel> {
     return OptionModel(
       id: fields[0] as String,
       text: fields[1] as String,
+      image: fields[12] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OptionModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.text);
+      ..write(obj.text)
+      ..writeByte(12)
+      ..write(obj.image);
   }
 
   @override

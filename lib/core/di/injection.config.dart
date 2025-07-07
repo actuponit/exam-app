@@ -153,6 +153,13 @@ Future<_i174.GetIt> init(
         gh<_i123.IRecentExamLocalDatasource>(),
         gh<_i156.ISubjectLocalDatasource>(),
       ));
+  gh.lazySingleton<_i573.AuthRepository>(() => authModule.authRepository(
+        gh<_i970.AuthDataSource>(),
+        gh<_i970.LocalAuthDataSource>(),
+        gh<_i516.IQuestionsLocalDatasource>(),
+        gh<_i123.IRecentExamLocalDatasource>(),
+        gh<_i293.UserPreferencesLocalDataSource>(),
+      ));
   gh.factory<_i354.SubjectBloc>(() => subjectModule.subjectBloc(
         gh<_i634.SubjectRepository>(),
         gh<_i254.ExamRepository>(),
@@ -173,12 +180,6 @@ Future<_i174.GetIt> init(
       ));
   gh.factory<_i125.SplashCubit>(
       () => _i125.SplashCubit(gh<_i421.UserPreferencesRepository>()));
-  gh.lazySingleton<_i573.AuthRepository>(() => authModule.authRepository(
-        gh<_i970.AuthDataSource>(),
-        gh<_i970.LocalAuthDataSource>(),
-        gh<_i516.IQuestionsLocalDatasource>(),
-        gh<_i123.IRecentExamLocalDatasource>(),
-      ));
   gh.factory<_i1020.ExamBloc>(
       () => examModule.examBloc(gh<_i254.ExamRepository>()));
   gh.lazySingleton<_i661.AuthBloc>(

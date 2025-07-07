@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:exam_app/features/exams/data/datasource/recent_exam_local_datasource.dart';
 import 'package:exam_app/features/quiz/data/datasource/questions_local_datasource.dart';
+import 'package:exam_app/features/splash/data/datasources/user_preferences_local_datasource.dart';
 import 'package:injectable/injectable.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/auth/data/datasources/local_auth_data_source.dart';
@@ -25,12 +26,14 @@ abstract class AuthModule {
     LocalAuthDataSource localDataSource,
     IQuestionsLocalDatasource questionsLocalDatasource,
     IRecentExamLocalDatasource recentExamLocalDatasource,
+    UserPreferencesLocalDataSource userPreferencesLocalDataSource,
   ) =>
       AuthRepositoryImpl(
         remoteDataSource,
         localDataSource,
         questionsLocalDatasource,
         recentExamLocalDatasource,
+        userPreferencesLocalDataSource,
       );
 
   @lazySingleton

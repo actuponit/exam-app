@@ -6,15 +6,22 @@ import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:exam_app/features/auth/data/utils/device_manager.dart';
 import 'package:exam_app/features/exams/data/datasource/recent_exam_local_datasource.dart';
 import 'package:exam_app/features/quiz/data/datasource/questions_local_datasource.dart';
+import 'package:exam_app/features/splash/data/datasources/user_preferences_local_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthDataSource _remoteDataSource;
   final LocalAuthDataSource _localDataSource;
   final IQuestionsLocalDatasource _questionsLocalDatasource;
   final IRecentExamLocalDatasource _recentExamLocalDatasource;
+  final UserPreferencesLocalDataSource _userPreferencesLocalDataSource;
 
-  AuthRepositoryImpl(this._remoteDataSource, this._localDataSource,
-      this._questionsLocalDatasource, this._recentExamLocalDatasource);
+  AuthRepositoryImpl(
+    this._remoteDataSource,
+    this._localDataSource,
+    this._questionsLocalDatasource,
+    this._recentExamLocalDatasource,
+    this._userPreferencesLocalDataSource,
+  );
 
   @override
   Future<List<ExamType>> getExamTypes() async {
@@ -165,7 +172,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> logout() async {
     try {
       // Clear user data from local storage
+
       await _localDataSource.clearUserData();
+      await _userPreferencesLocalDataSource.setOnboardingCompleted(true);
       await _questionsLocalDatasource.clearQuestions();
       await _recentExamLocalDatasource.clearRecentExams();
     } catch (e) {
