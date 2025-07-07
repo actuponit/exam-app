@@ -17,7 +17,7 @@ class ThemePersistenceService {
     final themeName = prefs.getString(_themeKey);
 
     if (themeName == null) {
-      return ThemeMode.system;
+      return ThemeMode.light;
     }
 
     switch (themeName) {
