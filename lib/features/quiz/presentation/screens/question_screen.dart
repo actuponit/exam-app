@@ -88,9 +88,9 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
   }
 
   void _startScreenshotListening() async {
-    await _noScreenshot.screenshotOff();
-    await startScreenshotListening();
-    listenForScreenshot();
+    // await _noScreenshot.screenshotOff();
+    // await startScreenshotListening();
+    // listenForScreenshot();
   }
 
   @override
