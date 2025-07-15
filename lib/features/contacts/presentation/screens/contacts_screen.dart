@@ -384,13 +384,6 @@ class ContactsScreen extends StatelessWidget {
     }
   }
 
-  void _launchSocialMedia(String platform, BuildContext context) {
-    // Handle social media launches
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Opening $platform...')),
-    );
-  }
-
   void _launchUrl(String url) async {
     final Uri urlUri = Uri.parse(url);
     if (await canLaunchUrl(urlUri)) {
