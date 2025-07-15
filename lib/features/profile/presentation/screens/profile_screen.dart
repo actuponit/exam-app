@@ -1,6 +1,9 @@
 import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
+import 'package:exam_app/features/referral/presentation/bloc/referral_bloc.dart';
+import 'package:exam_app/features/referral/domain/repositories/referral_repository.dart';
+import 'package:exam_app/features/profile/presentation/widgets/referred_users_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exam_app/core/theme.dart';
@@ -10,10 +13,15 @@ import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 
 class ProfileScreen extends StatelessWidget {
-  static Widget route = BlocProvider(
+  static Widget route = MultiBlocProvider(providers: [
+    BlocProvider(
       create: (context) =>
           ProfileCubit(authRepository: getIt<AuthRepository>())..loadProfile(),
-      child: const ProfileScreen());
+    ),
+    BlocProvider(
+      create: (context) => ReferralBloc(getIt<ReferralRepository>()),
+    ),
+  ], child: const ProfileScreen());
   const ProfileScreen({super.key});
 
   @override
@@ -96,6 +104,8 @@ class ProfileScreen extends StatelessWidget {
                       _buildSubscriptionCard(context, state),
                       const SizedBox(height: 24),
                       _buildReferralCard(context, state),
+                      const SizedBox(height: 24),
+                      const ReferredUsersWidget(),
                     ],
                   ),
                 ),
@@ -117,7 +127,11 @@ class ProfileScreen extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[700]!
+              : Colors.grey[200]!,
+        ),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -125,10 +139,15 @@ class ProfileScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.white,
-              Colors.grey[50]!,
-            ],
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? [
+                    Colors.grey[850]!,
+                    Colors.grey[900]!,
+                  ]
+                : [
+                    Colors.white,
+                    Colors.grey[50]!,
+                  ],
           ),
         ),
         child: Padding(
@@ -146,7 +165,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     child: Icon(
                       Icons.card_membership,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -155,6 +174,9 @@ class ProfileScreen extends StatelessWidget {
                     style: titleStyle.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
                     ),
                   ),
                 ],
@@ -163,11 +185,15 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey[200]!,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black26
+                          : Colors.grey[200]!,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -181,13 +207,17 @@ class ProfileScreen extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).primaryColor.withOpacity(0.2)
+                            : Theme.of(context).primaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         subscriptionStatus,
                         style: bodyStyle.copyWith(
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -199,6 +229,9 @@ class ProfileScreen extends StatelessWidget {
                         style: bodyStyle.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
                         ),
                       ),
                     ),
@@ -217,7 +250,11 @@ class ProfileScreen extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(cardRadius),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[700]!
+              : Colors.grey[200]!,
+        ),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -225,10 +262,15 @@ class ProfileScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.white,
-              Colors.grey[50]!,
-            ],
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? [
+                    Colors.grey[850]!,
+                    Colors.grey[900]!,
+                  ]
+                : [
+                    Colors.white,
+                    Colors.grey[50]!,
+                  ],
           ),
         ),
         child: Padding(
@@ -246,7 +288,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     child: Icon(
                       Icons.card_giftcard,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -255,6 +297,9 @@ class ProfileScreen extends StatelessWidget {
                     style: titleStyle.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
                     ),
                   ),
                 ],
@@ -263,7 +308,9 @@ class ProfileScreen extends StatelessWidget {
               Text(
                 'Share your referral code with friends and earn rewards!',
                 style: bodyStyle.copyWith(
-                  color: textLight,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[400]
+                      : textLight,
                   fontSize: 14,
                 ),
               ),
@@ -271,11 +318,15 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey[200]!,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black26
+                          : Colors.grey[200]!,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -289,13 +340,21 @@ class ProfileScreen extends StatelessWidget {
                       style: bodyStyle.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
                       ),
                     ),
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.copy),
-                          color: Theme.of(context).primaryColor,
+                          icon: Icon(
+                            Icons.copy,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Theme.of(context).primaryColor,
+                          ),
                           onPressed: () {
                             if (state.referralCode != null) {
                               Clipboard.setData(
@@ -310,8 +369,13 @@ class ProfileScreen extends StatelessWidget {
                           },
                         ),
                         IconButton(
-                          icon: const Icon(Icons.share),
-                          color: Theme.of(context).primaryColor,
+                          icon: Icon(
+                            Icons.share,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Theme.of(context).primaryColor,
+                          ),
                           onPressed: () {
                             if (state.referralCode != null) {
                               Share.share(
@@ -362,12 +426,17 @@ class ProfileScreen extends StatelessWidget {
                       style: titleStyle.copyWith(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
                       ),
                     ),
                     TextSpan(
                       text: error,
                       style: bodyStyle.copyWith(
-                        color: textLight,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[400]
+                            : textLight,
                       ),
                     ),
                   ],

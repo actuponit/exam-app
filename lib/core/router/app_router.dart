@@ -1,7 +1,9 @@
+import 'package:exam_app/features/about/presentation/screens/about_us_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/home_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/registration_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/welcome_screen.dart';
+import 'package:exam_app/features/contacts/presentation/screens/contacts_screen.dart';
 import 'package:exam_app/features/payment/presentation/screens/transaction_verification_screen.dart';
 import 'package:exam_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
@@ -120,16 +122,12 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.contact,
         name: 'Contact',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Contact Screen - Coming Soon')),
-        ),
+        builder: (context, state) => ContactsScreen(),
       ),
       GoRoute(
         path: RoutePaths.about,
         name: 'About',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('About Screen - Coming Soon')),
-        ),
+        builder: (context, state) => AboutUsScreen(),
       ),
       GoRoute(
         path: RoutePaths.settings,

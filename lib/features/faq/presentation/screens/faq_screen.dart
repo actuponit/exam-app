@@ -11,42 +11,56 @@ class FAQScreen extends StatefulWidget {
 class _FAQScreenState extends State<FAQScreen> {
   final List<FAQCategory> _categories = [
     FAQCategory(
-      title: 'Getting Started',
+      title: 'General App Usage',
       faqs: [
         FAQ(
-          question: 'How do I start practicing?',
+          question: 'What is this app used for?',
           answer:
-              'To start practicing, go to the home screen and tap on "Practice" or select "Practice Exams" from the menu. Choose your subject and preferred exam year to begin.',
+              'Ethio Exam Hub helps students access past exam papers for Grade 8 and university first-year freshman courses to prepare effectively.',
         ),
         FAQ(
-          question: 'Can I practice specific subjects?',
+          question: 'How do I use the app?',
           answer:
-              'Yes! You can select specific subjects to practice. Navigate to the subject selection screen and choose the subject you want to focus on.',
+              'Go to the Home screen, choose a subject,select year, filter by chapter or region and browse available past exams.',
         ),
         FAQ(
-          question: 'How are the questions organized?',
+          question: 'How do I track my progress?',
+          answer: 'Your practice history and performance are recorded.',
+        ),
+        FAQ(
+          question: 'Are explanations provided for all questions?',
           answer:
-              'Questions are organized by year and subject. You can choose to practice questions from specific years or focus on particular subjects.',
+              'Yes, every question includes a detailed explanation after answering — to help you learn better.',
+        ),
+        FAQ(
+          question: 'Is an internet connection required?',
+          answer:
+              'Internet is needed to download or update exams. Once downloaded, you can access them offline.',
         ),
       ],
     ),
     FAQCategory(
-      title: 'Exam Practice',
+      title: 'About Referral System',
       faqs: [
         FAQ(
-          question: 'How long is each practice exam?',
+          question: 'Can I earn rewards by referring friends?',
           answer:
-              'Each practice exam typically contains 75 questions and is designed to be completed in 2 hours and 30 minutes, matching the actual exam format.',
+              'Yes! Invite your friends to join Ethio Exam Hub using your referral code and earn rewards.',
         ),
         FAQ(
-          question: 'Can I review my answers?',
+          question: 'How do I refer my friends?',
           answer:
-              'Yes, after completing a practice exam, you can review all your answers. Each question will show the correct answer and a detailed explanation.',
+              'Share your referral code. When friends use it during registration, it\'s automatically linked to you.',
         ),
         FAQ(
-          question: 'Are the questions from real exams?',
+          question: 'Where can I find my referral code?',
           answer:
-              'Yes, our questions are sourced from previous National Entrance Exams (EUEE) and are carefully verified for accuracy.',
+              'Your referral code is located in your Profile section — simply copy and share.',
+        ),
+        FAQ(
+          question: 'How can I track my referrals?',
+          answer:
+              'In your profile, referrals are auto-counted. To take rewards, send a screenshot of your referral count to our Telegram support:@Ethio_exam_hub_support',
         ),
       ],
     ),
@@ -54,19 +68,60 @@ class _FAQScreenState extends State<FAQScreen> {
       title: 'App Features',
       faqs: [
         FAQ(
-          question: 'Can I use the app offline?',
+          question: 'Is the content organized and easy to use?',
           answer:
-              'Yes! Once you\'ve downloaded the content, you can use the app without an internet connection. All questions are stored locally on your device.',
+              'Yes! Exams are well-structured by subject, year, and region.',
         ),
         FAQ(
-          question: 'How do I track my progress?',
+          question: 'Are answer keys provided?',
           answer:
-              'The app keeps track of your practice history and performance. You can view your progress and areas for improvement in your profile.',
+              'Most exams include answer keys, and more detailed solutions are being added.',
         ),
         FAQ(
           question: 'Are explanations provided for all questions?',
+          answer: 'Yes — each question has an explanation after you answer it.',
+        ),
+        FAQ(
+          question: 'Can I study offline?',
           answer:
-              'Yes, every question comes with a detailed explanation. After answering a question, you can view the explanation to understand the concept better.',
+              'Yes — once content is downloaded, you can access it without internet.',
+        ),
+      ],
+    ),
+    FAQCategory(
+      title: 'Exam Content',
+      faqs: [
+        FAQ(
+          question: 'Where do the past exams come from?',
+          answer:
+              'Collected from official sources, regional exams, Freshman exams and teacher contributions.',
+        ),
+        FAQ(
+          question: 'How are the questions organized?',
+          answer: 'By year, subject, and chapter — easy to navigate and focus.',
+        ),
+        FAQ(
+          question: 'Are the exams from trusted sources?',
+          answer:
+              '100%. All content is verified and sourced from official materials.',
+        ),
+        FAQ(
+          question: 'How often is new content added?',
+          answer: 'New exams are uploaded yearly as they become available.',
+        ),
+        FAQ(
+          question: 'What subjects are available for 8th grade ministry exam?',
+          answer: 'All major subjects relevant to Grade 8.',
+        ),
+        FAQ(
+          question: 'Does this help with the Grade 8 regional exam?',
+          answer:
+              'Yes! It includes previous regional exams to prepare effectively.',
+        ),
+        FAQ(
+          question: 'Are all regional exams included?',
+          answer:
+              'Absolutely — exams from all regions (Addis Ababa, Afar, Amhara, Benishangul-Gumuz, Central Ethiopia, Dire Dawa, Gambella, Harari, Oromia, Sidama, Somali, South Ethiopia, South West Ethiopia, Tigray.) are covered.',
         ),
       ],
     ),
@@ -136,7 +191,8 @@ class _FAQExpansionCard extends StatefulWidget {
   State<_FAQExpansionCard> createState() => _FAQExpansionCardState();
 }
 
-class _FAQExpansionCardState extends State<_FAQExpansionCard> with SingleTickerProviderStateMixin {
+class _FAQExpansionCardState extends State<_FAQExpansionCard>
+    with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
   late AnimationController _controller;
   late Animation<double> _iconTurns;
@@ -189,7 +245,8 @@ class _FAQExpansionCardState extends State<_FAQExpansionCard> with SingleTickerP
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(cardRadius),
         side: BorderSide(
-          color: _isExpanded ? primaryColor.withOpacity(0.5) : Colors.grey[200]!,
+          color:
+              _isExpanded ? primaryColor.withOpacity(0.5) : Colors.grey[200]!,
         ),
       ),
       margin: const EdgeInsets.only(bottom: 12),
@@ -271,4 +328,4 @@ class FAQ {
     required this.question,
     required this.answer,
   });
-} 
+}

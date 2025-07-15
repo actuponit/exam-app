@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
-import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_cubit.dart';
 import 'package:exam_app/features/profile/presentation/bloc/profile_cubit.dart';
 import 'package:exam_app/features/profile/presentation/bloc/profile_state.dart';
 import 'package:flutter/material.dart';

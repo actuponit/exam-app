@@ -1,8 +1,8 @@
 class ReferralStatistics {
   final int totalReferrals;
   final int activeReferrals;
-  final String totalEarnings;
-  final String paidEarnings;
+  final num totalEarnings;
+  final num paidEarnings;
   final double pendingEarnings;
 
   ReferralStatistics({
@@ -17,8 +17,12 @@ class ReferralStatistics {
     return ReferralStatistics(
       totalReferrals: json['total_referrals'],
       activeReferrals: json['active_referrals'],
-      totalEarnings: json['total_earnings'],
-      paidEarnings: json['paid_earnings'],
+      totalEarnings: (json['total_earnings'] is num)
+          ? json['total_earnings'] as num
+          : double.parse(json['total_earnings']),
+      paidEarnings: (json['paid_earnings'] is num)
+          ? json['paid_earnings'] as num
+          : double.parse(json['paid_earnings']),
       pendingEarnings: (json['pending_earnings'] as num).toDouble(),
     );
   }
