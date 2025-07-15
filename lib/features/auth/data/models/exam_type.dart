@@ -33,7 +33,7 @@ class ExamType {
     };
   }
 
-  String get formattedPrice => '\$${price.toStringAsFixed(2)}';
+  String get formattedPrice => '\$${price.toStringAsFixed(2)} ETB';
 
   @override
   bool operator ==(Object other) =>
