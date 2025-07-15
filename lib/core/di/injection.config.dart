@@ -53,6 +53,11 @@ import '../../features/quiz/presentation/bloc/exam_bloc/exam_bloc.dart'
     as _i1020;
 import '../../features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart'
     as _i354;
+import '../../features/referral/data/datasources/referral_remote_data_source.dart'
+    as _i591;
+import '../../features/referral/domain/repositories/referral_repository.dart'
+    as _i854;
+import '../../features/referral/presentation/bloc/referral_bloc.dart' as _i494;
 import '../../features/splash/data/datasources/user_preferences_local_datasource.dart'
     as _i293;
 import '../../features/splash/data/datasources/user_preferences_local_datasource_impl.dart'
@@ -71,6 +76,7 @@ import 'modules/hive_module.dart' as _i31;
 import 'modules/network_module.dart' as _i851;
 import 'modules/payment_module.dart' as _i81;
 import 'modules/quiz_module.dart' as _i697;
+import 'modules/referral_module.dart' as _i62;
 import 'modules/subject_module.dart' as _i143;
 
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -92,6 +98,7 @@ Future<_i174.GetIt> init(
   final subjectModule = _$SubjectModule();
   final quizModule = _$QuizModule();
   final networkModule = _$NetworkModule();
+  final referralModule = _$ReferralModule();
   await gh.factoryAsync<_i460.SharedPreferences>(
     () => injectableModule.prefs,
     preResolve: true,
@@ -119,6 +126,8 @@ Future<_i174.GetIt> init(
       () => paymentModule.subscriptionDataSource(gh<_i361.Dio>()));
   gh.lazySingleton<_i970.AuthDataSource>(
       () => authModule.remoteAuthDataSource(gh<_i361.Dio>()));
+  gh.lazySingleton<_i591.ReferralRemoteDataSource>(
+      () => referralModule.referralRemoteDataSource(gh<_i361.Dio>()));
   gh.singleton<_i979.Box<_i898.ExamModel>>(
     () => examModule.examsBox(gh<_i1047.HiveService>()),
     instanceName: 'exams',
@@ -140,6 +149,11 @@ Future<_i174.GetIt> init(
       () => paymentModule.networkInfo(gh<_i973.InternetConnectionChecker>()));
   gh.singleton<_i634.SubjectRepository>(() =>
       subjectModule.subjectRepository(gh<_i156.ISubjectLocalDatasource>()));
+  gh.lazySingleton<_i854.ReferralRepository>(
+      () => referralModule.referralRepository(
+            gh<_i591.ReferralRemoteDataSource>(),
+            gh<_i970.LocalAuthDataSource>(),
+          ));
   gh.singleton<_i123.IRecentExamLocalDatasource>(() =>
       examModule.recentExamLocalDatasource(
           gh<_i979.Box<_i295.RecentExamModel>>(instanceName: 'recentExams')));
@@ -171,6 +185,8 @@ Future<_i174.GetIt> init(
             gh<_i970.LocalAuthDataSource>(),
             gh<_i932.NetworkInfo>(),
           ));
+  gh.factory<_i494.ReferralBloc>(
+      () => referralModule.referralBloc(gh<_i854.ReferralRepository>()));
   gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository(
         gh<_i516.IQuestionsLocalDatasource>(),
         gh<_i413.IQuestionsRemoteDatasource>(),
@@ -206,3 +222,5 @@ class _$SubjectModule extends _i143.SubjectModule {}
 class _$QuizModule extends _i697.QuizModule {}
 
 class _$NetworkModule extends _i851.NetworkModule {}
+
+class _$ReferralModule extends _i62.ReferralModule {}
