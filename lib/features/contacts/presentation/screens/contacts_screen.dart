@@ -65,8 +65,6 @@ class ContactsScreen extends StatelessWidget {
                   _buildWelcomeSection(context),
                   const SizedBox(height: 24),
                   _buildContactMethodsSection(context),
-                  const SizedBox(height: 24),
-                  _buildOfficeHoursSection(context),
                   // const SizedBox(height: 24),
                   // _buildSocialMediaSection(context),
                   const SizedBox(height: 24),
@@ -248,16 +246,16 @@ class ContactsScreen extends StatelessWidget {
                 'Email Support',
                 'support@examapp.com',
                 'Send us an email for general inquiries',
-                () => _launchEmail('support@examapp.com'),
+                () => _launchEmail('ethioexamhub@gmail.com'),
               ),
               const SizedBox(height: 16),
               _buildContactItem(
                 context,
                 Icons.phone_outlined,
                 'Phone Support',
-                '+251 9 40855439',
-                'Call us for urgent technical support, Misbah Jemal',
-                () => _launchPhone('+251940855439'),
+                '+251 9 78609825',
+                'Call us for urgent technical support, Admin',
+                () => _launchPhone('+251978609825'),
               ),
               const SizedBox(height: 16),
               _buildContactItem(
@@ -361,139 +359,6 @@ class ContactsScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildOfficeHoursSection(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(cardRadius),
-        side: BorderSide(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[700]!
-              : Colors.grey[200]!,
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(cardRadius),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: Theme.of(context).brightness == Brightness.dark
-                ? [
-                    Colors.grey[850]!,
-                    Colors.grey[900]!,
-                  ]
-                : [
-                    Colors.white,
-                    Colors.grey[50]!,
-                  ],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.schedule,
-                      color: Theme.of(context).primaryColor,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Office Hours',
-                      style: titleStyle.copyWith(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black87,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildOfficeHourItem(
-                  context, 'Monday - Friday', '9:00 AM - 6:00 PM'),
-              _buildOfficeHourItem(context, 'Saturday', '10:00 AM - 4:00 PM'),
-              _buildOfficeHourItem(context, 'Sunday', 'Closed'),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Theme.of(context).primaryColor,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Emergency support available 24/7 via live chat',
-                        style: bodyStyle.copyWith(
-                          fontSize: 14,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black87,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOfficeHourItem(BuildContext context, String day, String hours) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            day,
-            style: bodyStyle.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black87,
-            ),
-          ),
-          Text(
-            hours,
-            style: bodyStyle.copyWith(
-              fontSize: 16,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.grey[300]
-                  : Colors.grey[600],
-            ),
-          ),
-        ],
       ),
     );
   }

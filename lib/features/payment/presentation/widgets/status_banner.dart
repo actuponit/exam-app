@@ -130,80 +130,78 @@ class _StatusBannerState extends State<StatusBanner> {
                     borderRadius: BorderRadius.circular(buttonRadius),
                   ),
                 ),
-                onPressed: widget.onCheckStatus,
+                onPressed: () {},
                 child: const Text('Check Now'),
               ),
             ],
           ),
-          if (lastCheckedTimeText.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Text(
-                              'If your payment is not approved within 2 hours, ',
-                              style: bodyStyle.copyWith(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 12,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                context.pushNamed(RoutePaths.contact);
-                              },
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: Text(
-                                'please contact us',
-                                style: bodyStyle.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '.',
-                              style: bodyStyle.copyWith(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  children: [
+                    Text(
+                      'If your payment is not approved within 2 hours, ',
+                      style: bodyStyle.copyWith(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.push(RoutePaths.contact);
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        'Please contact us',
+                        style: bodyStyle.copyWith(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.access_time_rounded,
-                            color: Colors.white.withOpacity(0.9),
-                            size: 14,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Last checked: $lastCheckedTimeText',
-                            style: bodyStyle.copyWith(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                    ),
+                    Text(
+                      '.',
+                      style: bodyStyle.copyWith(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                if (lastCheckedTimeText.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time_rounded,
+                        color: Colors.white.withOpacity(0.9),
+                        size: 14,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Last checked: $lastCheckedTimeText',
+                        style: bodyStyle.copyWith(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
                 ],
-              ),
+              ],
             ),
+          ),
         ],
       ),
     );
