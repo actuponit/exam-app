@@ -102,8 +102,8 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
   @override
   void dispose() {
     _pageController.dispose();
-    stopScreenshotListening();
-    startScreenshot();
+    // stopScreenshotListening();
+    // startScreenshot();
     super.dispose();
   }
 
