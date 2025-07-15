@@ -9,7 +9,7 @@ class OnboardingData {
     {
       'title': 'All Education Levels',
       'description':
-          'From 6th and 8th grade regional exams to Ethiopian University Entrance Exam and Graduate Admission Tests.',
+          'Specifically designed for 8th Grade Regional Exams and First-Year Freshman Exams.',
       'animationPath': 'assets/animations/education_levels.json',
     },
     {

@@ -67,11 +67,11 @@ class ContactsScreen extends StatelessWidget {
                   _buildContactMethodsSection(context),
                   const SizedBox(height: 24),
                   _buildOfficeHoursSection(context),
+                  // const SizedBox(height: 24),
+                  // _buildSocialMediaSection(context),
                   const SizedBox(height: 24),
-                  _buildSocialMediaSection(context),
-                  const SizedBox(height: 24),
-                  _buildFeedbackSection(context),
-                  const SizedBox(height: 40),
+                  // _buildFeedbackSection(context),
+                  // const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -226,6 +226,24 @@ class ContactsScreen extends StatelessWidget {
               const SizedBox(height: 20),
               _buildContactItem(
                 context,
+                Icons.chat,
+                'Telegram Support bot',
+                '@Ethio_exam_hub_support',
+                'Send us a message for general inquiries',
+                () => _launchUrl('https://t.me/Ethio_exam_hub_support'),
+              ),
+              const SizedBox(height: 16),
+              _buildContactItem(
+                context,
+                Icons.telegram,
+                'Telegram Channel',
+                '@Ethio_exam_hub',
+                'Join our Telegram channel for updates and announcements',
+                () => _launchUrl('https://t.me/Ethio_exam_hub'),
+              ),
+              const SizedBox(height: 16),
+              _buildContactItem(
+                context,
                 Icons.email_outlined,
                 'Email Support',
                 'support@examapp.com',
@@ -237,27 +255,18 @@ class ContactsScreen extends StatelessWidget {
                 context,
                 Icons.phone_outlined,
                 'Phone Support',
-                '+1 (555) 123-4567',
-                'Call us for urgent technical support',
-                () => _launchPhone('+15551234567'),
-              ),
-              const SizedBox(height: 16),
-              _buildContactItem(
-                context,
-                Icons.chat_outlined,
-                'Live Chat',
-                'Available 24/7',
-                'Get instant help from our support team',
-                () => _showLiveChatInfo(context),
+                '+251 9 40855439',
+                'Call us for urgent technical support, Misbah Jemal',
+                () => _launchPhone('+251940855439'),
               ),
               const SizedBox(height: 16),
               _buildContactItem(
                 context,
                 Icons.bug_report_outlined,
                 'Report a Bug',
-                'bugs@examapp.com',
+                '@Ethio_exam_hub_support',
                 'Help us improve by reporting issues',
-                () => _launchEmail('bugs@examapp.com'),
+                () => _launchUrl('https://t.me/Ethio_exam_hub_support'),
               ),
             ],
           ),
@@ -489,100 +498,6 @@ class ContactsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialMediaSection(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(cardRadius),
-        side: BorderSide(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[700]!
-              : Colors.grey[200]!,
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(cardRadius),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: Theme.of(context).brightness == Brightness.dark
-                ? [
-                    Colors.grey[850]!,
-                    Colors.grey[900]!,
-                  ]
-                : [
-                    Colors.white,
-                    Colors.grey[50]!,
-                  ],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.public,
-                      color: Theme.of(context).primaryColor,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Follow Us',
-                      style: titleStyle.copyWith(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black87,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Stay updated with our latest features and study tips',
-                style: bodyStyle.copyWith(
-                  fontSize: 16,
-                  height: 1.6,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey[300]
-                      : Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildSocialButton(
-                      context, Icons.facebook, 'Facebook', Colors.blue),
-                  _buildSocialButton(context, Icons.alternate_email, 'Twitter',
-                      Colors.lightBlue),
-                  _buildSocialButton(
-                      context, Icons.camera_alt, 'Instagram', Colors.purple),
-                  _buildSocialButton(
-                      context, Icons.video_library, 'YouTube', Colors.red),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildSocialButton(
       BuildContext context, IconData icon, String platform, Color color) {
     return InkWell(
@@ -617,99 +532,6 @@ class ContactsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeedbackSection(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(cardRadius),
-        side: BorderSide(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[700]!
-              : Colors.grey[200]!,
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(cardRadius),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: Theme.of(context).brightness == Brightness.dark
-                ? [
-                    Colors.grey[850]!,
-                    Colors.grey[900]!,
-                  ]
-                : [
-                    Colors.white,
-                    Colors.grey[50]!,
-                  ],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.feedback,
-                      color: Theme.of(context).primaryColor,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Share Your Feedback',
-                      style: titleStyle.copyWith(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black87,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Your feedback helps us improve. Let us know what you think!',
-                style: bodyStyle.copyWith(
-                  fontSize: 16,
-                  height: 1.6,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey[300]
-                      : Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: () => _launchEmail('feedback@examapp.com'),
-                icon: const Icon(Icons.send),
-                label: const Text('Send Feedback'),
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   // Helper methods for launching external apps
   void _launchEmail(String email) async {
     final Uri emailUri = Uri(
@@ -738,20 +560,10 @@ class ContactsScreen extends StatelessWidget {
     );
   }
 
-  void _showLiveChatInfo(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Live Chat'),
-        content: const Text(
-            'Live chat will be available in the next update. For now, please use email or phone support.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
+  void _launchUrl(String url) async {
+    final Uri urlUri = Uri.parse(url);
+    if (await canLaunchUrl(urlUri)) {
+      await launchUrl(urlUri);
+    }
   }
 }

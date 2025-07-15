@@ -1,6 +1,7 @@
 import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/theme.dart';
@@ -68,13 +69,19 @@ class _TransactionVerificationScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         title: Text(
           'Verify Payment',
           style: displayStyle.copyWith(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
             fontSize: 24,
           ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        elevation: 0,
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onPrimary,
         ),
       ),
       body: BlocConsumer<SubscriptionBloc, SubscriptionState>(
@@ -100,7 +107,10 @@ class _TransactionVerificationScreenState
                   Text(
                     'Upload your payment receipt or screenshot of the transaction details',
                     style: bodyStyle.copyWith(
-                      color: textLight,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -139,6 +149,9 @@ class _TransactionVerificationScreenState
                                     'Subscription Details',
                                     style: titleStyle.copyWith(
                                       fontWeight: FontWeight.w600,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
                                     ),
                                   ),
                                   Icon(
@@ -155,12 +168,20 @@ class _TransactionVerificationScreenState
                                 children: [
                                   Text(
                                     'Exam Type:',
-                                    style: bodyStyle,
+                                    style: bodyStyle.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.7),
+                                    ),
                                   ),
                                   Text(
                                     _examType,
                                     style: bodyStyle.copyWith(
                                       fontWeight: FontWeight.w600,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
                                     ),
                                   ),
                                 ],
@@ -172,7 +193,12 @@ class _TransactionVerificationScreenState
                                 children: [
                                   Text(
                                     'Price:',
-                                    style: bodyStyle,
+                                    style: bodyStyle.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.7),
+                                    ),
                                   ),
                                   Text(
                                     '$_currency ${_subscriptionPrice.toStringAsFixed(2)}',
@@ -188,14 +214,40 @@ class _TransactionVerificationScreenState
                           ),
                   ),
 
+                  const SizedBox(height: 24),
+                  _buildBankAccountsSection(),
                   const SizedBox(height: 30),
                   TextFormField(
                     controller: _transactionNumberController,
                     decoration: InputDecoration(
                       labelText: 'Transaction Number (optional)',
-                      prefixIcon: const Icon(Icons.receipt),
+                      prefixIcon: Icon(
+                        Icons.receipt,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(cardRadius),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(cardRadius),
+                        borderSide: BorderSide(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.5),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(cardRadius),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                     ),
                   ),
@@ -205,6 +257,7 @@ class _TransactionVerificationScreenState
                     style: titleStyle.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -246,6 +299,164 @@ class _TransactionVerificationScreenState
           );
         },
       ),
+    );
+  }
+
+  Widget _buildBankAccountsSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(cardRadius),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.account_balance,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Payment Accounts',
+                style: titleStyle.copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Choose any of the following payment methods to complete your transaction:',
+            style: bodyStyle.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildCollapsibleBankAccount(
+            'CBE (Commercial Bank of Ethiopia)',
+            Icons.account_balance,
+            [
+              {'label': 'Account Number', 'value': '1000699012428'},
+              {
+                'label': 'Account Name',
+                'value': 'Musbah Jemal and or Kasim Nasir'
+              },
+            ],
+          ),
+          const SizedBox(height: 8),
+          _buildCollapsibleBankAccount(
+            'Telebirr',
+            Icons.phone_android,
+            [
+              {'label': 'Phone Number', 'value': '0926977531'},
+              {'label': 'Account Name', 'value': 'Kasim Nasir'},
+            ],
+          ),
+          const SizedBox(height: 8),
+          _buildCollapsibleBankAccount(
+            'E-birr',
+            Icons.mobile_friendly,
+            [
+              {'label': 'Phone Number', 'value': '0940855439'},
+              {'label': 'Account Name', 'value': 'Misba Jemal'},
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCollapsibleBankAccount(
+      String bankName, IconData icon, List<Map<String, String>> details) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+        ),
+      ),
+      child: ExpansionTile(
+        leading: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        title: Text(
+          bankName,
+          style: bodyStyle.copyWith(
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        iconColor: Theme.of(context).colorScheme.primary,
+        collapsedIconColor:
+            Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+        children: details
+            .map((detail) =>
+                _buildAccountDetail(detail['label']!, detail['value']!))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildAccountDetail(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: bodyStyle.copyWith(
+                    fontSize: 12,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: bodyStyle.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.copy,
+              size: 20,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            onPressed: () => _copyToClipboard(value),
+            tooltip: 'Copy $label',
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _copyToClipboard(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    AppSnackBar.success(
+      context: context,
+      message: 'Copied to clipboard!',
     );
   }
 

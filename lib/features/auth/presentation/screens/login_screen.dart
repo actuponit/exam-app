@@ -131,9 +131,9 @@ class _LoginScreenState extends State<LoginScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              primaryColor.withOpacity(0.1),
-              Colors.white,
-              secondaryColor.withOpacity(0.05),
+              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+              Theme.of(context).colorScheme.surface,
+              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.2),
             ],
           ),
         ),
@@ -151,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen>
                   IconButton(
                     onPressed: () => context.pop(),
                     icon: const Icon(Icons.arrow_back_ios_rounded),
-                    color: primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
 
                   const SizedBox(height: 20),
@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen>
                   Text(
                     'Welcome Back!',
                     style: theme.textTheme.displaySmall?.copyWith(
-                      color: textDark,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -168,7 +168,10 @@ class _LoginScreenState extends State<LoginScreen>
                   Text(
                     'Sign in to continue your exam preparation',
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: textLight,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
                     ),
                   ),
 
@@ -210,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen>
                       child: Text(
                         'Forgot Password?',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -234,7 +237,10 @@ class _LoginScreenState extends State<LoginScreen>
                         Text(
                           "Don't have an account? ",
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: textLight,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.7),
                           ),
                         ),
                         TextButton(
@@ -247,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen>
                           child: Text(
                             'Sign Up',
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -291,15 +297,18 @@ class _LoginScreenState extends State<LoginScreen>
           width: double.infinity,
           height: 56,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [primaryColor, secondaryColor],
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
+              ],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
             borderRadius: BorderRadius.circular(buttonRadius),
             boxShadow: [
               BoxShadow(
-                color: primaryColor.withOpacity(0.3),
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -316,20 +325,20 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
             child: state.isLoginLoading
-                ? const SizedBox(
+                ? SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       strokeWidth: 2,
                     ),
                   )
-                : const Text(
+                : Text(
                     'Login',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
           ),

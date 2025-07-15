@@ -139,7 +139,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Master Your National Exams',
+                          'Master Your Exams',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color:
                                 Theme.of(context).colorScheme.onSurfaceVariant,

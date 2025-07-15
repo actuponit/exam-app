@@ -183,13 +183,13 @@ class _ExamSelectionWidgetState extends State<ExamSelectionWidget> {
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, 
+          Icon(Icons.info_outline,
               color: Theme.of(context).colorScheme.onPrimaryContainer),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Start with free sample questions for any exam! '
-              'Upgrade anytime to unlock full access.',
+              'Begin with free sample questions after successful registration'
+              'You can upgrade anytime for full access to all exam materials.',
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
@@ -223,9 +223,10 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
     return BlocBuilder<RegistrationBloc, RegistrationState>(
       builder: (context, state) {
         final isSelected = widget.isSelected;
-        final isReallySelected = widget.exam.id == state.institutionInfo.examType.id;
+        final isReallySelected =
+            widget.exam.id == state.institutionInfo.examType.id;
         final theme = Theme.of(context);
-        
+
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -236,7 +237,7 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isSelected || isReallySelected
-                  ? theme.colorScheme.primary 
+                  ? theme.colorScheme.primary
                   : theme.colorScheme.outlineVariant,
               width: isSelected ? 2 : 1,
             ),
@@ -268,7 +269,6 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
                     ),
                   ),
                 ),
-              
               InkWell(
                 onTap: widget.onTap,
                 child: Padding(
@@ -292,7 +292,8 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
                                       const SizedBox(width: 8),
                                       Text(
                                         'Selected',
-                                        style: theme.textTheme.bodySmall?.copyWith(
+                                        style:
+                                            theme.textTheme.bodySmall?.copyWith(
                                           color: theme.colorScheme.primary,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -301,24 +302,39 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
                                   ),
                                 Text(
                                   widget.exam.name,
-                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: isSelected
-                                            ? Theme.of(context).colorScheme.onPrimaryContainer
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryContainer
                                             : null,
                                       ),
                                 ),
                                 Text(
                                   widget.exam.description,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   widget.exam.formattedPrice,
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.primary,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
@@ -326,9 +342,11 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
                             ),
                           ),
                           Icon(
-                            isReallySelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                            color: isReallySelected 
-                                ? Theme.of(context).colorScheme.primary 
+                            isReallySelected
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
+                            color: isReallySelected
+                                ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).colorScheme.outline,
                           ),
                         ],
@@ -355,8 +373,8 @@ class _AnimatedExamCardState extends State<AnimatedExamCard> {
           width: double.infinity,
           child: FilledButton(
             onPressed: () => context.read<RegistrationBloc>().add(
-              ExamTypeSelected(widget.exam),
-            ),
+                  ExamTypeSelected(widget.exam),
+                ),
             child: const Text('Select Exam'),
           ),
         ),

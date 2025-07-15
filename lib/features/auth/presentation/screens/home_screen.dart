@@ -1,8 +1,6 @@
-import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/presentation/utils/dialog_utils.dart';
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
-import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_cubit.dart';
 import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_state.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
@@ -19,7 +17,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/presentation/widgets/app_drawer.dart';
 import '../../../../core/theme.dart';
-import '../../../../core/theme_cubit.dart';
+// import '../../../../core/theme_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,11 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 IconButton(
                   icon: const Icon(Icons.share),
                   onPressed: () async {
-                    final referralCode =
-                        await getIt<LocalAuthDataSource>().getReferralCode();
-                    Share.share(
-                      'Join me on Exam App! Use my referral code: $referralCode to get started and I\'ll earn rewards when you subscribe!',
-                    );
+                    final uri = Uri.parse(
+                        'https://play.google.com/store/apps/details?id=com.ethioexam.app');
+
+                    final params = ShareParams(uri: uri);
+
+                    await SharePlus.instance.share(params);
                   },
                 ),
                 // Theme toggle button removed from here. Now in Settings.
@@ -87,10 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       'Welcome back!',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontSize: 28,
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(
+                            fontSize: 28,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -105,10 +107,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 40),
                     Text(
                       'Recent Exam',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontSize: 20,
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(
+                            fontSize: 20,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                     ),
                     const SizedBox(height: 16),
                     _buildRecentExams(context),
@@ -302,19 +307,30 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(
                                   'Continue Learning',
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color: Theme.of(context).colorScheme.onBackground,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground,
+                                      ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Pick up where you left off',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-                                    fontSize: 14,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground
+                                            .withOpacity(0.7),
+                                        fontSize: 14,
+                                      ),
                                 ),
                               ],
                             ),
@@ -327,10 +343,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Theme.of(context).dividerColor),
+                          border:
+                              Border.all(color: Theme.of(context).dividerColor),
                           boxShadow: [
                             BoxShadow(
-                              color: Theme.of(context).shadowColor.withOpacity(0.05),
+                              color: Theme.of(context)
+                                  .shadowColor
+                                  .withOpacity(0.05),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -361,11 +380,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     state.recentExam!.region != null
                                         ? "${state.recentExam!.subject.name} (${state.recentExam!.region})"
                                         : state.recentExam!.subject.name,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Theme.of(context).colorScheme.onBackground,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onBackground,
+                                        ),
                                   ),
                                 ),
                               ],
@@ -389,11 +413,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const SizedBox(width: 12),
                                       Text(
                                         'Year ${state.recentExam!.year}',
-                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                          color: Theme.of(context).colorScheme.onBackground,
-                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onBackground,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -410,10 +439,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Expanded(
                                           child: Text(
                                             state.recentExam!.chapter!.name,
-                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                              fontSize: 15,
-                                              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-                                            ),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                  fontSize: 15,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onBackground
+                                                      .withOpacity(0.7),
+                                                ),
                                           ),
                                         ),
                                       ],
@@ -442,8 +477,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             );
                           },
-                          icon: Icon(Icons.play_arrow_rounded, color: Theme.of(context).colorScheme.onPrimary),
-                          label: Text('Continue Learning', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimary)),
+                          icon: Icon(Icons.play_arrow_rounded,
+                              color: Theme.of(context).colorScheme.onPrimary),
+                          label: Text('Continue Learning',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary)),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
@@ -461,16 +504,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: Text(
                       'No recent exams',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                     ),
                     subtitle: Text(
                       'Start practicing to see your recent exams here',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
-                        fontSize: 14,
-                      ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withOpacity(0.7),
+                            fontSize: 14,
+                          ),
                     ),
                     trailing: TextButton(
                       onPressed: () {
