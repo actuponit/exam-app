@@ -299,7 +299,7 @@ class ContactsScreen extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Row(
             children: [
               Container(
@@ -494,40 +494,6 @@ class ContactsScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSocialButton(
-      BuildContext context, IconData icon, String platform, Color color) {
-    return InkWell(
-      onTap: () => _launchSocialMedia(platform, context),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              platform,
-              style: bodyStyle.copyWith(
-                fontSize: 12,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black87,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

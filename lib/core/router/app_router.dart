@@ -2,6 +2,7 @@ import 'package:exam_app/features/about/presentation/screens/about_us_screen.dar
 import 'package:exam_app/features/auth/presentation/screens/home_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/registration_screen.dart';
+import 'package:exam_app/features/auth/presentation/screens/video_walkthrough_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:exam_app/features/contacts/presentation/screens/contacts_screen.dart';
 import 'package:exam_app/features/payment/presentation/screens/transaction_verification_screen.dart';
@@ -19,6 +20,7 @@ import 'package:flutter/material.dart';
 class RoutePaths {
   static const String splash = '/splash';
   static const String welcome = '/welcome';
+  static const String videoWalkthrough = '/video-walkthrough';
   static const String login = '/login';
   static const String signUp = '/signup';
   static const String home = '/home';
@@ -52,6 +54,11 @@ class AppRouter {
         path: RoutePaths.welcome,
         name: 'Welcome',
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.videoWalkthrough,
+        name: 'VideoWalkthrough',
+        builder: (context, state) => const VideoWalkthroughScreen(),
       ),
       GoRoute(
         path: RoutePaths.login,
