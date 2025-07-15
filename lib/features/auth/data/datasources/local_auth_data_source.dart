@@ -29,8 +29,8 @@ class LocalAuthDataSourceImpl implements LocalAuthDataSource {
 
   @override
   Future<int?> getUserId() async {
-    // return _prefs.getInt(_userIdKey);
-    return 170;
+    return _prefs.getInt(_userIdKey);
+    // return 170;
   }
 
   @override
