@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:go_router/go_router.dart';
 import 'package:exam_app/core/router/app_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class VideoWalkthroughScreen extends StatefulWidget {
   const VideoWalkthroughScreen({super.key});
@@ -20,33 +19,22 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
   bool _isLoading = true;
   bool _hasError = false;
   String? _errorMessage;
-  Timer? _hideSkipTimer;
-  bool _showSkipButton = true;
 
   @override
   void initState() {
     super.initState();
     _initializeVideoPlayer();
-    _startHideSkipTimer();
-  }
-
-  void _startHideSkipTimer() {
-    _hideSkipTimer = Timer(const Duration(seconds: 10), () {
-      if (mounted) {
-        setState(() {
-          _showSkipButton = false;
-        });
-      }
-    });
   }
 
   Future<void> _initializeVideoPlayer() async {
     try {
-      // Check if video file exists
-      const String videoPath = 'assets/videos/walkthrough.mp4';
+      // Google Drive direct video URL
+      const String videoUrl =
+          'https://drive.google.com/uc?export=download&id=1gDp6HHaxtgOA3USom0mhedxrl10K6_Q4';
 
-      // Try to load the video
-      _videoPlayerController = VideoPlayerController.asset(videoPath);
+      // Load the video from URL
+      _videoPlayerController =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
       await _videoPlayerController.initialize();
 
@@ -97,7 +85,7 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
           _isLoading = false;
           _hasError = true;
           _errorMessage =
-              'No walkthrough video found. Click "Continue" to proceed with registration.';
+              'Unable to load walkthrough video. Please check your internet connection.';
         });
       }
     }
@@ -107,14 +95,26 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
     context.go(RoutePaths.signUp);
   }
 
-  void _skipVideo() {
-    _hideSkipTimer?.cancel();
-    _navigateToRegistration();
+  Future<void> _openVideoInBrowser() async {
+    const String videoUrl =
+        'https://drive.google.com/file/d/1gDp6HHaxtgOA3USom0mhedxrl10K6_Q4/view?usp=sharing';
+    final Uri uri = Uri.parse(videoUrl);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      // Show error message if can't open browser
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unable to open video in browser'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
-    _hideSkipTimer?.cancel();
     _videoPlayerController.dispose();
     _chewieController?.dispose();
     super.dispose();
@@ -130,17 +130,16 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
             // Video Player or Loading/Error State
             _buildVideoContent(),
 
-            // Skip Button
-            if (_showSkipButton)
-              Positioned(
-                top: 20,
-                right: 20,
-                child: AnimatedOpacity(
-                  opacity: _showSkipButton ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: _buildSkipButton(),
-                ),
+            // Browser Button
+            Positioned(
+              top: 20,
+              right: 20,
+              child: AnimatedOpacity(
+                opacity: 1.0,
+                duration: const Duration(milliseconds: 300),
+                child: _buildBrowserButton(),
               ),
+            ),
 
             // Back Button
             Positioned(
@@ -170,11 +169,24 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      child: _chewieController != null
-          ? Chewie(controller: _chewieController!)
-          : const Center(
-              child: CircularProgressIndicator(),
-            ),
+      color: Colors.black,
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: _videoPlayerController.value.aspectRatio,
+          child: _chewieController != null
+              ? Chewie(controller: _chewieController!)
+              : Container(
+                  color: Colors.black,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ),
+        ),
+      ),
     );
   }
 
@@ -264,7 +276,7 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
     );
   }
 
-  Widget _buildSkipButton() {
+  Widget _buildBrowserButton() {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
@@ -278,26 +290,13 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(25),
-          onTap: _skipVideo,
+          onTap: _openVideoInBrowser,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.skip_next,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Skip',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-              ],
+            padding: const EdgeInsets.all(10),
+            child: Icon(
+              Icons.open_in_browser,
+              color: Theme.of(context).colorScheme.primary,
+              size: 20,
             ),
           ),
         ),

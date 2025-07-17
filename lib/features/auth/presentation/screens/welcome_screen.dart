@@ -223,6 +223,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   ),
 
                   const SizedBox(height: 24),
+                  _buildWalkthroughButton(
+                    context: context,
+                    onPressed: () => context.push(RoutePaths.videoWalkthrough),
+                  ),
+
+                  const SizedBox(height: 24),
                   _buildPrivacyPolicyButton(),
                   const SizedBox(height: 32),
                 ],
@@ -230,6 +236,23 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildWalkthroughButton({
+    required BuildContext context,
+    required VoidCallback onPressed,
+  }) {
+    return TextButton(
+      onPressed: onPressed,
+      child: Text(
+        'Watch Video Walkthrough',
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w500,
+              decoration: TextDecoration.underline,
+            ),
       ),
     );
   }
