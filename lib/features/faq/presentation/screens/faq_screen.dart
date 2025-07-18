@@ -119,9 +119,39 @@ class _FAQScreenState extends State<FAQScreen> {
               'Yes! It includes previous regional exams to prepare effectively.',
         ),
         FAQ(
+          question: 'Does this app help with university freshman exams?',
+          answer:
+              'Yes! Ethio Exam Hub is designed to support first-year university students by providing real past exams for effective preparation.',
+        ),
+        FAQ(
           question: 'Are all regional exams included?',
           answer:
               'Absolutely — exams from all regions (Addis Ababa, Afar, Amhara, Benishangul-Gumuz, Central Ethiopia, Dire Dawa, Gambella, Harari, Oromia, Sidama, Somali, South Ethiopia, South West Ethiopia, Tigray.) are covered.',
+        ),
+        FAQ(
+          question: 'Which university exams are included?',
+          answer:
+              'The app includes selected real exams from all major Ethiopian universities, so you can study confidently, no matter where you’re enrolled.',
+        ),
+        FAQ(
+          question: 'Does the app contain COC exams?',
+          answer:
+              'Yes! Ethio Exam Hub includes COC exams, specifically for fields like Health and Law.',
+        ),
+      ],
+    ),
+    FAQCategory(
+      title: 'Technical & Support',
+      faqs: [
+        FAQ(
+          question: 'I found a mistake in an exam. What should I do?',
+          answer:
+              "Use the Contact Us section to report issues. We'll fix them quickly.",
+        ),
+        FAQ(
+          question: 'The app is slow or not loading. What can I do?',
+          answer:
+              "Check your internet and retry. If problems continue, reach out to support.",
         ),
       ],
     ),

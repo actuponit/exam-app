@@ -72,12 +72,12 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
         });
 
         // Listen for video completion
-        _videoPlayerController.addListener(() {
-          if (_videoPlayerController.value.position >=
-              _videoPlayerController.value.duration) {
-            _navigateToRegistration();
-          }
-        });
+        // _videoPlayerController.addListener(() {
+        //   if (_videoPlayerController.value.position >=
+        //       _videoPlayerController.value.duration) {
+        //     _navigateToRegistration();
+        //   }
+        // });
       }
     } catch (e) {
       if (mounted) {
@@ -92,7 +92,7 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
   }
 
   void _navigateToRegistration() {
-    context.go(RoutePaths.signUp);
+    context.pushReplacement(RoutePaths.signUp);
   }
 
   Future<void> _openVideoInBrowser() async {

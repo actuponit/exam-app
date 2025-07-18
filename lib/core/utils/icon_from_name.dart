@@ -28,6 +28,10 @@ IconData iconFromName(String name) {
     return Icons.language;
   }
 
+  if (lowerName.contains('civics')) {
+    return Icons.balance;
+  }
+
   // Biology and Life Sciences
   if (lowerName.contains('biology') ||
       lowerName.contains('bio') ||
@@ -53,11 +57,20 @@ IconData iconFromName(String name) {
   }
 
   // History and Social Studies
-  if (lowerName.contains('history') ||
-      lowerName.contains('social') ||
-      lowerName.contains('civics') ||
-      lowerName.contains('geography')) {
-    return Icons.history;
+  if (lowerName.contains('history') || lowerName.contains('global')) {
+    return Icons.public;
+  }
+
+  if (lowerName.contains('anthropology')) {
+    return Icons.groups_3;
+  }
+
+  if (lowerName.contains('geography')) {
+    return Icons.map;
+  }
+
+  if (lowerName.contains('logic')) {
+    return Icons.psychology_alt;
   }
 
   // Economics and Business
@@ -65,7 +78,7 @@ IconData iconFromName(String name) {
       lowerName.contains('business') ||
       lowerName.contains('commerce') ||
       lowerName.contains('finance')) {
-    return Icons.eco;
+    return Icons.monetization_on;
   }
 
   // Psychology and Sociology
@@ -108,18 +121,13 @@ IconData iconFromName(String name) {
     return Icons.music_note;
   }
 
-  // Religious Studies
-  if (lowerName.contains('religion') ||
-      lowerName.contains('religious') ||
-      lowerName.contains('theology')) {
-    return Icons.church;
+  if (lowerName.contains('inclusiveness')) {
+    return Icons.group;
   }
 
-  // Philosophy
-  if (lowerName.contains('philosophy') ||
-      lowerName.contains('ethics') ||
-      lowerName.contains('logic')) {
-    return Icons.psychology;
+  // Religious Studies
+  if (lowerName.contains('religion') || lowerName.contains('theology')) {
+    return Icons.church;
   }
 
   // Default case
