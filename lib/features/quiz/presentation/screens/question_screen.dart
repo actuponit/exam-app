@@ -272,7 +272,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                     itemCount: state.totalPages,
                     itemBuilder: (context, pageIndex) {
                       final pageQuestions =
-                          state.questions.skip(pageIndex * 3).take(3).toList();
+                          state.questions.skip(pageIndex * 6).take(6).toList();
 
                       return ListView.builder(
                         padding: const EdgeInsets.only(bottom: 16),
@@ -292,7 +292,7 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                                     ),
                                   );
                             },
-                            index: (state.currentPage * 3) + index,
+                            index: (state.currentPage * 6) + index,
                           );
                         },
                       );
