@@ -3,6 +3,7 @@ import '../../domain/models/question.dart';
 import '../../domain/services/score_calculator.dart';
 
 enum QuestionMode { practice, quiz }
+
 enum QuestionStatus { initial, loading, success, error, submitted }
 
 class QuestionState extends Equatable {
@@ -36,15 +37,15 @@ class QuestionState extends Equatable {
     this.startTime,
   });
 
-  int get totalPages => (questions.length / 3).ceil();
+  int get totalPages => (questions.length / 6).ceil();
 
-  bool get canSubmit => isQuizMode && 
-      !isSubmitted && 
+  bool get canSubmit =>
+      isQuizMode &&
+      !isSubmitted &&
       questions.every((q) => answers.containsKey(q.id));
 
-  bool get hasTimeExpired => isQuizMode && 
-      timeRemaining != null && 
-      timeRemaining! <= 0;
+  bool get hasTimeExpired =>
+      isQuizMode && timeRemaining != null && timeRemaining! <= 0;
 
   String get formattedTimeRemaining {
     if (timeRemaining == null) return '';
@@ -101,4 +102,4 @@ class QuestionState extends Equatable {
         timeRemaining,
         startTime,
       ];
-} 
+}

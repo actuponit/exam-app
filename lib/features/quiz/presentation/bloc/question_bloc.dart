@@ -8,7 +8,7 @@ import 'question_state.dart';
 
 class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
   final QuestionRepository _repository;
-  static const int questionsPerPage = 3;
+  static const int questionsPerPage = 6;
   static const int quizDurationMinutes = 30;
   Timer? _timer;
 

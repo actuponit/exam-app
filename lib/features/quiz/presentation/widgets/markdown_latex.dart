@@ -1,8 +1,10 @@
 import 'package:exam_app/core/widgets/cached_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'latex.dart';
 
-/// Enhanced text widget with markdown and LaTeX support
+/// Enhanced text widget with markdown, LaTeX, and HTML support
 class MarkdownLatexWidget extends StatelessWidget {
   final String data;
   final TextStyle? textStyle;
@@ -51,6 +53,8 @@ class MarkdownLatexWidget extends StatelessWidget {
             margin: const EdgeInsets.symmetric(vertical: 8.0),
             child: _buildImage(part.content, part.altText ?? ''),
           );
+        } else if (part.type == _ContentType.html) {
+          return _buildHtmlContent(part.content);
         } else {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 2.0),
@@ -61,6 +65,59 @@ class MarkdownLatexWidget extends StatelessWidget {
           );
         }
       }).toList(),
+    );
+  }
+
+  Widget _buildHtmlContent(String htmlContent) {
+    return Html(
+      shrinkWrap: true,
+      data: htmlContent,
+      style: {
+        "body": Style(
+          margin: Margins.zero,
+          padding: HtmlPaddings.zero,
+          fontSize: FontSize(textStyle?.fontSize ?? 16),
+          color: textStyle?.color ?? Colors.black87,
+          fontFamily: textStyle?.fontFamily,
+          fontWeight: textStyle?.fontWeight,
+        ),
+        "p": Style(
+          margin: Margins.only(bottom: 8),
+          textAlign: TextAlign.left,
+        ),
+        "div": Style(
+          margin: Margins.zero,
+          padding: HtmlPaddings.zero,
+        ),
+        "span": Style(
+          margin: Margins.zero,
+          padding: HtmlPaddings.zero,
+        ),
+        "strong": Style(
+          fontWeight: FontWeight.bold,
+        ),
+        "b": Style(
+          fontWeight: FontWeight.bold,
+        ),
+        "em": Style(
+          fontStyle: FontStyle.italic,
+        ),
+        "i": Style(
+          fontStyle: FontStyle.italic,
+        ),
+        "u": Style(
+          textDecoration: TextDecoration.underline,
+        ),
+        "br": Style(
+          margin: Margins.only(bottom: 4),
+        ),
+      },
+      onLinkTap: (url, attributes, element) {
+        // Handle link taps if needed
+        if (url != null) {
+          launchUrl(Uri.parse(url));
+        }
+      },
     );
   }
 
@@ -92,6 +149,12 @@ class MarkdownLatexWidget extends StatelessWidget {
 
   List<_ContentPart> _parseContent(String content) {
     final parts = <_ContentPart>[];
+
+    // Check if content contains HTML blocks
+    if (_containsHtmlBlocks(content)) {
+      parts.add(_ContentPart(content, _ContentType.html, true));
+      return parts;
+    }
 
     // Regex patterns for different content types
     final blockLatexPattern = RegExp(r'\$\$([^$]+?)\$\$');
@@ -195,9 +258,58 @@ class MarkdownLatexWidget extends StatelessWidget {
 
     return parts;
   }
+
+  bool _containsHtmlBlocks(String content) {
+    final trimmedContent = content.trim();
+
+    // Check for common HTML block patterns
+    final htmlBlockPatterns = [
+      RegExp(r'<p[^>]*>.*?</p>', dotAll: true),
+      RegExp(r'<div[^>]*>.*?</div>', dotAll: true),
+      RegExp(r'<section[^>]*>.*?</section>', dotAll: true),
+      RegExp(r'<article[^>]*>.*?</article>', dotAll: true),
+      RegExp(r'<header[^>]*>.*?</header>', dotAll: true),
+      RegExp(r'<footer[^>]*>.*?</footer>', dotAll: true),
+      RegExp(r'<main[^>]*>.*?</main>', dotAll: true),
+      RegExp(r'<aside[^>]*>.*?</aside>', dotAll: true),
+      RegExp(r'<nav[^>]*>.*?</nav>', dotAll: true),
+      RegExp(r'<h[1-6][^>]*>.*?</h[1-6]>', dotAll: true),
+      RegExp(r'<ul[^>]*>.*?</ul>', dotAll: true),
+      RegExp(r'<ol[^>]*>.*?</ol>', dotAll: true),
+      RegExp(r'<table[^>]*>.*?</table>', dotAll: true),
+      RegExp(r'<form[^>]*>.*?</form>', dotAll: true),
+    ];
+
+    // Check if content starts with HTML tags
+    final startsWithHtml = trimmedContent.startsWith('<') &&
+        (trimmedContent.startsWith('<p') ||
+            trimmedContent.startsWith('<div') ||
+            trimmedContent.startsWith('<span') ||
+            trimmedContent.startsWith('<strong') ||
+            trimmedContent.startsWith('<b') ||
+            trimmedContent.startsWith('<em') ||
+            trimmedContent.startsWith('<i') ||
+            trimmedContent.startsWith('<h') ||
+            trimmedContent.startsWith('<ul') ||
+            trimmedContent.startsWith('<ol') ||
+            trimmedContent.startsWith('<li') ||
+            trimmedContent.startsWith('<table') ||
+            trimmedContent.startsWith('<tr') ||
+            trimmedContent.startsWith('<td') ||
+            trimmedContent.startsWith('<th'));
+
+    // Check for HTML block patterns
+    for (final pattern in htmlBlockPatterns) {
+      if (pattern.hasMatch(trimmedContent)) {
+        return true;
+      }
+    }
+
+    return startsWithHtml;
+  }
 }
 
-enum _ContentType { text, latex, image, bold }
+enum _ContentType { text, latex, image, bold, html }
 
 class _ContentPart {
   final String content;

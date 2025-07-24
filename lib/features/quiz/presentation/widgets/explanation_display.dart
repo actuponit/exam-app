@@ -73,6 +73,7 @@ class _ExplanationDisplayState extends State<ExplanationDisplay> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
@@ -95,7 +96,7 @@ class _ExplanationDisplayState extends State<ExplanationDisplay> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 2),
             MarkdownLatexWidget(
               data: widget.explanation,
               shrinkWrap: true,
