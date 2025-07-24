@@ -9,12 +9,14 @@ class MarkdownLatexWidget extends StatelessWidget {
   final String data;
   final TextStyle? textStyle;
   final bool shrinkWrap;
+  final String? imageBaseUrl;
 
   const MarkdownLatexWidget({
     super.key,
     required this.data,
     this.textStyle,
     this.shrinkWrap = false,
+    this.imageBaseUrl,
   });
 
   @override
@@ -153,6 +155,9 @@ class MarkdownLatexWidget extends StatelessWidget {
     // Check if content contains HTML blocks
     if (_containsHtmlBlocks(content)) {
       parts.add(_ContentPart(content, _ContentType.html, true));
+      if (imageBaseUrl != null) {
+        parts.add(_ContentPart(imageBaseUrl!, _ContentType.image, false));
+      }
       return parts;
     }
 

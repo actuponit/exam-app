@@ -119,6 +119,7 @@ class _QuestionCardState extends State<QuestionCard> {
               const SizedBox(height: 10),
               ExplanationDisplay(
                 explanation: question.explanation ?? 'No explanation available',
+                imageUrl: question.image,
               ),
             ],
           ],

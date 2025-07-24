@@ -66,10 +66,6 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
     // Build explanation text with image if present
     String explanationText = json['explanation'] ?? '';
     final explanationImagePath = json['explanation_image_path'];
-    if (explanationImagePath != null &&
-        explanationImagePath.toString().isNotEmpty) {
-      explanationText += '\n\n![Explanation Image]($explanationImagePath)';
-    }
 
     return Question(
       id: json['id'].toString(),
@@ -82,7 +78,7 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
       createdAt: DateTime.parse(json['created_at']),
       subject: subject,
       region: json['subject']?['region'],
-      image: json['question_image_path'],
+      image: explanationImagePath,
     );
   }
 }

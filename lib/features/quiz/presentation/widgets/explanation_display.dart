@@ -6,6 +6,7 @@ class ExplanationDisplay extends StatefulWidget {
   final bool isVisible;
   final VoidCallback? onExpand;
   final VoidCallback? onCollapse;
+  final String? imageUrl;
 
   const ExplanationDisplay({
     super.key,
@@ -13,6 +14,7 @@ class ExplanationDisplay extends StatefulWidget {
     this.isVisible = false,
     this.onExpand,
     this.onCollapse,
+    this.imageUrl,
   });
 
   @override
@@ -100,6 +102,7 @@ class _ExplanationDisplayState extends State<ExplanationDisplay> {
             MarkdownLatexWidget(
               data: widget.explanation,
               shrinkWrap: true,
+              imageBaseUrl: widget.imageUrl,
               textStyle: theme.textTheme.bodyMedium?.copyWith(
                 fontSize: 15,
                 height: 1.5,
