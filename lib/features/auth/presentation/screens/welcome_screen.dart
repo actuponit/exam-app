@@ -249,7 +249,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       child: Text(
         'Watch the walkthrough video for a step-by-step registration guide.',
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).primaryColor,
               fontWeight: FontWeight.w500,
               decoration: TextDecoration.underline,
             ),

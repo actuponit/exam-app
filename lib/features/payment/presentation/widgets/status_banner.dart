@@ -1,4 +1,6 @@
+import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
@@ -120,18 +122,29 @@ class _StatusBannerState extends State<StatusBanner> {
               const SizedBox(
                 width: 2,
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.orange[700],
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(buttonRadius),
-                  ),
-                ),
-                onPressed: () {},
-                child: const Text('Check Now'),
+              BlocBuilder<SubscriptionBloc, SubscriptionState>(
+                builder: (context, state) {
+                  if (state is SubscriptionLoading) {
+                    return const CircularProgressIndicator();
+                  }
+                  return ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.orange[700],
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(buttonRadius),
+                      ),
+                    ),
+                    onPressed: () {
+                      context
+                          .read<SubscriptionBloc>()
+                          .add(const CheckSubscriptionStatus());
+                    },
+                    child: const Text('Check Now'),
+                  );
+                },
               ),
             ],
           ),
