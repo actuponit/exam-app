@@ -20,11 +20,13 @@ class ExamRepoImpl implements ExamRepository {
   }) async {
     final exams = await _localDatasource.getExams();
     if (region == null) {
-      return exams.where((exam) => exam.subjectId == subjectId).toList();
+      return exams.where((exam) => exam.subjectId == subjectId).toList()
+        ..sort((a, b) => b.year.compareTo(a.year));
     } else {
       return exams
           .where((exam) => exam.subjectId == subjectId && exam.region == region)
-          .toList();
+          .toList()
+        ..sort((a, b) => b.year.compareTo(a.year));
     }
   }
 
