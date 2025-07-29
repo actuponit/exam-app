@@ -168,7 +168,10 @@ class QuestionRepositoryImpl implements QuestionRepository {
             questionCount: entry.value.length,
           );
         }).toList()
-          ..sort((a, b) => a.id.compareTo(b.id));
+          ..sort((a, b) => a.name
+              .trim()
+              .toLowerCase()
+              .compareTo(b.name.trim().toLowerCase()));
 
         // Create exam
         final exam = Exam(
@@ -232,7 +235,10 @@ class QuestionRepositoryImpl implements QuestionRepository {
               questionCount: entry.value.length,
             );
           }).toList()
-            ..sort((a, b) => a.id.compareTo(b.id));
+            ..sort((a, b) => a.name
+                .trim()
+                .toLowerCase()
+                .compareTo(b.name.trim().toLowerCase()));
 
           // Create exam
           final exam = Exam(
