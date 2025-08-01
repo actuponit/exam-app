@@ -68,9 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () async {
                     final uri = Uri.parse(
                         'https://play.google.com/store/apps/details?id=com.ethioexam.app');
-
                     final params = ShareParams(uri: uri);
-
                     await SharePlus.instance.share(params);
                   },
                 ),
@@ -97,9 +95,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Practice for your upcoming exams',
-                      style: bodyStyle.copyWith(
-                        color: textLight,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withOpacity(0.7),
+                          ),
                     ),
                     const SizedBox(height: 40),
                     _buildStatusBanner(context),
@@ -155,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.onBackground,
                 ),
                 strokeWidth: 3,
               ),
@@ -163,17 +164,21 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
             Text(
               'Loading your study materials...',
-              style: titleStyle.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
               'Please wait while we prepare your dashboard',
-              style: bodyStyle.copyWith(
-                color: textLight,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(0.7),
+                  ),
             ),
           ],
         ),
@@ -207,16 +212,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         TextSpan(
                           text: 'Something went wrong\n',
-                          style: titleStyle.copyWith(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
                         ),
                         TextSpan(
                           text: 'We couldn\'t load your dashboard content',
-                          style: bodyStyle.copyWith(
-                            color: textLight,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground
+                                        .withOpacity(0.7),
+                                  ),
                         ),
                       ],
                     ),
@@ -225,8 +239,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: onRetry,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Try Again'),
+                    icon: Icon(
+                      Icons.refresh,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      'Try Again',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
@@ -296,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             child: Icon(
                               Icons.history_rounded,
-                              color: Theme.of(context).colorScheme.onPrimary,
+                              color: Colors.white,
                               size: 24,
                             ),
                           ),
@@ -371,7 +394,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Icon(
                                     Icons.book_rounded,
                                     size: 20,
-                                    color: Theme.of(context).primaryColor,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -408,7 +432,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Icon(
                                         Icons.calendar_today_rounded,
                                         size: 18,
-                                        color: Theme.of(context).primaryColor,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                       ),
                                       const SizedBox(width: 12),
                                       Text(
@@ -433,7 +459,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Icon(
                                           Icons.menu_book_rounded,
                                           size: 18,
-                                          color: Theme.of(context).primaryColor,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
                                         ),
                                         const SizedBox(width: 12),
                                         Expanded(
@@ -478,15 +506,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                           icon: Icon(Icons.play_arrow_rounded,
-                              color: Theme.of(context).colorScheme.onPrimary),
+                              color: Colors.white),
                           label: Text('Continue Learning',
                               style: Theme.of(context)
                                   .textTheme
                                   .labelLarge
-                                  ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary)),
+                                  ?.copyWith(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
@@ -522,7 +547,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () {
                         context.push('/subjects');
                       },
-                      child: const Text('Start Now'),
+                      child: Text(
+                        'Start Now',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
               ],
@@ -604,8 +635,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(cardRadius),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         children: [
@@ -615,19 +647,21 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   'Checking subscription status...',
-                  style: titleStyle.copyWith(
-                    fontSize: 16,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 16),
-          const SizedBox(
+          SizedBox(
             width: 20,
             height: 20,
             child: CircularProgressIndicator(
               strokeWidth: 2.0,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ],
@@ -667,12 +701,12 @@ class FloatingActionButtonPulse extends StatefulWidget {
   final LinearGradient gradient;
 
   const FloatingActionButtonPulse({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.child,
     required this.tooltip,
     required this.gradient,
-  }) : super(key: key);
+  });
 
   @override
   State<FloatingActionButtonPulse> createState() =>
