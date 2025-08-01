@@ -30,28 +30,24 @@ class SubscriptionDataSourceImpl implements SubscriptionDataSource {
     required XFile receiptImage,
     String? transactionNumber,
   }) async {
-    try {
-      final formData = FormData.fromMap({
-        'user_id': userId,
-        'image': await MultipartFile.fromFile(
-          receiptImage.path,
-          filename: receiptImage.name,
-        ),
-        if (transactionNumber != null && transactionNumber.isNotEmpty)
-          'transaction_number': transactionNumber,
-      });
+    final formData = FormData.fromMap({
+      'user_id': userId,
+      'image': await MultipartFile.fromFile(
+        receiptImage.path,
+        filename: receiptImage.name,
+      ),
+      if (transactionNumber != null && transactionNumber.isNotEmpty)
+        'transaction_number': transactionNumber,
+    });
 
-      final response = await dio.post(
-        '/subscribe',
-        data: formData,
-      );
+    final response = await dio.post(
+      '/subscribe',
+      data: formData,
+    );
 
-      final subscriptionModel =
-          SubscriptionModel.fromJson(response.data['subscription']);
-      return subscriptionModel;
-    } catch (e) {
-      throw ServerException('Failed to verify subscription: $e');
-    }
+    final subscriptionModel =
+        SubscriptionModel.fromJson(response.data['subscription']);
+    return subscriptionModel;
   }
 
   @override

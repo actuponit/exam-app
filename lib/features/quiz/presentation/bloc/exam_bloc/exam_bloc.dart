@@ -64,6 +64,8 @@ class ExamBloc extends Bloc<ExamEvent, ExamState> {
       map[chapter.id] = chapter;
       return map;
     });
-    return _allChaptersMap.values.toList();
+    return _allChaptersMap.values.toList()
+      ..sort((a, b) =>
+          a.name.trim().toLowerCase().compareTo(b.name.trim().toLowerCase()));
   }
 }

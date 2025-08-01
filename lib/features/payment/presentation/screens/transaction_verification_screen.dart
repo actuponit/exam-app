@@ -68,20 +68,23 @@ class _TransactionVerificationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         title: Text(
           'Verify Payment',
           style: displayStyle.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: colorScheme.onPrimary,
             fontSize: 24,
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: colorScheme.primary,
         elevation: 0,
         iconTheme: IconThemeData(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: colorScheme.onPrimary,
         ),
       ),
       body: BlocConsumer<SubscriptionBloc, SubscriptionState>(
@@ -107,10 +110,7 @@ class _TransactionVerificationScreenState
                   Text(
                     'Upload your payment receipt or screenshot of the transaction details',
                     style: bodyStyle.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.7),
+                      color: colorScheme.onSurface.withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -118,24 +118,22 @@ class _TransactionVerificationScreenState
                   // Subscription details card
                   Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primaryContainer
-                          .withOpacity(0.3),
+                      color: isDark
+                          ? colorScheme.surfaceVariant.withOpacity(0.3)
+                          : colorScheme.primaryContainer.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(cardRadius),
                       border: Border.all(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.2),
+                        color: colorScheme.primary.withOpacity(0.3),
                       ),
                     ),
                     padding: const EdgeInsets.all(16),
                     child: _isLoading
-                        ? const Center(
+                        ? Center(
                             child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: CircularProgressIndicator(),
+                              padding: const EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(
+                                color: colorScheme.primary,
+                              ),
                             ),
                           )
                         : Column(
@@ -149,15 +147,12 @@ class _TransactionVerificationScreenState
                                     'Subscription Details',
                                     style: titleStyle.copyWith(
                                       fontWeight: FontWeight.w600,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
+                                      color: colorScheme.onSurface,
                                     ),
                                   ),
                                   Icon(
                                     Icons.verified,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: colorScheme.primary,
                                   ),
                                 ],
                               ),
@@ -169,24 +164,23 @@ class _TransactionVerificationScreenState
                                   Text(
                                     'Exam Type:',
                                     style: bodyStyle.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withOpacity(0.7),
+                                      color: colorScheme.onSurface
+                                          .withOpacity(0.8),
                                     ),
                                   ),
                                   Text(
                                     _examType,
                                     style: bodyStyle.copyWith(
                                       fontWeight: FontWeight.w600,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
+                                      color: colorScheme.onSurface,
                                     ),
                                   ),
                                 ],
                               ),
-                              const Divider(height: 24),
+                              Divider(
+                                height: 24,
+                                color: colorScheme.outline.withOpacity(0.3),
+                              ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -194,18 +188,15 @@ class _TransactionVerificationScreenState
                                   Text(
                                     'Price:',
                                     style: bodyStyle.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withOpacity(0.7),
+                                      color: colorScheme.onSurface
+                                          .withOpacity(0.8),
                                     ),
                                   ),
                                   Text(
                                     '$_currency ${_subscriptionPrice.toStringAsFixed(2)}',
                                     style: titleStyle.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                      color: colorScheme.primary,
                                     ),
                                   ),
                                 ],
@@ -219,36 +210,38 @@ class _TransactionVerificationScreenState
                   const SizedBox(height: 30),
                   TextFormField(
                     controller: _transactionNumberController,
+                    style: TextStyle(color: colorScheme.onSurface),
                     decoration: InputDecoration(
                       labelText: 'Transaction Number (optional)',
+                      labelStyle: TextStyle(
+                          color: colorScheme.onSurface.withOpacity(0.8)),
                       prefixIcon: Icon(
                         Icons.receipt,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.7),
+                        color: colorScheme.onSurface.withOpacity(0.7),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(cardRadius),
                         borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.outline,
+                          color: colorScheme.outline,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(cardRadius),
                         borderSide: BorderSide(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outline
-                              .withOpacity(0.5),
+                          color: colorScheme.outline.withOpacity(0.5),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(cardRadius),
                         borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: colorScheme.primary,
+                          width: 2,
                         ),
                       ),
+                      filled: true,
+                      fillColor: isDark
+                          ? colorScheme.surfaceVariant.withOpacity(0.3)
+                          : colorScheme.surface,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -257,7 +250,7 @@ class _TransactionVerificationScreenState
                     style: titleStyle.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -280,6 +273,8 @@ class _TransactionVerificationScreenState
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(buttonRadius),
                         ),
@@ -289,8 +284,16 @@ class _TransactionVerificationScreenState
                               ? null
                               : _submitVerification,
                       child: state is SubscriptionLoading
-                          ? const CircularProgressIndicator()
-                          : const Text('Submit Verification'),
+                          ? CircularProgressIndicator(
+                              color: colorScheme.onPrimary,
+                            )
+                          : Text(
+                              'Submit Verification',
+                              style: TextStyle(
+                                color: colorScheme.onPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -303,12 +306,17 @@ class _TransactionVerificationScreenState
   }
 
   Widget _buildBankAccountsSection() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: isDark
+            ? colorScheme.surfaceVariant.withOpacity(0.2)
+            : colorScheme.surface,
         borderRadius: BorderRadius.circular(cardRadius),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: colorScheme.outline.withOpacity(0.3),
         ),
       ),
       padding: const EdgeInsets.all(16),
@@ -319,7 +327,7 @@ class _TransactionVerificationScreenState
             children: [
               Icon(
                 Icons.account_balance,
-                color: Theme.of(context).colorScheme.primary,
+                color: colorScheme.primary,
               ),
               const SizedBox(width: 12),
               Text(
@@ -327,7 +335,7 @@ class _TransactionVerificationScreenState
                 style: titleStyle.copyWith(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ],
@@ -336,7 +344,7 @@ class _TransactionVerificationScreenState
           Text(
             'Choose any of the following payment methods to complete your transaction:',
             style: bodyStyle.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: colorScheme.onSurface.withOpacity(0.8),
             ),
           ),
           const SizedBox(height: 16),
@@ -376,29 +384,33 @@ class _TransactionVerificationScreenState
 
   Widget _buildCollapsibleBankAccount(
       String bankName, IconData icon, List<Map<String, String>> details) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        color: isDark
+            ? colorScheme.surface.withOpacity(0.5)
+            : colorScheme.surfaceVariant.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+          color: colorScheme.outline.withOpacity(0.2),
         ),
       ),
       child: ExpansionTile(
         leading: Icon(
           icon,
-          color: Theme.of(context).colorScheme.primary,
+          color: colorScheme.primary,
         ),
         title: Text(
           bankName,
           style: bodyStyle.copyWith(
             fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: colorScheme.onSurface,
           ),
         ),
-        iconColor: Theme.of(context).colorScheme.primary,
-        collapsedIconColor:
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+        iconColor: colorScheme.primary,
+        collapsedIconColor: colorScheme.onSurface.withOpacity(0.7),
         children: details
             .map((detail) =>
                 _buildAccountDetail(detail['label']!, detail['value']!))
@@ -408,6 +420,8 @@ class _TransactionVerificationScreenState
   }
 
   Widget _buildAccountDetail(String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -421,10 +435,7 @@ class _TransactionVerificationScreenState
                   label,
                   style: bodyStyle.copyWith(
                     fontSize: 12,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.6),
+                    color: colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -432,7 +443,7 @@ class _TransactionVerificationScreenState
                   value,
                   style: bodyStyle.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -442,7 +453,7 @@ class _TransactionVerificationScreenState
             icon: Icon(
               Icons.copy,
               size: 20,
-              color: Theme.of(context).colorScheme.primary,
+              color: colorScheme.primary,
             ),
             onPressed: () => _copyToClipboard(value),
             tooltip: 'Copy $label',

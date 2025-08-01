@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/payment/domain/entities/subscription.dart';
 import 'package:image_picker/image_picker.dart';
@@ -49,6 +50,14 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
       await localDataSource.cacheSubscriptionStatus(subscription);
       return Right(subscription);
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final message = e.response?.data["message"];
+        return Left(ServerFailure(
+            message ?? "An unexpected error ocured during registration"));
+      }
+      return Left(ServerFailure(
+          e.message ?? "An unexpected error ocured during registration"));
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
