@@ -50,10 +50,9 @@ class ExamBloc extends Bloc<ExamEvent, ExamState> {
   }
 
   void _onClearFilter(FilterExamsByChapter event, Emitter<ExamState> emit) {
-    final chapters = _extractChapters(_allExams);
     emit(ExamLoaded(
       exams: _allExams,
-      chapters: chapters,
+      chapters: _allChapters,
     ));
   }
 

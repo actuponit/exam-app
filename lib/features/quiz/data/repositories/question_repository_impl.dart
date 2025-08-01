@@ -234,11 +234,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
               name: entry.value.first.chapter.name,
               questionCount: entry.value.length,
             );
-          }).toList()
-            ..sort((a, b) => a.name
-                .trim()
-                .toLowerCase()
-                .compareTo(b.name.trim().toLowerCase()));
+          }).toList();
 
           // Create exam
           final exam = Exam(
