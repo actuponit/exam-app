@@ -1,3 +1,4 @@
+import 'package:exam_app/core/constants/directory_constant.dart';
 import 'package:exam_app/core/widgets/cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -235,8 +236,12 @@ class MarkdownLatexWidget extends StatelessWidget {
       if (type == _ContentType.image) {
         final altText = match.group(1);
         final imageUrl = match.group(2)!;
-        parts.add(_ContentPart(imageUrl, _ContentType.image, false,
-            altText: altText));
+        parts.add(_ContentPart(
+          "${DirectoryConstant.images}/$imageUrl",
+          _ContentType.image,
+          false,
+          altText: altText,
+        ));
       } else if (type == _ContentType.latex) {
         final latexContent = match.group(1)!;
         parts.add(_ContentPart(latexContent, _ContentType.latex, isBlock));

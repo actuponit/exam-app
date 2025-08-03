@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:exam_app/core/error/exceptions.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:exam_app/features/exams/domain/entities/subject.dart';
@@ -105,6 +107,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
       // Convert the map to a flat list of questions
       final List<Question> allQuestions =
           questionsMap.values.expand((questions) => questions).toList();
+      await downloadImages(allQuestions);
       await _localDatasource.saveQuestions(allQuestions);
       await saveSubjects(allQuestions, questionsMap);
       if (allQuestions.first.region == null) {
@@ -112,8 +115,15 @@ class QuestionRepositoryImpl implements QuestionRepository {
       } else {
         await createExamsFromQuestionsByRegion(allQuestions);
       }
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final message = e.response?.data["message"];
+        throw ServerException(
+            message ?? "An unexpected error ocured during registration");
+      }
+      throw ServerException("Server Error: ${e.message}");
     } catch (e) {
-      rethrow;
+      throw ServerException("An unexpected error ocured during registration");
     }
   }
 
@@ -255,5 +265,24 @@ class QuestionRepositoryImpl implements QuestionRepository {
     await _examLocalDatasource.clearExams();
     // Save exams to local storage
     await _examLocalDatasource.saveExams(exams);
+  }
+
+  Future<void> downloadImages(List<Question> questions) async {
+    final images = <String, String>{};
+    for (final question in questions) {
+      if (question.imagePath != null) {
+        images[question.questionKey!] = question.imagePath!;
+      }
+      if (question.explanationImagePath != null) {
+        images[question.explanationKey!] = question.explanationImagePath!;
+      }
+
+      for (final option in question.options) {
+        if (option.imageKey != null) {
+          images[option.imageKey!] = option.image!;
+        }
+      }
+    }
+    await _remoteDatasource.downloadImages(images);
   }
 }

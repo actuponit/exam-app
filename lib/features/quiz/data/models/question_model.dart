@@ -56,6 +56,14 @@ class QuestionModel extends Question {
   @override
   final String? image;
 
+  @HiveField(11)
+  @override
+  final String? imagePath;
+
+  @HiveField(12)
+  @override
+  final String? explanationImagePath;
+
   const QuestionModel({
     required this.id,
     required this.text,
@@ -69,6 +77,8 @@ class QuestionModel extends Question {
     required this.subject,
     this.region,
     this.image,
+    this.imagePath,
+    this.explanationImagePath,
   }) : super(
           id: id,
           text: text,
@@ -82,6 +92,8 @@ class QuestionModel extends Question {
           subject: subject,
           region: region,
           image: image,
+          imagePath: imagePath,
+          explanationImagePath: explanationImagePath,
         );
 
   factory QuestionModel.fromEntity(Question question) {
@@ -98,6 +110,8 @@ class QuestionModel extends Question {
       subject: SubjectModel.fromEntity(question.subject),
       region: question.region,
       image: question.image,
+      imagePath: question.imagePath,
+      explanationImagePath: question.explanationImagePath,
     );
   }
 }

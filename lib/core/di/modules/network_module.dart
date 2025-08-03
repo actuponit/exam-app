@@ -10,8 +10,8 @@ abstract class NetworkModule {
   Dio dio(HiveService hiveService) {
     final dio = Dio(BaseOptions(
       baseUrl: 'https://ethioexamhub.com/api/',
-      connectTimeout: const Duration(seconds: 60),
-      receiveTimeout: const Duration(seconds: 60),
+      connectTimeout: const Duration(seconds: 120 * 2),
+      receiveTimeout: const Duration(seconds: 120 * 2),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

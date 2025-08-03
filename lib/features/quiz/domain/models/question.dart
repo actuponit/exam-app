@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:exam_app/core/constants/directory_constant.dart';
 import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:exam_app/features/exams/domain/entities/subject.dart';
 
@@ -15,7 +16,17 @@ class Question extends Equatable {
   final Subject subject;
   final String? image;
   final String? region;
+  final String? imagePath;
+  final String? explanationImagePath;
 
+  String? get questionKey => imagePath != null ? "q_$id" : null;
+
+  String? get explanationKey =>
+      explanationImagePath != null ? "explanation_$id" : null;
+
+  String? get localImageUrl => explanationImagePath != null
+      ? "${DirectoryConstant.images}/$explanationKey"
+      : null;
   const Question({
     required this.id,
     required this.text,
@@ -29,6 +40,8 @@ class Question extends Equatable {
     required this.subject,
     this.image,
     this.region,
+    this.imagePath,
+    this.explanationImagePath,
   });
 
   @override
@@ -43,6 +56,8 @@ class Question extends Equatable {
         createdAt,
         image,
         region,
+        imagePath,
+        explanationImagePath,
       ];
 
   Question copyWith({
@@ -58,6 +73,8 @@ class Question extends Equatable {
     Subject? subject,
     String? region,
     String? image,
+    String? imagePath,
+    String? explanationImagePath,
   }) {
     return Question(
       id: id ?? this.id,
@@ -72,6 +89,8 @@ class Question extends Equatable {
       subject: subject ?? this.subject,
       region: region ?? this.region,
       image: image ?? this.image,
+      imagePath: imagePath ?? this.imagePath,
+      explanationImagePath: explanationImagePath ?? this.explanationImagePath,
     );
   }
 }
@@ -80,6 +99,8 @@ class Option extends Equatable {
   final String id;
   final String text;
   final String? image;
+
+  String? get imageKey => image != null ? "o_$id" : null;
 
   const Option({
     required this.id,
