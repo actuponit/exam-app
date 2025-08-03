@@ -21,12 +21,10 @@ class Question extends Equatable {
 
   String? get questionKey => imagePath != null ? "q_$id" : null;
 
-  String? get explanationKey =>
-      explanationImagePath != null ? "explanation_$id" : null;
+  String? get explanationKey => image != null ? "explanation_$id" : null;
 
-  String? get localImageUrl => explanationImagePath != null
-      ? "${DirectoryConstant.images}/$explanationKey"
-      : null;
+  String? get localImageUrl =>
+      image != null ? "${DirectoryConstant.images}/$explanationKey" : null;
   const Question({
     required this.id,
     required this.text,

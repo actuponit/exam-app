@@ -41,7 +41,7 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
     final choices = (json['choices'] as List).map((c) {
       if (c['choice_image_path'] != null &&
           c['choice_image_path'].toString().isNotEmpty) {
-        c['choice_text'] += '\n\n![Question Image](o_${c['id']})';
+        c['choice_text'] += '\n\n![Choice Image](o_${c['id']})';
       }
       return Option(
         id: c['id'].toString(),

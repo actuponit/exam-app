@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:exam_app/core/error/exceptions.dart';
 import 'package:exam_app/features/quiz/domain/models/answer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/question_repository.dart';
@@ -32,8 +33,14 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     try {
       await _repository.getAllQuestions(ensureBackend: event.ensureBackend);
       emit(state.copyWith(status: QuestionStatus.success));
+    } on ServerException catch (e) {
+      emit(state.copyWith(status: QuestionStatus.error, error: e.message));
+    } on CacheException catch (_) {
+      emit(
+          state.copyWith(status: QuestionStatus.error, error: 'Storage error'));
     } catch (e) {
-      emit(state.copyWith(status: QuestionStatus.error, error: e.toString()));
+      emit(state.copyWith(
+          status: QuestionStatus.error, error: 'Unexpected error'));
     }
   }
 

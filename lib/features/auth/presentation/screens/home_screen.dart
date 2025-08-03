@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
         } else {
           return _buildErrorScreen(() {
             context.read<QuestionBloc>().add(FetchQuestions());
-          });
+          }, state.error);
         }
       },
     );
@@ -186,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildErrorScreen(VoidCallback onRetry) {
+  Widget _buildErrorScreen(VoidCallback onRetry, String? message) {
     return Scaffold(
       body: Center(
         child: Padding(
@@ -223,7 +223,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                         ),
                         TextSpan(
-                          text: 'We couldn\'t load your dashboard content',
+                          text: message ??
+                              'We couldn\'t load your dashboard content',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Theme.of(context)

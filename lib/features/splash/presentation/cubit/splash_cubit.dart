@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:exam_app/core/constants/directory_constant.dart';
 import 'package:exam_app/features/splash/domain/repositories/user_preferences_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'splash_state.dart';
 
@@ -26,6 +28,9 @@ class SplashCubit extends Cubit<SplashState> {
   // Check if onboarding has been completed and if user is logged in
   Future<void> checkAppInitialState() async {
     emit(state.copyWith(isLoading: true));
+    final directory = await getApplicationDocumentsDirectory();
+    final path = '${directory.path}/images';
+    DirectoryConstant.images = path;
 
     final hasCompletedOnboarding =
         await _preferencesRepository.hasCompletedOnboarding();
