@@ -1,7 +1,9 @@
 import 'package:exam_app/core/constants/directory_constant.dart';
 import 'package:exam_app/core/widgets/cached_image.dart';
+import 'package:exam_app/features/quiz/utils/parse_formula.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_math/flutter_html_math.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'latex.dart';
 
@@ -74,6 +76,22 @@ class MarkdownLatexWidget extends StatelessWidget {
   Widget _buildHtmlContent(String htmlContent) {
     return Html(
       shrinkWrap: true,
+      extensions: [
+        MathHtmlExtension(
+          onMathErrorBuilder: (error, element, _) => Text(error.toString()),
+        ),
+        TagExtension(
+          tagsToExtend: {"tex"},
+          builder: (context) => Math.tex(
+            context.innerHtml,
+            mathStyle: MathStyle.display,
+            textStyle: context.styledElement?.style.generateTextStyle(),
+            onErrorFallback: (FlutterMathException e) {
+              return Text(e.message);
+            },
+          ),
+        ),
+      ],
       data: htmlContent,
       style: {
         "body": Style(
@@ -155,7 +173,8 @@ class MarkdownLatexWidget extends StatelessWidget {
 
     // Check if content contains HTML blocks
     if (_containsHtmlBlocks(content)) {
-      parts.add(_ContentPart(content, _ContentType.html, true));
+      parts.add(_ContentPart(
+          cleanHtmlAndExtractMath(content), _ContentType.html, true));
       if (imageBaseUrl != null) {
         parts.add(_ContentPart(imageBaseUrl!, _ContentType.image, false));
       }
