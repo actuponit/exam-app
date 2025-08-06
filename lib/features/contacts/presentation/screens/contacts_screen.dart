@@ -11,7 +11,7 @@ class ContactsScreen extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 250,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
@@ -202,7 +202,7 @@ class ContactsScreen extends StatelessWidget {
                     ),
                     child: Icon(
                       Icons.contact_phone,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                       size: 24,
                     ),
                   ),
@@ -244,7 +244,7 @@ class ContactsScreen extends StatelessWidget {
                 context,
                 Icons.email_outlined,
                 'Email Support',
-                'support@examapp.com',
+                'ethioexamhub@gmail.com',
                 'Send us an email for general inquiries',
                 () => _launchEmail('ethioexamhub@gmail.com'),
               ),
@@ -308,7 +308,7 @@ class ContactsScreen extends StatelessWidget {
                 ),
                 child: Icon(
                   icon,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 20,
                 ),
               ),
@@ -333,7 +333,9 @@ class ContactsScreen extends StatelessWidget {
                       style: bodyStyle.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Theme.of(context).primaryColor,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -352,9 +354,7 @@ class ContactsScreen extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey[400]
-                    : Colors.grey[600],
+                color: Theme.of(context).colorScheme.primary,
               ),
             ],
           ),

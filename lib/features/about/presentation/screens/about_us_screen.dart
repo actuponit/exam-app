@@ -10,7 +10,7 @@ class AboutUsScreen extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 270,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
@@ -27,8 +27,8 @@ class AboutUsScreen extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                      Theme.of(context).primaryColor,
+                      Theme.of(context).primaryColor.withOpacity(0.8),
                     ],
                   ),
                 ),
