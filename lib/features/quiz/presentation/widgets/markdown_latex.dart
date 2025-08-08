@@ -82,13 +82,16 @@ class MarkdownLatexWidget extends StatelessWidget {
         ),
         TagExtension(
           tagsToExtend: {"tex"},
-          builder: (context) => Math.tex(
-            context.innerHtml,
-            mathStyle: MathStyle.display,
-            textStyle: context.styledElement?.style.generateTextStyle(),
-            onErrorFallback: (FlutterMathException e) {
-              return Text(e.message);
-            },
+          builder: (context) => SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Math.tex(
+              context.node.text ?? "",
+              mathStyle: MathStyle.display,
+              textStyle: context.styledElement?.style.generateTextStyle(),
+              onErrorFallback: (FlutterMathException e) {
+                return Text(e.message);
+              },
+            ),
           ),
         ),
       ],
@@ -103,35 +106,35 @@ class MarkdownLatexWidget extends StatelessWidget {
           fontWeight: textStyle?.fontWeight,
         ),
         "p": Style(
-          margin: Margins.only(bottom: 8),
+          margin: Margins.only(bottom: 4),
           textAlign: TextAlign.left,
         ),
         "div": Style(
           margin: Margins.zero,
           padding: HtmlPaddings.zero,
         ),
-        "span": Style(
-          margin: Margins.zero,
-          padding: HtmlPaddings.zero,
-        ),
-        "strong": Style(
-          fontWeight: FontWeight.bold,
-        ),
-        "b": Style(
-          fontWeight: FontWeight.bold,
-        ),
-        "em": Style(
-          fontStyle: FontStyle.italic,
-        ),
-        "i": Style(
-          fontStyle: FontStyle.italic,
-        ),
-        "u": Style(
-          textDecoration: TextDecoration.underline,
-        ),
-        "br": Style(
-          margin: Margins.only(bottom: 4),
-        ),
+        // "span": Style(
+        //   margin: Margins.zero,
+        //   padding: HtmlPaddings.zero,
+        // ),
+        // "strong": Style(
+        //   fontWeight: FontWeight.bold,
+        // ),
+        // "b": Style(
+        //   fontWeight: FontWeight.bold,
+        // ),
+        // "em": Style(
+        //   fontStyle: FontStyle.italic,
+        // ),
+        // "i": Style(
+        //   fontStyle: FontStyle.italic,
+        // ),
+        // "u": Style(
+        //   textDecoration: TextDecoration.underline,
+        // ),
+        // "br": Style(
+        //   margin: Margins.only(bottom: 4),
+        // ),
       },
       onLinkTap: (url, attributes, element) {
         // Handle link taps if needed
