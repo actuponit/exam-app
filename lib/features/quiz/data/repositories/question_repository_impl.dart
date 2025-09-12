@@ -56,7 +56,9 @@ class QuestionRepositoryImpl implements QuestionRepository {
       }
       return isMatch;
     }).toList();
-    return filteredQuestions;
+
+    return filteredQuestions
+      ..sort((a, b) => int.parse(a.id).compareTo(int.parse(b.id)));
   }
 
   @override
