@@ -5,12 +5,14 @@ import 'package:exam_app/features/auth/presentation/screens/registration_screen.
 import 'package:exam_app/features/auth/presentation/screens/video_walkthrough_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:exam_app/features/contacts/presentation/screens/contacts_screen.dart';
+import 'package:exam_app/features/notes/presentation/screens/notes_screen.dart';
+import 'package:exam_app/features/notes/presentation/screens/note_detail_screen.dart';
 import 'package:exam_app/features/payment/presentation/screens/transaction_verification_screen.dart';
 import 'package:exam_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
 import 'package:exam_app/features/quiz/presentation/screens/question_screen.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
-import 'package:exam_app/features/quiz/presentation/screens/year_selection_screen.dart';
+import 'package:exam_app/features/quiz/presentation/screens/year_chapter_selection_screen.dart';
 import 'package:exam_app/features/faq/presentation/screens/faq_screen.dart';
 import 'package:exam_app/features/splash/presentation/screens/splash_screen.dart';
 import 'package:exam_app/features/settings/presentation/settings_screen.dart';
@@ -32,6 +34,8 @@ class RoutePaths {
   static const String contact = '/contact';
   static const String about = '/about';
   static const String settings = '/settings';
+  static const String notes = '/notes';
+  static const String noteDetail = '/notes/detail';
   static const String transactionVerification = '/transaction-verification';
 
   // Deep link paths
@@ -85,11 +89,13 @@ class AppRouter {
         name: 'Years',
         builder: (context, state) {
           final subjectId = state.pathParameters['subjectId'] ?? '';
-          final extra = state.extra as (int, String?)? ?? (2, null);
-          final duration = extra.$1;
-          final region = extra.$2;
-          return YearSelectionScreen(
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final duration = extra['duration'] as int? ?? 2;
+          final region = extra['region'] as String?;
+          final subjectName = extra['subjectName'] as String? ?? 'Subject';
+          return YearChapterSelectionScreen(
             subjectId: subjectId,
+            subjectName: subjectName,
             duration: duration,
             region: region,
           );
@@ -140,6 +146,19 @@ class AppRouter {
         path: RoutePaths.settings,
         name: 'Settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.notes,
+        name: 'Notes',
+        builder: (context, state) => const NotesScreen(),
+      ),
+      GoRoute(
+        path: '${RoutePaths.noteDetail}/:noteId',
+        name: 'NoteDetail',
+        builder: (context, state) {
+          final noteId = state.pathParameters['noteId'] ?? '';
+          return NoteDetailScreen(noteId: noteId);
+        },
       ),
       GoRoute(
         path: RoutePaths.transactionVerification,

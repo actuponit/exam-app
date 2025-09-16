@@ -29,13 +29,15 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       subject: fields[9] as SubjectModel,
       region: fields[10] as String?,
       image: fields[11] as String?,
+      imagePath: fields[12] as String?,
+      explanationImagePath: fields[13] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, QuestionModel obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +61,11 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       ..writeByte(10)
       ..write(obj.region)
       ..writeByte(11)
-      ..write(obj.image);
+      ..write(obj.image)
+      ..writeByte(12)
+      ..write(obj.imagePath)
+      ..writeByte(13)
+      ..write(obj.explanationImagePath);
   }
 
   @override

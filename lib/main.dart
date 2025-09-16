@@ -12,6 +12,8 @@ import 'package:exam_app/features/quiz/domain/repositories/question_repository.d
 import 'package:exam_app/features/quiz/presentation/bloc/exam_bloc/exam_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
+import 'package:exam_app/features/notes/presentation/cubit/notes_cubit.dart';
+import 'package:exam_app/features/notes/domain/repositories/notes_repository.dart';
 import 'package:exam_app/features/referral/presentation/bloc/referral_bloc.dart';
 import 'package:exam_app/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:flutter/material.dart';
@@ -88,6 +90,9 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider(
           create: (context) => getIt<ReferralBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => NotesCubit(repository: getIt<NotesRepository>()),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(

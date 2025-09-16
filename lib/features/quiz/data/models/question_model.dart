@@ -56,11 +56,11 @@ class QuestionModel extends Question {
   @override
   final String? image;
 
-  @HiveField(11)
+  @HiveField(12)
   @override
   final String? imagePath;
 
-  @HiveField(12)
+  @HiveField(13)
   @override
   final String? explanationImagePath;
 
