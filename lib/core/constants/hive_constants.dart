@@ -8,6 +8,7 @@ abstract class HiveTypeIds {
   static const chapter = 4;
   static const cache = 5;
   static const recentExam = 6;
+  static const notes = 7;
   // Add more type IDs as needed
 }
 
@@ -18,5 +19,6 @@ abstract class HiveBoxNames {
   static const subjects = 'subjects_box';
   static const questions = 'questions_box';
   static const recentExams = 'recent_exams_box';
+  static const notes = 'notees';
   // Add more box names as needed
 }

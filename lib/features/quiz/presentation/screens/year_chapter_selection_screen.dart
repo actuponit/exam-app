@@ -36,7 +36,7 @@ class _YearChapterSelectionScreenState extends State<YearChapterSelectionScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _notesCubit = getIt<NotesCubit>();
-    _notesCubit.loadNotes();
+    _notesCubit.loadNotes(widget.subjectName);
   }
 
   @override
@@ -222,7 +222,8 @@ class NotesTabContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
-                  onPressed: () => context.read<NotesCubit>().loadNotes(),
+                  onPressed: () =>
+                      context.read<NotesCubit>().loadNotes(subjectName),
                   icon: const Icon(Icons.refresh, color: Colors.white),
                   label: const Text(
                     'Try Again',

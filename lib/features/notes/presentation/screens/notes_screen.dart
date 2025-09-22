@@ -10,7 +10,8 @@ import '../widgets/note_card.dart';
 import '../widgets/subject_notes_section.dart';
 
 class NotesScreen extends StatefulWidget {
-  const NotesScreen({super.key});
+  final String subject;
+  const NotesScreen({super.key, required this.subject});
 
   @override
   State<NotesScreen> createState() => _NotesScreenState();
@@ -25,7 +26,7 @@ class _NotesScreenState extends State<NotesScreen>
   void initState() {
     super.initState();
     _notesCubit = getIt<NotesCubit>();
-    _notesCubit.loadNotes();
+    _notesCubit.loadNotes(widget.subject);
   }
 
   @override
@@ -180,7 +181,7 @@ class _NotesScreenState extends State<NotesScreen>
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
-                  onPressed: () => _notesCubit.loadNotes(),
+                  onPressed: () => _notesCubit.loadNotes(widget.subject),
                   icon: const Icon(Icons.refresh, color: Colors.white),
                   label: const Text(
                     'Try Again',

@@ -6,4 +6,5 @@ abstract class NotesRepository {
   Future<Note?> getNoteById(String noteId);
   Future<List<Note>> searchNotes(String query);
   Future<List<int>> getAvailableGrades();
+  Future<void> loadNotes(String name);
 }

@@ -56,4 +56,9 @@ class NotesRepositoryImpl implements NotesRepository {
       throw Exception('Failed to load available grades: $e');
     }
   }
+
+  @override
+  Future<void> loadNotes(String name) async {
+    await localDataSource.loadNotes(name);
+  }
 }

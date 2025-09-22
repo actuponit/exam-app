@@ -3,6 +3,8 @@ import 'package:exam_app/core/services/hive_service.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/exams/data/datasource/exam_local_datasource.dart';
 import 'package:exam_app/features/exams/data/datasource/subject_local_datasource.dart';
+import 'package:exam_app/features/notes/data/datasources/notes_local_datasource.dart';
+import 'package:exam_app/features/notes/data/datasources/notes_remote_datasource.dart';
 import 'package:exam_app/features/quiz/data/models/question_model.dart';
 import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
@@ -38,6 +40,8 @@ abstract class QuizModule {
     ISubjectLocalDatasource subjectLocalDatasource,
     IExamLocalDatasource examLocalDatasource,
     LocalAuthDataSource authLocalDatasource,
+    NotesLocalDataSource notesLocalDatasource,
+    NotesRemoteDataSource notesRemoteDataSource,
   ) =>
       QuestionRepositoryImpl(
         localDatasource: localDatasource,
@@ -45,5 +49,7 @@ abstract class QuizModule {
         subjectLocalDatasource: subjectLocalDatasource,
         examLocalDatasource: examLocalDatasource,
         authLocalDatasource: authLocalDatasource,
+        notesLocalDatasource: notesLocalDatasource,
+        notesRemoteDataSource: notesRemoteDataSource,
       );
 }

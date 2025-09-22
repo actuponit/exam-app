@@ -1,19 +1,36 @@
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 import '../../domain/entities/note.dart';
 
+part 'note_model.g.dart';
+
+@HiveType(typeId: 20)
 class NoteModel extends Equatable {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String title;
+  @HiveField(2)
   final String content;
+  @HiveField(3)
   final String subjectId;
+  @HiveField(4)
   final String subjectName;
+  @HiveField(5)
   final int grade;
+  @HiveField(6)
   final String chapterId;
+  @HiveField(7)
   final String chapterName;
+  @HiveField(8)
   final DateTime createdAt;
+  @HiveField(9)
   final DateTime updatedAt;
+  @HiveField(10)
   final List<String> tags;
+  @HiveField(11)
   final String? imageUrl;
+  @HiveField(12)
   final bool isLocked;
 
   const NoteModel({
@@ -34,13 +51,13 @@ class NoteModel extends Equatable {
 
   factory NoteModel.fromJson(Map<String, dynamic> json) {
     return NoteModel(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       title: json['title'] as String,
       content: json['content'] as String,
-      subjectId: json['subjectId'] as String,
+      subjectId: json['subjectId'].toString(),
       subjectName: json['subjectName'] as String,
       grade: json['grade'] as int,
-      chapterId: json['chapterId'] as String,
+      chapterId: json['chapterId'].toString(),
       chapterName: json['chapterName'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
@@ -86,11 +103,17 @@ class NoteModel extends Equatable {
       ];
 }
 
+@HiveType(typeId: 21)
 class NoteChapterModel extends Equatable {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String name;
+  @HiveField(2)
   final String subjectId;
+  @HiveField(3)
   final int grade;
+  @HiveField(4)
   final List<NoteModel> notes;
 
   const NoteChapterModel({
@@ -103,9 +126,9 @@ class NoteChapterModel extends Equatable {
 
   factory NoteChapterModel.fromJson(Map<String, dynamic> json) {
     return NoteChapterModel(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       name: json['name'] as String,
-      subjectId: json['subjectId'] as String,
+      subjectId: json['subjectId'].toString(),
       grade: json['grade'] as int,
       notes: (json['notes'] as List<dynamic>?)
               ?.map((e) => NoteModel.fromJson(e as Map<String, dynamic>))
@@ -128,11 +151,17 @@ class NoteChapterModel extends Equatable {
   List<Object?> get props => [id, name, subjectId, grade, notes];
 }
 
+@HiveType(typeId: 22)
 class NoteSubjectModel extends Equatable {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String name;
+  @HiveField(2)
   final int grade;
+  @HiveField(3)
   final String iconName;
+  @HiveField(4)
   final List<NoteChapterModel> chapters;
 
   const NoteSubjectModel({
@@ -145,10 +174,10 @@ class NoteSubjectModel extends Equatable {
 
   factory NoteSubjectModel.fromJson(Map<String, dynamic> json) {
     return NoteSubjectModel(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       name: json['name'] as String,
-      grade: json['grade'] as int,
-      iconName: json['iconName'] as String,
+      grade: int.tryParse(json['grade']) ?? 0,
+      iconName: json['iconName'] as String? ?? 'book',
       chapters: (json['chapters'] as List<dynamic>?)
               ?.map((e) => NoteChapterModel.fromJson(e as Map<String, dynamic>))
               .toList() ??

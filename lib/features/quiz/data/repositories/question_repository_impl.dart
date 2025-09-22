@@ -3,6 +3,8 @@ import 'package:exam_app/core/error/exceptions.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:exam_app/features/exams/domain/entities/subject.dart';
+import 'package:exam_app/features/notes/data/datasources/notes_local_datasource.dart';
+import 'package:exam_app/features/notes/data/datasources/notes_remote_datasource.dart';
 import '../../domain/models/question.dart';
 import '../../domain/models/answer.dart' as models;
 import '../../domain/repositories/question_repository.dart';
@@ -17,6 +19,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
   final ISubjectLocalDatasource _subjectLocalDatasource;
   final IExamLocalDatasource _examLocalDatasource;
   final LocalAuthDataSource _authLocalDatasource;
+  final NotesLocalDataSource _notesLocalDatasource;
+  final NotesRemoteDataSource _notesRemoteDataSource;
 
   QuestionRepositoryImpl({
     required IQuestionsLocalDatasource localDatasource,
@@ -24,11 +28,15 @@ class QuestionRepositoryImpl implements QuestionRepository {
     required ISubjectLocalDatasource subjectLocalDatasource,
     required IExamLocalDatasource examLocalDatasource,
     required LocalAuthDataSource authLocalDatasource,
+    required NotesLocalDataSource notesLocalDatasource,
+    required NotesRemoteDataSource notesRemoteDataSource,
   })  : _localDatasource = localDatasource,
         _remoteDatasource = remoteDatasource,
         _subjectLocalDatasource = subjectLocalDatasource,
         _examLocalDatasource = examLocalDatasource,
-        _authLocalDatasource = authLocalDatasource;
+        _authLocalDatasource = authLocalDatasource,
+        _notesLocalDatasource = notesLocalDatasource,
+        _notesRemoteDataSource = notesRemoteDataSource;
 
   final Map<String, models.Answer> _answers = {};
 
@@ -105,6 +113,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
       }
       final questionsMap =
           await _remoteDatasource.getQuestions(userId.toString());
+      final notes = await _notesRemoteDataSource.getNotesByGrade(userId);
+      await _notesLocalDatasource.saveNotes(notes);
 
       // Convert the map to a flat list of questions
       final List<Question> allQuestions =

@@ -1,3 +1,5 @@
+import 'package:hive/hive.dart';
+
 import '../models/note_model.dart';
 
 abstract class NotesLocalDataSource {
@@ -6,11 +8,14 @@ abstract class NotesLocalDataSource {
   Future<NoteModel?> getNoteById(String noteId);
   Future<List<NoteModel>> searchNotes(String query);
   Future<List<int>> getAvailableGrades();
+  Future<void> saveNotes(List<NoteSubjectModel> notes);
+  Future<void> loadNotes(String subject);
 }
 
 class NotesLocalDataSourceImpl implements NotesLocalDataSource {
+  final Box<List<NoteSubjectModel>> _box;
   // Dummy data for demonstration
-  static final List<NoteSubjectModel> _dummyData = [
+  List<NoteSubjectModel> _dummyData = [
     // Grade 10 - Biology
     NoteSubjectModel(
       id: 'bio_10',
@@ -479,17 +484,19 @@ Calculate pH of 0.1 M \\(CH_3COOH\\) (\\(K_a = 1.8 × 10^{-5}\\))
     ),
   ];
 
+  NotesLocalDataSourceImpl(Box<List<NoteSubjectModel>> box) : _box = box;
+
   @override
   Future<List<NoteSubjectModel>> getNotesByGrade(int grade) async {
     // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
+    // await Future.delayed(const Duration(milliseconds: 500));
 
     return _dummyData.where((subject) => subject.grade == grade).toList();
   }
 
   @override
   Future<List<NoteModel>> getNotesByChapter(String chapterId) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    // await Future.delayed(const Duration(milliseconds: 300));
 
     for (final subject in _dummyData) {
       for (final chapter in subject.chapters) {
@@ -503,7 +510,7 @@ Calculate pH of 0.1 M \\(CH_3COOH\\) (\\(K_a = 1.8 × 10^{-5}\\))
 
   @override
   Future<NoteModel?> getNoteById(String noteId) async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    // await Future.delayed(const Duration(milliseconds: 200));
 
     for (final subject in _dummyData) {
       for (final chapter in subject.chapters) {
@@ -519,7 +526,7 @@ Calculate pH of 0.1 M \\(CH_3COOH\\) (\\(K_a = 1.8 × 10^{-5}\\))
 
   @override
   Future<List<NoteModel>> searchNotes(String query) async {
-    await Future.delayed(const Duration(milliseconds: 400));
+    // await Future.delayed(const Duration(milliseconds: 400));
 
     final results = <NoteModel>[];
     final lowercaseQuery = query.toLowerCase();
@@ -542,10 +549,30 @@ Calculate pH of 0.1 M \\(CH_3COOH\\) (\\(K_a = 1.8 × 10^{-5}\\))
 
   @override
   Future<List<int>> getAvailableGrades() async {
-    await Future.delayed(const Duration(milliseconds: 100));
+    // await Future.delayed(const Duration(milliseconds: 100));
 
     final grades = _dummyData.map((subject) => subject.grade).toSet().toList();
     grades.sort();
     return grades;
+  }
+
+  @override
+  Future<void> loadNotes(String subject) async {
+    _dummyData = _box.get(subject) ?? [];
+  }
+
+  @override
+  Future<void> saveNotes(List<NoteSubjectModel> notes) async {
+    Map<String, List<NoteSubjectModel>> noteMap = {};
+    for (var note in notes) {
+      if (noteMap.containsKey(note.name)) {
+        noteMap[note.name]?.add(note);
+      } else {
+        noteMap[note.name] = [note];
+      }
+    }
+    for (var keys in noteMap.keys) {
+      await _box.put(keys, noteMap[keys]!);
+    }
   }
 }

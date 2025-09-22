@@ -147,11 +147,11 @@ class AppRouter {
         name: 'Settings',
         builder: (context, state) => const SettingsScreen(),
       ),
-      GoRoute(
-        path: RoutePaths.notes,
-        name: 'Notes',
-        builder: (context, state) => const NotesScreen(),
-      ),
+      // GoRoute(
+      //   path: RoutePaths.notes,
+      //   name: 'Notes',
+      //   builder: (context, state) => const NotesScreen(),
+      // ),
       GoRoute(
         path: '${RoutePaths.noteDetail}/:noteId',
         name: 'NoteDetail',

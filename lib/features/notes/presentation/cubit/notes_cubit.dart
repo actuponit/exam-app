@@ -10,12 +10,13 @@ class NotesCubit extends Cubit<NotesState> {
 
   NotesCubit({required this.repository}) : super(const NotesInitial());
 
-  Future<void> loadNotes([int? grade]) async {
+  Future<void> loadNotes(String subject) async {
     emit(const NotesLoading());
 
     try {
+      repository.loadNotes(subject);
       final availableGrades = await repository.getAvailableGrades();
-      final selectedGrade = grade ?? availableGrades.first;
+      final selectedGrade = availableGrades.firstOrNull ?? 0;
       final subjects = await repository.getNotesByGrade(selectedGrade);
 
       emit(NotesLoaded(
@@ -63,7 +64,7 @@ class NotesCubit extends Cubit<NotesState> {
   Future<void> searchNotes(String query) async {
     if (query.trim().isEmpty) {
       // Return to normal notes view
-      await loadNotes();
+      await loadNotes("");
       return;
     }
 
@@ -81,6 +82,6 @@ class NotesCubit extends Cubit<NotesState> {
   }
 
   void clearSearch() {
-    loadNotes();
+    loadNotes("");
   }
 }
