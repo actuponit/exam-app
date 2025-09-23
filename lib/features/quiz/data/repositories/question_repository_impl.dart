@@ -5,6 +5,7 @@ import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:exam_app/features/exams/domain/entities/subject.dart';
 import 'package:exam_app/features/notes/data/datasources/notes_local_datasource.dart';
 import 'package:exam_app/features/notes/data/datasources/notes_remote_datasource.dart';
+import 'package:exam_app/features/notes/data/models/note_model.dart';
 import '../../domain/models/question.dart';
 import '../../domain/models/answer.dart' as models;
 import '../../domain/repositories/question_repository.dart';
@@ -111,31 +112,36 @@ class QuestionRepositoryImpl implements QuestionRepository {
       if (userId == null) {
         throw Exception('User ID not found');
       }
-      final questionsMap =
-          await _remoteDatasource.getQuestions(userId.toString());
-      final notes = await _notesRemoteDataSource.getNotesByGrade(userId);
-      await _notesLocalDatasource.saveNotes(notes);
+      final [questionsMapDynamic, notesDynamic] = await Future.wait([
+        _remoteDatasource.getQuestions(userId.toString()),
+        _notesRemoteDataSource.getNotesByGrade(userId),
+      ]);
+      final questionsMap = questionsMapDynamic as Map<String, List<Question>>;
+      final notes = notesDynamic as List<NoteSubjectModel>;
 
       // Convert the map to a flat list of questions
       final List<Question> allQuestions =
           questionsMap.values.expand((questions) => questions).toList();
-      await downloadImages(allQuestions);
-      await _localDatasource.saveQuestions(allQuestions);
-      await saveSubjects(allQuestions, questionsMap);
-      if (allQuestions.first.region == null) {
-        await createExamsFromQuestions(allQuestions);
-      } else {
-        await createExamsFromQuestionsByRegion(allQuestions);
-      }
+      await Future.wait([
+        _notesLocalDatasource.saveNotes(notes),
+        downloadImages(allQuestions),
+        _localDatasource.saveQuestions(allQuestions),
+        saveSubjects(allQuestions, questionsMap),
+        if (allQuestions.first.region == null)
+          createExamsFromQuestions(allQuestions),
+        if (allQuestions.first.region != null)
+          createExamsFromQuestionsByRegion(allQuestions),
+      ]);
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final message = e.response?.data["message"];
         throw ServerException(
-            message ?? "An unexpected error ocured during registration");
+            message ?? "An unexpected error ocured during fetching questions");
       }
       throw ServerException("Server Error: ${e.message}");
     } catch (e) {
-      throw ServerException("An unexpected error ocured during registration");
+      throw ServerException(
+          "An unexpected error ocured during fetching questions");
     }
   }
 

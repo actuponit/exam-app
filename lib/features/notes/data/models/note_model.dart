@@ -129,7 +129,7 @@ class NoteChapterModel extends Equatable {
       id: json['id'].toString(),
       name: json['name'] as String,
       subjectId: json['subjectId'].toString(),
-      grade: json['grade'] as int,
+      grade: int.tryParse(json['grade']) ?? 0,
       notes: (json['notes'] as List<dynamic>?)
               ?.map((e) => NoteModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
