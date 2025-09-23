@@ -1,7 +1,9 @@
+import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/features/quiz/presentation/widgets/markdown_latex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/theme.dart';
@@ -23,8 +25,41 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
   late NotesCubit _notesCubit;
   final ScrollController _scrollController = ScrollController();
 
+  final _noScreenshot = NoScreenshot.instance;
+
+  void stopScreenshotListening() async {
+    await _noScreenshot.stopScreenshotListening();
+  }
+
+  void startScreenshot() async {
+    await _noScreenshot.screenshotOn();
+  }
+
+  Future<void> startScreenshotListening() async {
+    await _noScreenshot.startScreenshotListening();
+  }
+
+  void listenForScreenshot() {
+    _noScreenshot.screenshotStream.listen((value) {
+      if (value.wasScreenshotTaken && mounted) {
+        AppSnackBar.warning(
+          context: context,
+          message: 'Screenshots are not allowed on this page',
+        );
+      }
+    });
+  }
+
+  void _startScreenshotListening() async {
+    await _noScreenshot.screenshotOff();
+    await startScreenshotListening();
+    startScreenshot();
+    listenForScreenshot();
+  }
+
   @override
   void initState() {
+    _startScreenshotListening();
     super.initState();
     _notesCubit = getIt<NotesCubit>();
     _notesCubit.loadNoteDetail(widget.noteId);
@@ -33,6 +68,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    stopScreenshotListening();
     super.dispose();
   }
 
@@ -209,40 +245,40 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 80), // Space for app bar
-                    if (note.isLocked) ...[
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.lock_outline,
-                              size: 16,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Premium Content',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
+                    // if (note.isLocked) ...[
+                    //   Container(
+                    //     padding: const EdgeInsets.symmetric(
+                    //       horizontal: 8,
+                    //       vertical: 4,
+                    //     ),
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.orange.withOpacity(0.2),
+                    //       borderRadius: BorderRadius.circular(8),
+                    //     ),
+                    //     child: Row(
+                    //       mainAxisSize: MainAxisSize.min,
+                    //       children: [
+                    //         const Icon(
+                    //           Icons.lock_outline,
+                    //           size: 16,
+                    //           color: Colors.white,
+                    //         ),
+                    //         const SizedBox(width: 4),
+                    //         Text(
+                    //           'Premium Content',
+                    //           style: Theme.of(context)
+                    //               .textTheme
+                    //               .bodySmall
+                    //               ?.copyWith(
+                    //                 color: Colors.white,
+                    //                 fontWeight: FontWeight.w500,
+                    //               ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    //   const SizedBox(height: 8),
+                    // ],
                   ],
                 ),
               ),
@@ -288,26 +324,30 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                     const SizedBox(width: 12),
 
                     // Grade badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                    if (note.grade > 0)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .secondary
+                              .withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Grade ${note.grade}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .secondary
-                            .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Grade ${note.grade}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -384,14 +424,12 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                 width: 1,
               ),
             ),
-            child: note.isLocked
-                ? _buildLockedContent()
-                : SingleChildScrollView(
-                    child: MarkdownLatexWidget(
-                      data: note.content,
-                      shrinkWrap: true,
-                    ),
-                  ),
+            child: SingleChildScrollView(
+              child: MarkdownLatexWidget(
+                data: note.content,
+                shrinkWrap: true,
+              ),
+            ),
           ),
         ),
 
@@ -403,74 +441,58 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     );
   }
 
-  Widget _buildLockedContent() {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        children: [
-          Icon(
-            Icons.lock_outline,
-            size: 64,
-            color: Colors.orange.shade600,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Premium Content',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'This note contains premium content. Upgrade your subscription to access all notes and features.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                  height: 1.5,
-                ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () {
-              // Navigate to subscription/payment screen
-              context.push('/transaction-verification');
-            },
-            icon: const Icon(Icons.upgrade, color: Colors.white),
-            label: const Text(
-              'Upgrade Now',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 12,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _shareNote(note) {
-    final shareText = '''
-${note.title}
-
-Subject: ${note.subjectName}
-Grade: ${note.grade}
-Chapter: ${note.chapterName}
-
-${note.content}
-
-Shared from Ethio Matric App
-''';
-
-    Share.share(shareText, subject: note.title);
-  }
+  // Widget _buildLockedContent() {
+  //   return Container(
+  //     padding: const EdgeInsets.all(32),
+  //     child: Column(
+  //       children: [
+  //         Icon(
+  //           Icons.lock_outline,
+  //           size: 64,
+  //           color: Colors.orange.shade600,
+  //         ),
+  //         const SizedBox(height: 16),
+  //         Text(
+  //           'Premium Content',
+  //           style: Theme.of(context).textTheme.titleLarge?.copyWith(
+  //                 fontSize: 20,
+  //                 fontWeight: FontWeight.w600,
+  //                 color: Theme.of(context).colorScheme.onSurface,
+  //               ),
+  //         ),
+  //         const SizedBox(height: 8),
+  //         Text(
+  //           'This note contains premium content. Upgrade your subscription to access all notes and features.',
+  //           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+  //                 color:
+  //                     Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+  //                 height: 1.5,
+  //               ),
+  //           textAlign: TextAlign.center,
+  //         ),
+  //         const SizedBox(height: 24),
+  //         ElevatedButton.icon(
+  //           onPressed: () {
+  //             // Navigate to subscription/payment screen
+  //             context.push('/transaction-verification');
+  //           },
+  //           icon: const Icon(Icons.upgrade, color: Colors.white),
+  //           label: const Text(
+  //             'Upgrade Now',
+  //             style: TextStyle(
+  //               color: Colors.white,
+  //               fontWeight: FontWeight.w600,
+  //             ),
+  //           ),
+  //           style: ElevatedButton.styleFrom(
+  //             padding: const EdgeInsets.symmetric(
+  //               horizontal: 24,
+  //               vertical: 12,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

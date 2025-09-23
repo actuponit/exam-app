@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:exam_app/core/constants/hive_constants.dart';
 import 'package:hive/hive.dart';
 import '../../domain/entities/note.dart';
 
 part 'note_model.g.dart';
 
-@HiveType(typeId: 20)
+@HiveType(typeId: HiveTypeIds.notes)
 class NoteModel extends Equatable {
   @HiveField(0)
   final String id;
@@ -56,7 +57,7 @@ class NoteModel extends Equatable {
       content: json['content'] as String,
       subjectId: json['subjectId'].toString(),
       subjectName: json['subjectName'] as String,
-      grade: json['grade'] as int,
+      grade: int.tryParse(json['grade']) ?? 0,
       chapterId: json['chapterId'].toString(),
       chapterName: json['chapterName'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -103,7 +104,7 @@ class NoteModel extends Equatable {
       ];
 }
 
-@HiveType(typeId: 21)
+@HiveType(typeId: HiveTypeIds.noteChapter)
 class NoteChapterModel extends Equatable {
   @HiveField(0)
   final String id;
@@ -151,7 +152,7 @@ class NoteChapterModel extends Equatable {
   List<Object?> get props => [id, name, subjectId, grade, notes];
 }
 
-@HiveType(typeId: 22)
+@HiveType(typeId: HiveTypeIds.noteSubject)
 class NoteSubjectModel extends Equatable {
   @HiveField(0)
   final String id;
@@ -197,6 +198,19 @@ class NoteSubjectModel extends Equatable {
 
   @override
   List<Object?> get props => [id, name, grade, iconName, chapters];
+}
+
+@HiveType(typeId: HiveTypeIds.notesList)
+class NotesListModel extends Equatable {
+  @HiveField(0)
+  final List<NoteSubjectModel> subjects;
+
+  const NotesListModel({
+    required this.subjects,
+  });
+
+  @override
+  List<Object?> get props => [subjects];
 }
 
 // Extension methods to convert models to entities

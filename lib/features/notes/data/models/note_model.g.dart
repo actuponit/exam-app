@@ -8,7 +8,7 @@ part of 'note_model.dart';
 
 class NoteModelAdapter extends TypeAdapter<NoteModel> {
   @override
-  final int typeId = 20;
+  final int typeId = 9;
 
   @override
   NoteModel read(BinaryReader reader) {
@@ -78,7 +78,7 @@ class NoteModelAdapter extends TypeAdapter<NoteModel> {
 
 class NoteChapterModelAdapter extends TypeAdapter<NoteChapterModel> {
   @override
-  final int typeId = 21;
+  final int typeId = 8;
 
   @override
   NoteChapterModel read(BinaryReader reader) {
@@ -124,7 +124,7 @@ class NoteChapterModelAdapter extends TypeAdapter<NoteChapterModel> {
 
 class NoteSubjectModelAdapter extends TypeAdapter<NoteSubjectModel> {
   @override
-  final int typeId = 22;
+  final int typeId = 7;
 
   @override
   NoteSubjectModel read(BinaryReader reader) {
@@ -164,6 +164,40 @@ class NoteSubjectModelAdapter extends TypeAdapter<NoteSubjectModel> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is NoteSubjectModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class NotesListModelAdapter extends TypeAdapter<NotesListModel> {
+  @override
+  final int typeId = 10;
+
+  @override
+  NotesListModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return NotesListModel(
+      subjects: (fields[0] as List).cast<NoteSubjectModel>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, NotesListModel obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.subjects);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NotesListModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

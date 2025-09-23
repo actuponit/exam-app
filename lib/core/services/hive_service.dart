@@ -17,6 +17,9 @@ class HiveService {
     Hive.registerAdapter(SubjectModelAdapter());
     Hive.registerAdapter(RecentExamModelAdapter());
     Hive.registerAdapter(NoteSubjectModelAdapter());
+    Hive.registerAdapter(NoteChapterModelAdapter());
+    Hive.registerAdapter(NotesListModelAdapter());
+    Hive.registerAdapter(NoteModelAdapter());
 
     // Open Boxes
     await Hive.openBox<CacheItem>(HiveBoxNames.httpCache);
@@ -24,7 +27,7 @@ class HiveService {
     await Hive.openBox<SubjectModel>(HiveBoxNames.subjects);
     await Hive.openBox<QuestionModel>(HiveBoxNames.questions);
     await Hive.openBox<RecentExamModel>(HiveBoxNames.recentExams);
-    await Hive.openBox<List<NoteSubjectModel>>(HiveBoxNames.notes);
+    await Hive.openBox<NotesListModel>(HiveBoxNames.notes);
   }
 
   // Helper methods for box accessw
@@ -36,8 +39,8 @@ class HiveService {
   Box<CacheItem> get cacheBox => Hive.box<CacheItem>(HiveBoxNames.httpCache);
   Box<RecentExamModel> get recentExamsBox =>
       Hive.box<RecentExamModel>(HiveBoxNames.recentExams);
-  Box<List<NoteSubjectModel>> get notesBox =>
-      Hive.box<List<NoteSubjectModel>>(HiveBoxNames.notes);
+  Box<NotesListModel> get notesBox =>
+      Hive.box<NotesListModel>(HiveBoxNames.notes);
   // Clean up method
   Future<void> closeBoxes() async {
     await Hive.close();

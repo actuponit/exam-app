@@ -132,10 +132,8 @@ Future<_i174.GetIt> init(
   gh.singleton<_i979.Box<_i555.QuestionModel>>(
       () => quizModule.questionsBox(gh<_i1047.HiveService>()));
   gh.singleton<_i361.Dio>(() => networkModule.dio(gh<_i1047.HiveService>()));
-  gh.singleton<_i979.Box<List<_i214.NoteSubjectModel>>>(
+  gh.singleton<_i979.Box<_i214.NotesListModel>>(
       () => notesModule.notesBox(gh<_i1047.HiveService>()));
-  gh.singleton<_i43.NotesLocalDataSource>(() => notesModule
-      .notesLocalDatasource(gh<_i979.Box<List<_i214.NoteSubjectModel>>>()));
   gh.lazySingleton<_i900.SubscriptionDataSource>(
       () => paymentModule.subscriptionDataSource(gh<_i361.Dio>()));
   gh.lazySingleton<_i970.AuthDataSource>(
@@ -155,6 +153,8 @@ Future<_i174.GetIt> init(
             gh<_i361.Dio>(),
             gh<_i516.IQuestionsLocalDatasource>(),
           ));
+  gh.singleton<_i43.NotesLocalDataSource>(() =>
+      notesModule.notesLocalDatasource(gh<_i979.Box<_i214.NotesListModel>>()));
   gh.singleton<_i506.IExamLocalDatasource>(() => examModule.examLocalDatasource(
       gh<_i979.Box<_i898.ExamModel>>(instanceName: 'exams')));
   gh.singleton<_i156.ISubjectLocalDatasource>(() => subjectModule

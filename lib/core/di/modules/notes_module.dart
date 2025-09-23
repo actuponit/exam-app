@@ -12,11 +12,9 @@ import '../../../features/notes/presentation/cubit/notes_cubit.dart';
 @module
 abstract class NotesModule {
   @singleton
-  Box<List<NoteSubjectModel>> notesBox(HiveService hiveService) =>
-      hiveService.notesBox;
+  Box<NotesListModel> notesBox(HiveService hiveService) => hiveService.notesBox;
   @singleton
-  NotesLocalDataSource notesLocalDatasource(
-          Box<List<NoteSubjectModel>> notesBox) =>
+  NotesLocalDataSource notesLocalDatasource(Box<NotesListModel> notesBox) =>
       NotesLocalDataSourceImpl(notesBox);
 
   @singleton

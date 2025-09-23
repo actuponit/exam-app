@@ -13,7 +13,7 @@ abstract class NotesLocalDataSource {
 }
 
 class NotesLocalDataSourceImpl implements NotesLocalDataSource {
-  final Box<List<NoteSubjectModel>> _box;
+  final Box<NotesListModel> _box;
   // Dummy data for demonstration
   List<NoteSubjectModel> _dummyData = [
     // Grade 10 - Biology
@@ -484,7 +484,7 @@ Calculate pH of 0.1 M \\(CH_3COOH\\) (\\(K_a = 1.8 × 10^{-5}\\))
     ),
   ];
 
-  NotesLocalDataSourceImpl(Box<List<NoteSubjectModel>> box) : _box = box;
+  NotesLocalDataSourceImpl(Box<NotesListModel> box) : _box = box;
 
   @override
   Future<List<NoteSubjectModel>> getNotesByGrade(int grade) async {
@@ -558,7 +558,7 @@ Calculate pH of 0.1 M \\(CH_3COOH\\) (\\(K_a = 1.8 × 10^{-5}\\))
 
   @override
   Future<void> loadNotes(String subject) async {
-    _dummyData = _box.get(subject) ?? [];
+    _dummyData = _box.get(subject)?.subjects ?? [];
   }
 
   @override
@@ -572,7 +572,7 @@ Calculate pH of 0.1 M \\(CH_3COOH\\) (\\(K_a = 1.8 × 10^{-5}\\))
       }
     }
     for (var keys in noteMap.keys) {
-      await _box.put(keys, noteMap[keys]!);
+      await _box.put(keys, NotesListModel(subjects: noteMap[keys]!));
     }
   }
 }
