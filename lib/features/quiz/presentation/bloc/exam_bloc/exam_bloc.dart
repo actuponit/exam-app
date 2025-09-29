@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:exam_app/features/exams/domain/entities/exam.dart';
 import 'package:exam_app/features/exams/domain/repositories/exam_repository.dart';
+import 'package:exam_app/features/quiz/utils/sort_with_chapter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'exam_event.dart';
@@ -64,7 +65,6 @@ class ExamBloc extends Bloc<ExamEvent, ExamState> {
       return map;
     });
     return _allChaptersMap.values.toList()
-      ..sort((a, b) =>
-          a.name.trim().toLowerCase().compareTo(b.name.trim().toLowerCase()));
+      ..sort((a, b) => sortChapters(a.name, b.name));
   }
 }

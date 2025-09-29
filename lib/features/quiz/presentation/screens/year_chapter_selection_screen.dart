@@ -1,3 +1,4 @@
+import 'package:exam_app/features/quiz/utils/sort_with_chapter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -253,7 +254,8 @@ class NotesTabContent extends StatelessWidget {
         .expand((subject) => subject.chapters)
         .expand((chapter) => chapter.notes)
         .where((note) => true)
-        .toList();
+        .toList()
+      ..sort((a, b) => sortChapters(a.chapterName, b.chapterName));
 
     if (subjectNotes.isEmpty) {
       return _buildEmptyState(context);
