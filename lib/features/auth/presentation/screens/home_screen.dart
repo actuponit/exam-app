@@ -124,7 +124,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       height: 24,
                     ),
-                    const SubjectSelectionScreen(),
+                    BlocBuilder<SubscriptionBloc, SubscriptionState>(
+                      builder: (context, state) {
+                        return SubjectSelectionScreen(
+                          isLocked: !(state is SubscriptionStatusLoaded &&
+                              state.subscription.isApproved),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),

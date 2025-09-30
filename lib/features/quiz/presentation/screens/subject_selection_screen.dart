@@ -1,5 +1,6 @@
 import 'package:exam_app/core/theme.dart';
 import 'package:exam_app/features/exams/domain/entities/subject.dart';
+import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,9 +11,17 @@ class SubjectSelectionScreen extends StatelessWidget {
     appBar: AppBar(
       title: const Text('Subjects'),
     ),
-    body: const SubjectSelectionScreen(),
+    body: BlocBuilder<SubscriptionBloc, SubscriptionState>(
+      builder: (context, state) {
+        return SubjectSelectionScreen(
+            isLocked: !(state is SubscriptionStatusLoaded &&
+                state.subscription.isApproved));
+      },
+    ),
   );
-  const SubjectSelectionScreen({super.key});
+  const SubjectSelectionScreen({super.key, this.isLocked = true});
+
+  final bool isLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -21,31 +30,35 @@ class SubjectSelectionScreen extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       } else if (state is SubjectLoaded) {
         final subjects = state.subjects;
-        return Column(
-          children: [
-            if (state.regionSubjects.isNotEmpty &&
-                state.regionSubjects.first.isNotEmpty) ...[
-              RegionFilterWidget(regions: state.regionSubjects),
-              const SizedBox(height: 16),
-            ],
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.9,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                ),
-                itemCount: subjects.length,
-                itemBuilder: (context, index) => SubjectCard(
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              if (state.regionSubjects.isNotEmpty &&
+                  state.regionSubjects.first.isNotEmpty) ...[
+                RegionFilterWidget(regions: state.regionSubjects),
+                const SizedBox(height: 16),
+              ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.9,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                  ),
+                  itemCount: subjects.length,
+                  itemBuilder: (context, index) => SubjectCard(
                     subject: subjects[index],
-                    region: state.region == '' ? null : state.region),
+                    region: state.region == '' ? null : state.region,
+                    isLocked: isLocked,
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       } else if (state is SubjectError) {
         return Center(child: Text(state.message));
@@ -60,8 +73,14 @@ class SubjectSelectionScreen extends StatelessWidget {
 class SubjectCard extends StatelessWidget {
   final Subject subject;
   final String? region;
+  final bool isLocked;
 
-  const SubjectCard({super.key, required this.subject, this.region});
+  const SubjectCard({
+    super.key,
+    required this.subject,
+    this.region,
+    this.isLocked = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -86,61 +105,108 @@ class SubjectCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(cardRadius),
           onTap: () {
-            context.push('/years/${subject.id}', extra: {
-              'duration': subject.duration,
-              'region': region,
-              'subjectName': subject.name,
-            });
+            // print(subject.name);
+            if (isLocked && subject.isLocked) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'This subject is locked',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onError,
+                    ),
+                  ),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  behavior: SnackBarBehavior.floating,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              );
+            } else {
+              context.push('/years/${subject.id}', extra: {
+                'duration': subject.duration,
+                'region': region,
+                'subjectName': subject.name,
+              });
+            }
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    subject.icon,
-                    size: 28,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Flexible(
-                  child: Text(
-                    subject.name.toUpperCase(),
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+          child: Stack(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        subject.icon,
+                        size: 28,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Flexible(
+                      child: Text(
+                        subject.name.toUpperCase(),
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        minHeight: 8,
+                        value: subject.progress,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.surfaceVariant,
+                        valueColor: AlwaysStoppedAnimation(
+                          Theme.of(context).colorScheme.primary,
                         ),
-                  ),
+                      ),
+                    ),
+                    Text(
+                      '${(subject.progress * 100).toInt()}% Completed',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                    ),
+                  ],
                 ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    minHeight: 8,
-                    value: subject.progress,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceVariant,
-                    valueColor: AlwaysStoppedAnimation(
-                      Theme.of(context).colorScheme.primary,
+              ),
+              if (isLocked && subject.isLocked)
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surface
+                          .withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(cardRadius),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.lock,
+                        size: 40,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ),
                 ),
-                Text(
-                  '${(subject.progress * 100).toInt()}% Completed',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        fontSize: 12,
-                      ),
-                ),
-              ],
-            ),
+            ],
           ),
         ),
       ),

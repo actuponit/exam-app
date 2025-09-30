@@ -35,6 +35,8 @@ class Subject extends Equatable {
         'region': region,
       };
 
+  bool get isLocked => name.trim().toLowerCase() != "logic";
+
   Subject copyWith({
     String? id,
     String? name,
