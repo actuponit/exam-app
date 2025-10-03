@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:no_screenshot/no_screenshot.dart';
-import 'package:share_plus/share_plus.dart';
+// import 'package:share_plus/share_plus.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/theme.dart';
 import '../cubit/notes_cubit.dart';
@@ -53,14 +53,13 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
   void _startScreenshotListening() async {
     await _noScreenshot.screenshotOff();
     await startScreenshotListening();
-    startScreenshot();
     listenForScreenshot();
   }
 
   @override
   void initState() {
-    _startScreenshotListening();
     super.initState();
+    _startScreenshotListening();
     _notesCubit = getIt<NotesCubit>();
     _notesCubit.loadNoteDetail(widget.noteId);
   }
@@ -69,6 +68,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
   void dispose() {
     _scrollController.dispose();
     stopScreenshotListening();
+    startScreenshot();
     super.dispose();
   }
 

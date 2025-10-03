@@ -110,7 +110,7 @@ class SubjectCard extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    'This subject is locked',
+                    'This subject is locked, please finish the payment to unlock this subject.',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onError,
                     ),

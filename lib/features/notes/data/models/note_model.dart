@@ -57,7 +57,7 @@ class NoteModel extends Equatable {
       content: json['content'] as String,
       subjectId: json['subjectId'].toString(),
       subjectName: json['subjectName'] as String,
-      grade: int.tryParse(json['grade']) ?? 0,
+      grade: int.tryParse(json['grade'] ?? '0') ?? 0,
       chapterId: json['chapterId'].toString(),
       chapterName: json['chapterName'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -130,7 +130,7 @@ class NoteChapterModel extends Equatable {
       id: json['id'].toString(),
       name: json['name'] as String,
       subjectId: json['subjectId'].toString(),
-      grade: int.tryParse(json['grade']) ?? 0,
+      grade: int.tryParse((json['grade'] ?? '0')) ?? 0,
       notes: (json['notes'] as List<dynamic>?)
               ?.map((e) => NoteModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -177,7 +177,7 @@ class NoteSubjectModel extends Equatable {
     return NoteSubjectModel(
       id: json['id'].toString(),
       name: json['name'] as String,
-      grade: int.tryParse(json['grade']) ?? 0,
+      grade: int.tryParse((json['grade'] ?? '0')) ?? 0,
       iconName: json['iconName'] as String? ?? 'book',
       chapters: (json['chapters'] as List<dynamic>?)
               ?.map((e) => NoteChapterModel.fromJson(e as Map<String, dynamic>))

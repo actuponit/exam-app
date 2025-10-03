@@ -1,4 +1,5 @@
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
+import 'package:exam_app/features/profile/presentation/bloc/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -323,6 +324,13 @@ class _StatusBannerState extends State<StatusBanner> {
 
   // Default banner for initial/no subscription state
   Widget _buildDefaultBanner(BuildContext context) {
+    final state = context.read<ProfileCubit>().state;
+    final examType = state.examType;
+    final text = examType == null
+        ? "some subjects."
+        : examType.name.contains("region")
+            ? "General science"
+            : "Logic and critical thinking";
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -356,7 +364,8 @@ class _StatusBannerState extends State<StatusBanner> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'These are sample questions. Pay now to access all questions and features!',
+                  '''These are sample questions in $text.
+Pay now to unlock full access to all subjects, all years, chapters, notes, and features!''',
                   style: bodyStyle.copyWith(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 14,
