@@ -328,7 +328,7 @@ class _StatusBannerState extends State<StatusBanner> {
     final examType = state.examType;
     final text = examType == null
         ? "some subjects."
-        : examType.name.contains("region")
+        : examType.name.trim().toLowerCase().contains("region")
             ? "General science"
             : "Logic and critical thinking";
     return Container(
