@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/models/question.dart';
+import '../../domain/models/download_progress.dart';
 import '../../domain/services/score_calculator.dart';
 
 enum QuestionMode { practice, quiz }
@@ -20,6 +21,7 @@ class QuestionState extends Equatable {
   final ScoreResult? scoreResult;
   final int? timeRemaining; // in seconds
   final DateTime? startTime;
+  final DownloadProgress? syncProgress;
 
   const QuestionState({
     this.questions = const [],
@@ -35,6 +37,7 @@ class QuestionState extends Equatable {
     this.scoreResult,
     this.timeRemaining,
     this.startTime,
+    this.syncProgress,
   });
 
   int get totalPages => (questions.length / 6).ceil();
@@ -68,6 +71,7 @@ class QuestionState extends Equatable {
     ScoreResult? scoreResult,
     int? timeRemaining,
     DateTime? startTime,
+    DownloadProgress? syncProgress,
   }) {
     return QuestionState(
       questions: questions ?? this.questions,
@@ -83,6 +87,7 @@ class QuestionState extends Equatable {
       scoreResult: scoreResult ?? this.scoreResult,
       timeRemaining: timeRemaining ?? this.timeRemaining,
       startTime: startTime ?? this.startTime,
+      syncProgress: syncProgress ?? this.syncProgress,
     );
   }
 
@@ -101,5 +106,6 @@ class QuestionState extends Equatable {
         scoreResult,
         timeRemaining,
         startTime,
+        syncProgress,
       ];
 }

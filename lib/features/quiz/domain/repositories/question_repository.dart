@@ -1,5 +1,6 @@
 import '../models/question.dart';
 import '../models/answer.dart' as models;
+import '../models/download_progress.dart';
 
 abstract class QuestionRepository {
   Future<List<Question>> getQuestions({
@@ -11,5 +12,8 @@ abstract class QuestionRepository {
 
   Future<void> saveAnswer(models.Answer answer);
   Future<List<models.Answer>> getSavedAnswers(List<String> questionIds);
-  Future<void> getAllQuestions({bool ensureBackend = false});
+  Future<void> getAllQuestions({
+    bool ensureBackend = false,
+    void Function(DownloadProgress)? onProgress,
+  });
 }

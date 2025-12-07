@@ -8,7 +8,9 @@ import 'package:exam_app/features/notes/data/datasources/notes_remote_datasource
 import 'package:exam_app/features/notes/data/models/note_model.dart';
 import '../../domain/models/question.dart';
 import '../../domain/models/answer.dart' as models;
+import '../../domain/models/download_progress.dart';
 import '../../domain/repositories/question_repository.dart';
+import '../../domain/services/image_download_service.dart';
 import 'package:exam_app/features/quiz/data/datasource/questions_local_datasource.dart';
 import 'package:exam_app/features/quiz/data/datasource/questions_remote_datasource.dart';
 import 'package:exam_app/features/exams/data/datasource/subject_local_datasource.dart';
@@ -22,6 +24,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
   final LocalAuthDataSource _authLocalDatasource;
   final NotesLocalDataSource _notesLocalDatasource;
   final NotesRemoteDataSource _notesRemoteDataSource;
+  final ImageDownloadService _imageDownloadService;
 
   QuestionRepositoryImpl({
     required IQuestionsLocalDatasource localDatasource,
@@ -31,13 +34,15 @@ class QuestionRepositoryImpl implements QuestionRepository {
     required LocalAuthDataSource authLocalDatasource,
     required NotesLocalDataSource notesLocalDatasource,
     required NotesRemoteDataSource notesRemoteDataSource,
+    required ImageDownloadService imageDownloadService,
   })  : _localDatasource = localDatasource,
         _remoteDatasource = remoteDatasource,
         _subjectLocalDatasource = subjectLocalDatasource,
         _examLocalDatasource = examLocalDatasource,
         _authLocalDatasource = authLocalDatasource,
         _notesLocalDatasource = notesLocalDatasource,
-        _notesRemoteDataSource = notesRemoteDataSource;
+        _notesRemoteDataSource = notesRemoteDataSource,
+        _imageDownloadService = imageDownloadService;
 
   final Map<String, models.Answer> _answers = {};
 
@@ -94,44 +99,120 @@ class QuestionRepositoryImpl implements QuestionRepository {
   }
 
   @override
-  Future<void> getAllQuestions({bool ensureBackend = false}) async {
+  Future<void> getAllQuestions({
+    bool ensureBackend = false,
+    void Function(DownloadProgress)? onProgress,
+  }) async {
     try {
+      await _localDatasource.clearQuestions();
       if (ensureBackend) {
         await _localDatasource.clearQuestions();
       }
+
       // First check if we have data in local storage
       final localQuestions = await _localDatasource.getQuestions();
 
       // If we have data locally, return it
       if (localQuestions.isNotEmpty) {
+        onProgress?.call(const DownloadProgress(
+          phase: SyncPhase.completed,
+          message: 'Content loaded from cache',
+        ));
         return;
       }
+
+      // Phase 1: Fetch from API
+      onProgress?.call(const DownloadProgress(
+        phase: SyncPhase.fetchingQuestions,
+        apiTasksTotal: 2,
+        apiTasksCompleted: 0,
+        message: 'Fetching questions and notes...',
+      ));
 
       // If no local data, fetch from remote
       final int? userId = await _authLocalDatasource.getUserId();
       if (userId == null) {
         throw Exception('User ID not found');
       }
+
       final [questionsMapDynamic, notesDynamic] = await Future.wait([
         _remoteDatasource.getQuestions(userId.toString()),
         _notesRemoteDataSource.getNotesByGrade(userId),
       ]);
+
+      onProgress?.call(const DownloadProgress(
+        phase: SyncPhase.fetchingQuestions,
+        apiTasksTotal: 2,
+        apiTasksCompleted: 2,
+        message: 'Questions and notes fetched',
+      ));
+
       final questionsMap = questionsMapDynamic as Map<String, List<Question>>;
       final notes = notesDynamic as List<NoteSubjectModel>;
 
       // Convert the map to a flat list of questions
       final List<Question> allQuestions =
           questionsMap.values.expand((questions) => questions).toList();
-      await Future.wait([
-        _notesLocalDatasource.saveNotes(notes),
-        downloadImages(allQuestions),
-        _localDatasource.saveQuestions(allQuestions),
-        saveSubjects(allQuestions, questionsMap),
-        if (allQuestions.first.region == null)
-          createExamsFromQuestions(allQuestions),
-        if (allQuestions.first.region != null)
-          createExamsFromQuestionsByRegion(allQuestions),
-      ]);
+
+      // Phase 2: Save data (NO IMAGE DOWNLOADS HERE - That's the key!)
+      onProgress?.call(const DownloadProgress(
+        phase: SyncPhase.savingData,
+        dataSaveTasksTotal: 4,
+        dataSaveTasksCompleted: 0,
+        message: 'Saving content...',
+      ));
+
+      await _notesLocalDatasource.saveNotes(notes);
+      onProgress?.call(const DownloadProgress(
+        phase: SyncPhase.savingData,
+        dataSaveTasksTotal: 4,
+        dataSaveTasksCompleted: 1,
+      ));
+
+      await _localDatasource.saveQuestions(allQuestions);
+      onProgress?.call(const DownloadProgress(
+        phase: SyncPhase.savingData,
+        dataSaveTasksTotal: 4,
+        dataSaveTasksCompleted: 2,
+      ));
+
+      await saveSubjects(allQuestions, questionsMap);
+      onProgress?.call(const DownloadProgress(
+        phase: SyncPhase.savingData,
+        dataSaveTasksTotal: 4,
+        dataSaveTasksCompleted: 3,
+      ));
+
+      if (allQuestions.first.region == null) {
+        await createExamsFromQuestions(allQuestions);
+      } else {
+        await createExamsFromQuestionsByRegion(allQuestions);
+      }
+
+      onProgress?.call(const DownloadProgress(
+        phase: SyncPhase.savingData,
+        dataSaveTasksTotal: 4,
+        dataSaveTasksCompleted: 4,
+        message: 'Data saved successfully',
+      ));
+
+      // Phase 3: Start background downloads (NON-BLOCKING - Fire and forget!)
+      final imageUrls = _extractImageUrls(allQuestions);
+
+      // Fire and forget - downloads happen in background
+      _imageDownloadService
+          .downloadImagesInBackground(imageUrls)
+          .listen((progress) {
+        onProgress?.call(progress);
+      });
+
+      // Return immediately - app is ready!
+      onProgress?.call(DownloadProgress(
+        phase: SyncPhase.downloadingImages,
+        message: 'App ready! Images downloading in background...',
+        imagesTotalCount: imageUrls.length,
+        imagesDownloaded: 0,
+      ));
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final message = e.response?.data["message"];
@@ -285,7 +366,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
     await _examLocalDatasource.saveExams(exams);
   }
 
-  Future<void> downloadImages(List<Question> questions) async {
+  /// Extract image URLs from questions (replaces old blocking downloadImages method)
+  Map<String, String> _extractImageUrls(List<Question> questions) {
     final images = <String, String>{};
     for (final question in questions) {
       if (question.imagePath != null) {
@@ -301,6 +383,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
         }
       }
     }
-    await _remoteDatasource.downloadImages(images);
+    // await _remoteDatasource.downloadImages(images);
+    return images;
   }
 }

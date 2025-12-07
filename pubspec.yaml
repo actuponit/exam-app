@@ -36,13 +36,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   go_router: ^16.0.0
-  device_preview: ^1.2.0
   equatable: ^2.0.7
   get_it: ^8.0.3
   injectable: ^2.3.2
   hive_flutter: ^1.1.0
   confetti: ^0.8.0
-  flutter_signin_button: ^2.0.0
   flutter_bloc: ^9.1.1
   formz: ^0.8.0
   animations: ^2.0.11
@@ -50,7 +48,6 @@ dependencies:
   shared_preferences: ^2.5.3
   markdown: ^7.2.1
   dio: ^5.8.0+1
-  internet_connection_checker: ^3.0.1
   hive: ^2.2.3
   flutter_cache_manager: ^3.4.1
   cached_network_image: ^3.4.1
@@ -72,6 +69,7 @@ dependencies:
   flutter_html: ^3.0.0
   path_provider: ^2.1.5
   flutter_html_math: ^3.0.0
+  background_downloader: ^9.4.0
 
 dev_dependencies:
   flutter_test:

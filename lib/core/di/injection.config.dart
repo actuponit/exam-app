@@ -57,6 +57,7 @@ import '../../features/quiz/data/datasource/questions_remote_datasource.dart'
 import '../../features/quiz/data/models/question_model.dart' as _i555;
 import '../../features/quiz/domain/repositories/question_repository.dart'
     as _i837;
+import '../../features/quiz/domain/services/image_download_service.dart' as _i8;
 import '../../features/quiz/presentation/bloc/exam_bloc/exam_bloc.dart'
     as _i1020;
 import '../../features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart'
@@ -101,13 +102,13 @@ Future<_i174.GetIt> init(
   );
   final injectableModule = _$InjectableModule();
   final hiveModule = _$HiveModule();
+  final quizModule = _$QuizModule();
   final paymentModule = _$PaymentModule();
   final authModule = _$AuthModule();
   final examModule = _$ExamModule();
   final subjectModule = _$SubjectModule();
-  final quizModule = _$QuizModule();
-  final networkModule = _$NetworkModule();
   final notesModule = _$NotesModule();
+  final networkModule = _$NetworkModule();
   final referralModule = _$ReferralModule();
   await gh.factoryAsync<_i460.SharedPreferences>(
     () => injectableModule.prefs,
@@ -117,6 +118,8 @@ Future<_i174.GetIt> init(
     () => hiveModule.hiveService,
     preResolve: true,
   );
+  gh.singleton<_i8.ImageDownloadService>(
+      () => quizModule.imageDownloadService());
   gh.lazySingleton<_i973.InternetConnectionChecker>(
       () => paymentModule.internetConnectionChecker());
   gh.lazySingleton<_i970.LocalAuthDataSource>(
@@ -129,11 +132,11 @@ Future<_i174.GetIt> init(
       _i424.UserPreferencesLocalDataSourceImpl(gh<_i460.SharedPreferences>()));
   gh.singleton<_i979.Box<_i238.SubjectModel>>(
       () => subjectModule.subjectsBox(gh<_i1047.HiveService>()));
+  gh.singleton<_i979.Box<_i214.NotesListModel>>(
+      () => notesModule.notesBox(gh<_i1047.HiveService>()));
   gh.singleton<_i979.Box<_i555.QuestionModel>>(
       () => quizModule.questionsBox(gh<_i1047.HiveService>()));
   gh.singleton<_i361.Dio>(() => networkModule.dio(gh<_i1047.HiveService>()));
-  gh.singleton<_i979.Box<_i214.NotesListModel>>(
-      () => notesModule.notesBox(gh<_i1047.HiveService>()));
   gh.lazySingleton<_i900.SubscriptionDataSource>(
       () => paymentModule.subscriptionDataSource(gh<_i361.Dio>()));
   gh.lazySingleton<_i970.AuthDataSource>(
@@ -161,15 +164,6 @@ Future<_i174.GetIt> init(
       .subjectLocalDatasource(gh<_i979.Box<_i238.SubjectModel>>()));
   gh.lazySingleton<_i622.SubscriptionLocalDataSource>(() =>
       paymentModule.subscriptionLocalDataSource(gh<_i460.SharedPreferences>()));
-  gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository(
-        gh<_i516.IQuestionsLocalDatasource>(),
-        gh<_i413.IQuestionsRemoteDatasource>(),
-        gh<_i156.ISubjectLocalDatasource>(),
-        gh<_i506.IExamLocalDatasource>(),
-        gh<_i970.LocalAuthDataSource>(),
-        gh<_i43.NotesLocalDataSource>(),
-        gh<_i1026.NotesRemoteDataSource>(),
-      ));
   gh.lazySingleton<_i932.NetworkInfo>(
       () => paymentModule.networkInfo(gh<_i973.InternetConnectionChecker>()));
   gh.singleton<_i634.SubjectRepository>(() =>
@@ -214,6 +208,16 @@ Future<_i174.GetIt> init(
           ));
   gh.factory<_i494.ReferralBloc>(
       () => referralModule.referralBloc(gh<_i854.ReferralRepository>()));
+  gh.singleton<_i837.QuestionRepository>(() => quizModule.questionRepository(
+        gh<_i516.IQuestionsLocalDatasource>(),
+        gh<_i413.IQuestionsRemoteDatasource>(),
+        gh<_i156.ISubjectLocalDatasource>(),
+        gh<_i506.IExamLocalDatasource>(),
+        gh<_i970.LocalAuthDataSource>(),
+        gh<_i43.NotesLocalDataSource>(),
+        gh<_i1026.NotesRemoteDataSource>(),
+        gh<_i8.ImageDownloadService>(),
+      ));
   gh.factory<_i125.SplashCubit>(
       () => _i125.SplashCubit(gh<_i421.UserPreferencesRepository>()));
   gh.factory<_i1020.ExamBloc>(
@@ -233,6 +237,8 @@ class _$InjectableModule extends _i109.InjectableModule {}
 
 class _$HiveModule extends _i31.HiveModule {}
 
+class _$QuizModule extends _i697.QuizModule {}
+
 class _$PaymentModule extends _i81.PaymentModule {}
 
 class _$AuthModule extends _i4.AuthModule {}
@@ -241,10 +247,8 @@ class _$ExamModule extends _i486.ExamModule {}
 
 class _$SubjectModule extends _i143.SubjectModule {}
 
-class _$QuizModule extends _i697.QuizModule {}
+class _$NotesModule extends _i161.NotesModule {}
 
 class _$NetworkModule extends _i851.NetworkModule {}
-
-class _$NotesModule extends _i161.NotesModule {}
 
 class _$ReferralModule extends _i62.ReferralModule {}

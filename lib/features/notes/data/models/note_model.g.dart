@@ -8,7 +8,7 @@ part of 'note_model.dart';
 
 class NoteModelAdapter extends TypeAdapter<NoteModel> {
   @override
-  final int typeId = 9;
+  final int typeId = 10;
 
   @override
   NoteModel read(BinaryReader reader) {
@@ -78,7 +78,7 @@ class NoteModelAdapter extends TypeAdapter<NoteModel> {
 
 class NoteChapterModelAdapter extends TypeAdapter<NoteChapterModel> {
   @override
-  final int typeId = 8;
+  final int typeId = 9;
 
   @override
   NoteChapterModel read(BinaryReader reader) {
@@ -124,7 +124,7 @@ class NoteChapterModelAdapter extends TypeAdapter<NoteChapterModel> {
 
 class NoteSubjectModelAdapter extends TypeAdapter<NoteSubjectModel> {
   @override
-  final int typeId = 7;
+  final int typeId = 8;
 
   @override
   NoteSubjectModel read(BinaryReader reader) {
@@ -170,7 +170,7 @@ class NoteSubjectModelAdapter extends TypeAdapter<NoteSubjectModel> {
 
 class NotesListModelAdapter extends TypeAdapter<NotesListModel> {
   @override
-  final int typeId = 10;
+  final int typeId = 7;
 
   @override
   NotesListModel read(BinaryReader reader) {

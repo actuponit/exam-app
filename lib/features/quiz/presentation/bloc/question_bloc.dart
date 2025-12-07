@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:exam_app/core/error/exceptions.dart';
 import 'package:exam_app/features/quiz/domain/models/answer.dart';
+import 'package:exam_app/features/quiz/domain/models/download_progress.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/question_repository.dart';
 import '../../domain/services/score_calculator.dart';
@@ -23,6 +24,8 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
     on<QuizSubmitted>(_onQuizSubmitted);
     on<QuizTicked>(_onQuizTicked);
     on<FetchQuestions>(_onFetchQuestions);
+    on<SyncProgressUpdated>(_onSyncProgressUpdated);
+    on<CancelImageDownloads>(_onCancelImageDownloads);
   }
 
   Future<void> _onFetchQuestions(
@@ -31,17 +34,62 @@ class QuestionBloc extends Bloc<QuestionEvent, QuestionState> {
   ) async {
     emit(state.copyWith(status: QuestionStatus.loading));
     try {
-      await _repository.getAllQuestions(ensureBackend: event.ensureBackend);
+      await _repository.getAllQuestions(
+        ensureBackend: event.ensureBackend,
+        onProgress: (progress) {
+          add(SyncProgressUpdated(progress));
+        },
+      );
       emit(state.copyWith(status: QuestionStatus.success));
     } on ServerException catch (e) {
-      emit(state.copyWith(status: QuestionStatus.error, error: e.message));
+      emit(state.copyWith(
+        status: QuestionStatus.error,
+        error: e.message,
+        syncProgress: DownloadProgress(
+          phase: SyncPhase.error,
+          message: e.message,
+        ),
+      ));
     } on CacheException catch (_) {
-      emit(
-          state.copyWith(status: QuestionStatus.error, error: 'Storage error'));
+      emit(state.copyWith(
+        status: QuestionStatus.error,
+        error: 'Storage error',
+        syncProgress: const DownloadProgress(
+          phase: SyncPhase.error,
+          message: 'Storage error',
+        ),
+      ));
     } catch (e) {
       emit(state.copyWith(
-          status: QuestionStatus.error, error: 'Unexpected error'));
+        status: QuestionStatus.error,
+        error: 'Unexpected error',
+        syncProgress: const DownloadProgress(
+          phase: SyncPhase.error,
+          message: 'Unexpected error',
+        ),
+      ));
     }
+  }
+
+  void _onSyncProgressUpdated(
+    SyncProgressUpdated event,
+    Emitter<QuestionState> emit,
+  ) {
+    emit(state.copyWith(syncProgress: event.progress));
+  }
+
+  Future<void> _onCancelImageDownloads(
+    CancelImageDownloads event,
+    Emitter<QuestionState> emit,
+  ) async {
+    // Download cancellation will be implemented via dependency injection
+    // For now, just update the state
+    emit(state.copyWith(
+      syncProgress: const DownloadProgress(
+        phase: SyncPhase.idle,
+        message: 'Downloads cancelled',
+      ),
+    ));
   }
 
   Future<void> _onQuestionStarted(

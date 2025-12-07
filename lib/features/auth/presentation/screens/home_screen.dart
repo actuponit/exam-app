@@ -11,6 +11,7 @@ import 'package:exam_app/features/quiz/presentation/bloc/question_event.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
+import 'package:exam_app/features/quiz/presentation/widgets/sync_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -152,42 +153,56 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildLoadingScreen() {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).colorScheme.onBackground,
+        child: BlocBuilder<QuestionBloc, QuestionState>(
+          builder: (context, state) {
+            if (state.syncProgress != null) {
+              return SyncProgressIndicator(
+                progress: state.syncProgress!,
+                onCancel: () {
+                  context.read<QuestionBloc>().add(const CancelImageDownloads());
+                },
+              );
+            }
+
+            // Fallback to simple loading indicator
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.onBackground,
+                    ),
+                    strokeWidth: 3,
+                  ),
                 ),
-                strokeWidth: 3,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Loading your study materials...',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Please wait while we prepare your dashboard',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onBackground
-                        .withOpacity(0.7),
-                  ),
-            ),
-          ],
+                const SizedBox(height: 24),
+                Text(
+                  'Loading your study materials...',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Please wait while we prepare your dashboard',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withOpacity(0.7),
+                      ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
