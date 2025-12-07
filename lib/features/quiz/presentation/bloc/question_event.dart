@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:exam_app/features/quiz/domain/models/question.dart';
+import 'package:exam_app/features/quiz/domain/models/download_progress.dart';
 
 abstract class QuestionEvent extends Equatable {
   const QuestionEvent();
@@ -74,3 +75,16 @@ class AnswerRevealed extends QuestionEvent {
 class LoadMoreRequested extends QuestionEvent {}
 
 class QuizTicked extends QuestionEvent {}
+
+class SyncProgressUpdated extends QuestionEvent {
+  final DownloadProgress progress;
+
+  const SyncProgressUpdated(this.progress);
+
+  @override
+  List<Object?> get props => [progress];
+}
+
+class CancelImageDownloads extends QuestionEvent {
+  const CancelImageDownloads();
+}
