@@ -43,20 +43,20 @@ class DownloadProgress extends Equatable {
   });
 
   String get displayMessage {
-    switch (phase) {
-      case SyncPhase.fetchingQuestions:
-        return 'Fetching questions... ${_percentage(apiTasksCompleted, apiTasksTotal)}';
-      case SyncPhase.savingData:
-        return 'Preparing content... ${_percentage(dataSaveTasksCompleted, dataSaveTasksTotal)}';
-      case SyncPhase.downloadingImages:
-        return 'Downloading images $imagesDownloaded/$imagesTotalCount';
-      case SyncPhase.completed:
-        return 'All content synchronized!';
-      case SyncPhase.error:
-        return message;
-      default:
-        return message;
-    }
+    return message;
+    // switch (phase) {
+    //   case SyncPhase.fetchingQuestions:
+    //     return 'Fetching questions... ${_percentage(apiTasksCompleted, apiTasksTotal)}';
+    //   case SyncPhase.savingData:
+    //     return 'Preparing content... ${_percentage(dataSaveTasksCompleted, dataSaveTasksTotal)}';
+    //   case SyncPhase.downloadingImages:
+    //     return 'Downloading images $imagesDownloaded/$imagesTotalCount';
+    //   case SyncPhase.completed:
+    //     return 'All content synchronized!';
+    //   case SyncPhase.error:
+    //     return message;
+    //   default:
+    // }
   }
 
   String _percentage(int completed, int total) {
@@ -81,7 +81,8 @@ class DownloadProgress extends Equatable {
       message: message ?? this.message,
       apiTasksCompleted: apiTasksCompleted ?? this.apiTasksCompleted,
       apiTasksTotal: apiTasksTotal ?? this.apiTasksTotal,
-      dataSaveTasksCompleted: dataSaveTasksCompleted ?? this.dataSaveTasksCompleted,
+      dataSaveTasksCompleted:
+          dataSaveTasksCompleted ?? this.dataSaveTasksCompleted,
       dataSaveTasksTotal: dataSaveTasksTotal ?? this.dataSaveTasksTotal,
       imagesDownloaded: imagesDownloaded ?? this.imagesDownloaded,
       imagesTotalCount: imagesTotalCount ?? this.imagesTotalCount,
@@ -92,15 +93,15 @@ class DownloadProgress extends Equatable {
 
   @override
   List<Object?> get props => [
-    phase,
-    message,
-    apiTasksCompleted,
-    apiTasksTotal,
-    dataSaveTasksCompleted,
-    dataSaveTasksTotal,
-    imagesDownloaded,
-    imagesTotalCount,
-    imageDownloadsFailed,
-    overallProgress,
-  ];
+        phase,
+        message,
+        apiTasksCompleted,
+        apiTasksTotal,
+        dataSaveTasksCompleted,
+        dataSaveTasksTotal,
+        imagesDownloaded,
+        imagesTotalCount,
+        imageDownloadsFailed,
+        overallProgress,
+      ];
 }
