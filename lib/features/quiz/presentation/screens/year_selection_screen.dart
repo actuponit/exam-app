@@ -48,6 +48,8 @@ class YearSelectionScreen extends StatelessWidget {
           }
 
           if (state is ExamLoaded) {
+            final isChaptter = state.chapters.isNotEmpty &&
+                state.chapters.first.name.startsWith("Ch-");
             return Column(
               children: [
                 if (region != null) ...[
@@ -72,7 +74,9 @@ class YearSelectionScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Filter by Chapter',
+                        isChaptter
+                            ? 'Filter by Chapter'
+                            : 'Filter by University',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontSize: 16,
                               color: Theme.of(context)
@@ -87,10 +91,12 @@ class YearSelectionScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(cardRadius),
                         ),
-                        height: 40,
+                        height: isChaptter ? 40 : 120,
                         child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
+                          scrollDirection:
+                              isChaptter ? Axis.horizontal : Axis.vertical,
                           itemCount: state.chapters.length + 1,
+                          shrinkWrap: true,
                           separatorBuilder: (_, __) => const SizedBox(width: 8),
                           itemBuilder: (context, index) {
                             final isAll = index == 0;
