@@ -12,6 +12,8 @@ import 'package:exam_app/features/quiz/presentation/bloc/question_state.dart';
 import 'package:exam_app/features/quiz/presentation/bloc/subject_bloc/subject_bloc.dart';
 import 'package:exam_app/features/quiz/presentation/screens/subject_selection_screen.dart';
 import 'package:exam_app/features/quiz/presentation/widgets/sync_progress_indicator.dart';
+import 'package:exam_app/features/permission/presentation/cubit/permission_cubit.dart';
+import 'package:exam_app/features/permission/presentation/cubit/permission_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<SubscriptionBloc>().add(const CheckSubscriptionStatus());
     context.read<QuestionBloc>().add(const FetchQuestions());
     context.read<ProfileCubit>().loadProfile();
+    context.read<PermissionCubit>().checkPermission();
   }
 
   @override
@@ -46,107 +49,117 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<QuestionBloc, QuestionState>(
+    return BlocListener<PermissionCubit, PermissionState>(
       listener: (context, state) {
-        if (state.status == QuestionStatus.success) {
-          context.read<SubjectBloc>().add(LoadSubjects());
+        if (state is PermissionRationaleRequired) {
+          DialogUtils.showRationaleDialog(context, onConfirm: () {
+            context.read<PermissionCubit>().requestPermission();
+          });
         }
       },
-      builder: (context, state) {
-        if (state.status == QuestionStatus.success) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'Home',
-                style: displayStyle.copyWith(
-                  color: Colors.white,
-                  fontSize: 24,
+      child: BlocConsumer<QuestionBloc, QuestionState>(
+        listener: (context, state) {
+          if (state.status == QuestionStatus.success) {
+            context.read<SubjectBloc>().add(LoadSubjects());
+          }
+        },
+        builder: (context, state) {
+          if (state.status == QuestionStatus.success) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  'Home',
+                  style: displayStyle.copyWith(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.share),
+                    onPressed: () async {
+                      final uri = Uri.parse(
+                          'https://play.google.com/store/apps/details?id=com.ethioexam.app');
+                      final params = ShareParams(uri: uri);
+                      await SharePlus.instance.share(params);
+                    },
+                  ),
+                  // Theme toggle button removed from here. Now in Settings.
+                ],
+              ),
+              drawer: const AppDrawer(),
+              body: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Welcome back!',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              fontSize: 28,
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Practice for your upcoming exams',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onBackground
+                                  .withOpacity(0.7),
+                            ),
+                      ),
+                      const SizedBox(height: 40),
+                      _buildStatusBanner(context),
+                      // _buildQuickActions(context),
+                      const SizedBox(height: 40),
+                      Text(
+                        'Recent Exam',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              fontSize: 20,
+                              color:
+                                  Theme.of(context).colorScheme.onBackground,
+                            ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildRecentExams(context),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      BlocBuilder<SubscriptionBloc, SubscriptionState>(
+                        builder: (context, state) {
+                          return SubjectSelectionScreen(
+                            isLocked: !(state is SubscriptionStatusLoaded &&
+                                state.subscription.isApproved),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.share),
-                  onPressed: () async {
-                    final uri = Uri.parse(
-                        'https://play.google.com/store/apps/details?id=com.ethioexam.app');
-                    final params = ShareParams(uri: uri);
-                    await SharePlus.instance.share(params);
-                  },
-                ),
-                // Theme toggle button removed from here. Now in Settings.
-              ],
-            ),
-            drawer: const AppDrawer(),
-            body: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Welcome back!',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(
-                            fontSize: 28,
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Practice for your upcoming exams',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onBackground
-                                .withOpacity(0.7),
-                          ),
-                    ),
-                    const SizedBox(height: 40),
-                    _buildStatusBanner(context),
-                    // _buildQuickActions(context),
-                    const SizedBox(height: 40),
-                    Text(
-                      'Recent Exam',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(
-                            fontSize: 20,
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildRecentExams(context),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    BlocBuilder<SubscriptionBloc, SubscriptionState>(
-                      builder: (context, state) {
-                        return SubjectSelectionScreen(
-                          isLocked: !(state is SubscriptionStatusLoaded &&
-                              state.subscription.isApproved),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            floatingActionButton: _buildRefetchButton(context),
-          );
-        } else if (state.status == QuestionStatus.loading) {
-          return _buildLoadingScreen();
-        } else {
-          return _buildErrorScreen(() {
-            context.read<QuestionBloc>().add(FetchQuestions());
-          }, state.error);
-        }
-      },
+              floatingActionButton: _buildRefetchButton(context),
+            );
+          } else if (state.status == QuestionStatus.loading) {
+            return _buildLoadingScreen();
+          } else {
+            return _buildErrorScreen(() {
+              context.read<QuestionBloc>().add(FetchQuestions());
+            }, state.error);
+          }
+        },
+      ),
     );
   }
 
@@ -159,7 +172,9 @@ class _HomeScreenState extends State<HomeScreen> {
               return SyncProgressIndicator(
                 progress: state.syncProgress!,
                 onCancel: () {
-                  context.read<QuestionBloc>().add(const CancelImageDownloads());
+                  context
+                      .read<QuestionBloc>()
+                      .add(const CancelImageDownloads());
                 },
               );
             }

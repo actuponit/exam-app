@@ -50,6 +50,12 @@ import '../../features/payment/domain/repositories/subscription_repository.dart'
     as _i611;
 import '../../features/payment/presentation/bloc/subscription_bloc.dart'
     as _i383;
+import '../../features/permission/data/repositories/permission_repository_impl.dart'
+    as _i519;
+import '../../features/permission/domain/repositories/permission_repository.dart'
+    as _i606;
+import '../../features/permission/presentation/cubit/permission_cubit.dart'
+    as _i321;
 import '../../features/quiz/data/datasource/questions_local_datasource.dart'
     as _i516;
 import '../../features/quiz/data/datasource/questions_remote_datasource.dart'
@@ -137,6 +143,8 @@ Future<_i174.GetIt> init(
   gh.singleton<_i979.Box<_i555.QuestionModel>>(
       () => quizModule.questionsBox(gh<_i1047.HiveService>()));
   gh.singleton<_i361.Dio>(() => networkModule.dio(gh<_i1047.HiveService>()));
+  gh.lazySingleton<_i606.PermissionRepository>(
+      () => _i519.PermissionRepositoryImpl());
   gh.lazySingleton<_i900.SubscriptionDataSource>(
       () => paymentModule.subscriptionDataSource(gh<_i361.Dio>()));
   gh.lazySingleton<_i970.AuthDataSource>(
@@ -168,6 +176,8 @@ Future<_i174.GetIt> init(
       () => paymentModule.networkInfo(gh<_i973.InternetConnectionChecker>()));
   gh.singleton<_i634.SubjectRepository>(() =>
       subjectModule.subjectRepository(gh<_i156.ISubjectLocalDatasource>()));
+  gh.factory<_i321.PermissionCubit>(
+      () => _i321.PermissionCubit(gh<_i606.PermissionRepository>()));
   gh.lazySingleton<_i854.ReferralRepository>(
       () => referralModule.referralRepository(
             gh<_i591.ReferralRemoteDataSource>(),

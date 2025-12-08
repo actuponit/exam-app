@@ -23,4 +23,38 @@ class DialogUtils {
       ),
     );
   }
+
+  static Future<void> showRationaleDialog(BuildContext context, {required VoidCallback onConfirm}) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Notification Permission'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('We need notification permission to show download progress in the background.'),
+                Text('Please allow notifications.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                onConfirm();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

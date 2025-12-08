@@ -11,6 +11,8 @@ class PermissionInitial extends PermissionState {}
 
 class PermissionRequestInProgress extends PermissionState {}
 
-class PermissionRequestSuccess extends PermissionState {}
+class PermissionRationaleRequired extends PermissionState {}
 
-class PermissionRequestFailure extends PermissionState {}
+class PermissionGranted extends PermissionState {}
+
+class PermissionDenied extends PermissionState {}

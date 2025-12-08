@@ -1,4 +1,6 @@
 PODS:
+  - background_downloader (0.0.1):
+    - Flutter
   - connectivity_plus (0.0.1):
     - Flutter
   - Flutter (1.0.0)
@@ -32,6 +34,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - background_downloader (from `.symlinks/plugins/background_downloader/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - Flutter (from `Flutter`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
@@ -51,6 +54,8 @@ SPEC REPOS:
     - ScreenProtectorKit
 
 EXTERNAL SOURCES:
+  background_downloader:
+    :path: ".symlinks/plugins/background_downloader/ios"
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/ios"
   Flutter:
@@ -79,8 +84,9 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/wakelock_plus/ios"
 
 SPEC CHECKSUMS:
+  background_downloader: 50e91d979067b82081aba359d7d916b3ba5fadad
   connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
   image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
   no_screenshot: 6d183496405a3ab709a67a54e5cd0f639e94729e
@@ -94,6 +100,6 @@ SPEC CHECKSUMS:
   video_player_avfoundation: 2cef49524dd1f16c5300b9cd6efd9611ce03639b
   wakelock_plus: e29112ab3ef0b318e58cfa5c32326458be66b556
 
-PODFILE CHECKSUM: 4305caec6b40dde0ae97be1573c53de1882a07e5
+PODFILE CHECKSUM: 251cb053df7158f337c0712f2ab29f4e0fa474ce
 
 COCOAPODS: 1.16.2
