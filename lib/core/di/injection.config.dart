@@ -42,6 +42,12 @@ import '../../features/notes/data/models/note_model.dart' as _i214;
 import '../../features/notes/domain/repositories/notes_repository.dart'
     as _i399;
 import '../../features/notes/presentation/cubit/notes_cubit.dart' as _i267;
+import '../../features/notifications/data/datasources/notification_remote_data_source.dart'
+    as _i757;
+import '../../features/notifications/data/repositories/notification_repository_impl.dart'
+    as _i361;
+import '../../features/notifications/domain/repositories/notification_repository.dart'
+    as _i367;
 import '../../features/payment/data/datasources/subscription_data_source.dart'
     as _i900;
 import '../../features/payment/data/datasources/subscription_local_data_source.dart'
@@ -143,6 +149,8 @@ Future<_i174.GetIt> init(
   gh.singleton<_i979.Box<_i555.QuestionModel>>(
       () => quizModule.questionsBox(gh<_i1047.HiveService>()));
   gh.singleton<_i361.Dio>(() => networkModule.dio(gh<_i1047.HiveService>()));
+  gh.lazySingleton<_i757.NotificationRemoteDataSource>(
+      () => _i757.NotificationRemoteDataSourceImpl(gh<_i361.Dio>()));
   gh.lazySingleton<_i606.PermissionRepository>(
       () => _i519.PermissionRepositoryImpl());
   gh.lazySingleton<_i900.SubscriptionDataSource>(
@@ -178,6 +186,9 @@ Future<_i174.GetIt> init(
       subjectModule.subjectRepository(gh<_i156.ISubjectLocalDatasource>()));
   gh.factory<_i321.PermissionCubit>(
       () => _i321.PermissionCubit(gh<_i606.PermissionRepository>()));
+  gh.lazySingleton<_i367.NotificationRepository>(() =>
+      _i361.NotificationRepositoryImpl(
+          gh<_i757.NotificationRemoteDataSource>()));
   gh.lazySingleton<_i854.ReferralRepository>(
       () => referralModule.referralRepository(
             gh<_i591.ReferralRemoteDataSource>(),
