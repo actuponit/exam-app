@@ -22,8 +22,8 @@ class NotificationModel extends Notification {
       likeCount: json['like_count'] as int,
       dislikeCount: json['dislike_count'] as int,
       commentCount: json['comment_count'] as int,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
+      updatedAt: DateTime.parse(json['updated_at'] as String).toLocal(),
     );
   }
 

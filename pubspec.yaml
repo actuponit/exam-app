@@ -71,6 +71,7 @@ dependencies:
   flutter_html_math: ^3.0.0
   background_downloader: ^9.4.0
   internet_connection_checker: ^3.0.1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

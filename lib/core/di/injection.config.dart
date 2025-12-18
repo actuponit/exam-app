@@ -48,6 +48,8 @@ import '../../features/notifications/data/repositories/notification_repository_i
     as _i361;
 import '../../features/notifications/domain/repositories/notification_repository.dart'
     as _i367;
+import '../../features/notifications/presentation/bloc/notification_bloc.dart'
+    as _i876;
 import '../../features/payment/data/datasources/subscription_data_source.dart'
     as _i900;
 import '../../features/payment/data/datasources/subscription_local_data_source.dart'
@@ -239,6 +241,8 @@ Future<_i174.GetIt> init(
         gh<_i1026.NotesRemoteDataSource>(),
         gh<_i8.ImageDownloadService>(),
       ));
+  gh.factory<_i876.NotificationBloc>(
+      () => _i876.NotificationBloc(gh<_i367.NotificationRepository>()));
   gh.factory<_i125.SplashCubit>(
       () => _i125.SplashCubit(gh<_i421.UserPreferencesRepository>()));
   gh.factory<_i1020.ExamBloc>(
