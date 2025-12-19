@@ -1,6 +1,6 @@
 part of 'registration_form_bloc.dart';
 
-enum RegistrationStep { personalInfo, institutionInfo, finish }
+enum RegistrationStep { personalInfo, institutionInfo, examSelection }
 
 class RegistrationState extends Equatable {
   final RegistrationStep currentStep;

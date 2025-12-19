@@ -43,7 +43,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
           status: true,
         ));
         break;
-      case RegistrationStep.finish:
+      case RegistrationStep.examSelection:
         emit(state.copyWith(status: true));
         break;
     }

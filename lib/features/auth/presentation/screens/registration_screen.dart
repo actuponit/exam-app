@@ -90,6 +90,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
           _goToPage(0);
         } else if (state.currentStep == RegistrationStep.institutionInfo) {
           _goToPage(1);
+        } else if (state.currentStep == RegistrationStep.examSelection) {
+          _goToPage(2);
         }
       },
       child: Scaffold(
@@ -123,7 +125,9 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                     onPageChanged: (page) {
                       final step = page == 0
                           ? RegistrationStep.personalInfo
-                          : RegistrationStep.institutionInfo;
+                          : page == 1
+                              ? RegistrationStep.institutionInfo
+                              : RegistrationStep.examSelection;
 
                       if (context.read<RegistrationBloc>().state.currentStep !=
                           step) {
@@ -132,9 +136,10 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                             .add(RegistrationStepChanged(step));
                       }
                     },
-                    children: const [
-                      _PersonalInfoPage(),
-                      _InstitutionInfoPage(),
+                    children: [
+                      const _PersonalInfoPage(),
+                      const _InstitutionInfoPage(),
+                      const _ExamSelectionPage(),
                     ],
                   ),
                 ),
@@ -151,8 +156,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       buildWhen: (previous, current) =>
           previous.currentStep != current.currentStep,
       builder: (context, state) {
-        final isStep1 = state.currentStep == RegistrationStep.personalInfo;
-        final progress = isStep1 ? 0.5 : 1.0;
+        final currentStepIndex = state.currentStep.index;
+        final progress = (currentStepIndex + 1) / 3.0;
 
         return FadeTransition(
           opacity: _fadeAnimation,
@@ -178,13 +183,13 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                   // Back Button and Close
                   Row(
                     children: [
-                      if (!isStep1)
+                      if (currentStepIndex > 0)
                         GestureDetector(
                           onTap: () {
+                            final previousStep =
+                                RegistrationStep.values[currentStepIndex - 1];
                             context.read<RegistrationBloc>().add(
-                                  const RegistrationStepChanged(
-                                    RegistrationStep.personalInfo,
-                                  ),
+                                  RegistrationStepChanged(previousStep),
                                 );
                           },
                           child: Container(
@@ -225,7 +230,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                         ),
                       const Spacer(),
                       Text(
-                        '${isStep1 ? 1 : 2} of 2',
+                        '${currentStepIndex + 1} of 3',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context)
                                   .colorScheme
@@ -241,16 +246,17 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                   // Creative Step Indicator
                   Row(
                     children: [
-                      _buildStepCircle(1, isStep1, true),
+                      _buildStepCircle(
+                          1, currentStepIndex == 0, currentStepIndex > 0),
                       Expanded(
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 600),
                           height: 4,
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(2),
                             gradient: LinearGradient(
-                              colors: progress > 0.5
+                              colors: currentStepIndex >= 1
                                   ? [
                                       Theme.of(context).colorScheme.primary,
                                       Theme.of(context).colorScheme.secondary,
@@ -267,7 +273,34 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                           ),
                         ),
                       ),
-                      _buildStepCircle(2, !isStep1, progress == 1.0),
+                      _buildStepCircle(
+                          2, currentStepIndex == 1, currentStepIndex > 1),
+                      Expanded(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 600),
+                          height: 4,
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(2),
+                            gradient: LinearGradient(
+                              colors: currentStepIndex >= 2
+                                  ? [
+                                      Theme.of(context).colorScheme.primary,
+                                      Theme.of(context).colorScheme.secondary,
+                                    ]
+                                  : [
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .surfaceVariant,
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .surfaceVariant,
+                                    ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      _buildStepCircle(3, currentStepIndex == 2, false),
                     ],
                   ),
 
@@ -277,12 +310,14 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 400),
                     child: Column(
-                      key: ValueKey(isStep1),
+                      key: ValueKey(currentStepIndex),
                       children: [
                         Text(
-                          isStep1
+                          currentStepIndex == 0
                               ? 'Tell us about yourself'
-                              : 'Institution Details',
+                              : currentStepIndex == 1
+                                  ? 'Institution Details'
+                                  : 'Select Exam',
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall
@@ -294,9 +329,11 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          isStep1
+                          currentStepIndex == 0
                               ? 'Let\'s start with your basic information to create your account'
-                              : 'Help us understand your educational background',
+                              : currentStepIndex == 1
+                                  ? 'Help us understand your educational background'
+                                  : 'Choose the exam you are preparing for',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Theme.of(context)
@@ -735,6 +772,297 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
     return institutionNameController.text.isNotEmpty;
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RegistrationBloc, RegistrationState>(
+      builder: (context, state) {
+        final institutionType = state.institutionInfo.institutionType;
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          controller: _pageController,
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              _buildInstitutionTypeDropdown(
+                  context: context, currentValue: institutionType),
+              const SizedBox(height: 30),
+              _buildInstitutionNameField(context, institutionType),
+              const SizedBox(height: 30),
+              _buildGradientButton(
+                context: context,
+                text: 'Continue',
+                onPressed: _isFormValid()
+                    ? () {
+                        final institutionType =
+                            state.institutionInfo.institutionType;
+                        if (institutionType == InstitutionType.none) {
+                          AppSnackBar.show(
+                            context: context,
+                            message: 'Please select an institution type',
+                            type: SnackBarType.error,
+                          );
+                        } else {
+                          context.read<RegistrationBloc>().add(
+                                const RegistrationStepChanged(
+                                  RegistrationStep.examSelection,
+                                ),
+                              );
+                        }
+                      }
+                    : null,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildInstitutionTypeDropdown({
+    required BuildContext context,
+    required InstitutionType currentValue,
+  }) {
+    return DropdownButtonFormField<InstitutionType>(
+      value: currentValue,
+      decoration: InputDecoration(
+        labelText: 'Institution Type',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      items: InstitutionType.values
+          .map((type) => DropdownMenuItem(
+                value: type,
+                child: Text(type.displayName),
+              ))
+          .toList(),
+      onChanged: (value) {
+        if (value != null) {
+          context.read<RegistrationBloc>().add(
+                RegistrationFormFieldUpdated(
+                  step: RegistrationStep.institutionInfo,
+                  field: 'institutionType',
+                  value: value.name,
+                ),
+              );
+        }
+      },
+    );
+  }
+
+  Widget _buildInstitutionNameField(
+      BuildContext context, InstitutionType institutionType) {
+    if (institutionType == InstitutionType.university) {
+      return Autocomplete<String>(
+        optionsBuilder: (TextEditingValue textEditingValue) {
+          if (textEditingValue.text.isEmpty) {
+            return const Iterable<String>.empty();
+          }
+          return _getUniversitySuggestions(textEditingValue.text);
+        },
+        onSelected: (String selection) {
+          institutionNameController.text = selection;
+          context.read<RegistrationBloc>().add(
+                RegistrationFormFieldUpdated(
+                  step: RegistrationStep.institutionInfo,
+                  field: 'institutionName',
+                  value: selection,
+                ),
+              );
+          setState(() {});
+        },
+        fieldViewBuilder:
+            (context, textEditingController, focusNode, onFieldSubmitted) {
+          // Sync the controller with our main controller only once
+          if (textEditingController.text != institutionNameController.text) {
+            textEditingController.text = institutionNameController.text;
+          }
+
+          return TextField(
+            controller: textEditingController,
+            focusNode: focusNode,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              labelText: 'University Name',
+              hintText: 'Type to search universities...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              suffixIcon: const Icon(Icons.search),
+            ),
+            onChanged: (value) {
+              institutionNameController.text = value;
+              context.read<RegistrationBloc>().add(
+                    RegistrationFormFieldUpdated(
+                      step: RegistrationStep.institutionInfo,
+                      field: 'institutionName',
+                      value: value,
+                    ),
+                  );
+            },
+          );
+        },
+      );
+    } else {
+      return TextField(
+        controller: institutionNameController,
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          labelText: 'Institution Name',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onChanged: (value) {
+          context.read<RegistrationBloc>().add(
+                RegistrationFormFieldUpdated(
+                  step: RegistrationStep.institutionInfo,
+                  field: 'institutionName',
+                  value: value,
+                ),
+              );
+          setState(() {}); // Refresh UI to update button state
+        },
+      );
+    }
+  }
+
+  Iterable<String> _getUniversitySuggestions(String query) {
+    final universities = [
+      'Addis Ababa Science and Technology University',
+      'Addis Ababa University',
+      'Adigrat University',
+      'Ambo University',
+      'Arba Minch University',
+      'Arsi University',
+      'Adama Science and Technology University',
+      'Axum University',
+      'Bahir Dar University',
+      'Bonga University',
+      'Bule Hora University',
+      'Dambi Dollo University',
+      'Debark University',
+      'Debre Berhan University',
+      'Debre Markos University',
+      'Debre Tabor University',
+      'Defence University',
+      'Dilla University',
+      'Dire Dawa University',
+      'Gambella University',
+      'Gondar University',
+      'Haramaya University',
+      'Hawassa University',
+      'Injibara University',
+      'Jijiga University',
+      'Jimma University',
+      'Jinka University',
+      'Kebri Dehar University',
+      'Kotebe Metropolitan University',
+      'Madda Walabu University',
+      'Mekdela Amba University',
+      'Mekelle University',
+      'Mettu University',
+      'Mizan Tepi University',
+      'Oda Bultum University',
+      'Raya University',
+      'Salale University',
+      'Semera University',
+      'Wachamo University',
+      'Werabe University',
+      'Wolaita Sodo University',
+      'Woldia University',
+      'Wollega University',
+      'Wollo University',
+      'Wolkite University',
+    ];
+
+    return universities
+        .where((university) =>
+            university.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+  }
+
+  Widget _buildGradientButton({
+    required BuildContext context,
+    required String text,
+    VoidCallback? onPressed,
+  }) {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: onPressed != null
+            ? LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.secondary,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              )
+            : null,
+        color: onPressed == null
+            ? Theme.of(context).colorScheme.surfaceVariant
+            : null,
+        borderRadius: BorderRadius.circular(buttonRadius),
+        boxShadow: onPressed != null
+            ? [
+                BoxShadow(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(buttonRadius),
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: onPressed != null
+                ? Theme.of(context).colorScheme.onPrimary
+                : Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ExamSelectionPage extends StatefulWidget {
+  const _ExamSelectionPage();
+
+  @override
+  State<_ExamSelectionPage> createState() => _ExamSelectionPageState();
+}
+
+class _ExamSelectionPageState extends State<_ExamSelectionPage> {
+  final TextEditingController referralCodeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final state = context.read<RegistrationBloc>().state;
+    referralCodeController.text = state.institutionInfo.referralCode;
+  }
+
+  @override
+  void dispose() {
+    referralCodeController.dispose();
+    super.dispose();
+  }
+
   void _showReferralDialog() {
     showDialog(
       context: context,
@@ -971,249 +1299,6 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
         referralCode: state.institutionInfo.referralCode));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<RegistrationBloc, RegistrationState>(
-      builder: (context, state) {
-        final institutionType = state.institutionInfo.institutionType;
-
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          controller: _pageController,
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              _buildInstitutionTypeDropdown(
-                  context: context, currentValue: institutionType),
-              const SizedBox(height: 30),
-              _buildInstitutionNameField(context, institutionType),
-              const SizedBox(height: 30),
-              const ExamSelectionWidget(),
-              const SizedBox(height: 30),
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, authState) {
-                  return _buildGradientButton(
-                    context: context,
-                    text: 'Complete Registration',
-                    onPressed: _isFormValid() &&
-                            state.institutionInfo.examType.id != -1 &&
-                            !authState.isRegistrationLoading
-                        ? () {
-                            final institutionType =
-                                state.institutionInfo.institutionType;
-                            if (institutionType == InstitutionType.none) {
-                              AppSnackBar.show(
-                                context: context,
-                                message: 'Please select an institution type',
-                                type: SnackBarType.error,
-                              );
-                              _pageController.animateToPage(
-                                0,
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                              );
-                            } else {
-                              _showReferralDialog();
-                              // Ethio Exam Hub – Access previous first-year exam questions and study smarter!
-//                               """
-// 📚 Ethio Exam Hub is the ultimate study companion for Ethiopian first-year students!
-// Access a wide collection of past exam questions from all Ethiopian universities, all in one easy-to-use app. Whether you're preparing for midterms, finals, or COC exams, Ethio Exam Hub helps you study efficiently and confidently.
-
-// 🔍 Key Features:
-// 📝 Previous Exam Questions: Organised by subject, chapter and year for quick access.
-
-// 🎓 Freshman Focused: Specifically designed for Ethiopian first-year students.
-
-// 📖 Simple & Modern Interface: Easy to navigate with a clean and engaging design.
-
-// 📥 Offline Access: Download questions and study anytime, anywhere.
-
-// 🎯 Why choose Ethio Exam Hub?
-// Covers multiple subjects, including Natural Sciences, Social Sciences, Engineering, and more.
-
-// Helps you prepare with real, exam-tested questions.
-// Designed with your academic success in mind.
-
-// Start learning the smart way.
-// Download Ethio Exam Hub today and boost your exam performance!
-// """
-                            }
-                          }
-                        : null,
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildInstitutionTypeDropdown({
-    required BuildContext context,
-    required InstitutionType currentValue,
-  }) {
-    return DropdownButtonFormField<InstitutionType>(
-      value: currentValue,
-      decoration: InputDecoration(
-        labelText: 'Institution Type',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      items: InstitutionType.values
-          .map((type) => DropdownMenuItem(
-                value: type,
-                child: Text(type.displayName),
-              ))
-          .toList(),
-      onChanged: (value) {
-        if (value != null) {
-          context.read<RegistrationBloc>().add(
-                RegistrationFormFieldUpdated(
-                  step: RegistrationStep.institutionInfo,
-                  field: 'institutionType',
-                  value: value.name,
-                ),
-              );
-        }
-      },
-    );
-  }
-
-  Widget _buildInstitutionNameField(
-      BuildContext context, InstitutionType institutionType) {
-    if (institutionType == InstitutionType.university) {
-      return Autocomplete<String>(
-        optionsBuilder: (TextEditingValue textEditingValue) {
-          if (textEditingValue.text.isEmpty) {
-            return const Iterable<String>.empty();
-          }
-          return _getUniversitySuggestions(textEditingValue.text);
-        },
-        onSelected: (String selection) {
-          institutionNameController.text = selection;
-          context.read<RegistrationBloc>().add(
-                RegistrationFormFieldUpdated(
-                  step: RegistrationStep.institutionInfo,
-                  field: 'institutionName',
-                  value: selection,
-                ),
-              );
-          setState(() {});
-        },
-        fieldViewBuilder:
-            (context, textEditingController, focusNode, onFieldSubmitted) {
-          // Sync the controller with our main controller only once
-          if (textEditingController.text != institutionNameController.text) {
-            textEditingController.text = institutionNameController.text;
-          }
-
-          return TextField(
-            controller: textEditingController,
-            focusNode: focusNode,
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-              labelText: 'University Name',
-              hintText: 'Type to search universities...',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              suffixIcon: const Icon(Icons.search),
-            ),
-            onChanged: (value) {
-              institutionNameController.text = value;
-              context.read<RegistrationBloc>().add(
-                    RegistrationFormFieldUpdated(
-                      step: RegistrationStep.institutionInfo,
-                      field: 'institutionName',
-                      value: value,
-                    ),
-                  );
-            },
-          );
-        },
-      );
-    } else {
-      return TextField(
-        controller: institutionNameController,
-        textInputAction: TextInputAction.next,
-        decoration: InputDecoration(
-          labelText: 'Institution Name',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        onChanged: (value) {
-          context.read<RegistrationBloc>().add(
-                RegistrationFormFieldUpdated(
-                  step: RegistrationStep.institutionInfo,
-                  field: 'institutionName',
-                  value: value,
-                ),
-              );
-          setState(() {}); // Refresh UI to update button state
-        },
-      );
-    }
-  }
-
-  Iterable<String> _getUniversitySuggestions(String query) {
-    final universities = [
-      'Addis Ababa Science and Technology University',
-      'Addis Ababa University',
-      'Adigrat University',
-      'Ambo University',
-      'Arba Minch University',
-      'Arsi University',
-      'Adama Science and Technology University',
-      'Axum University',
-      'Bahir Dar University',
-      'Bonga University',
-      'Bule Hora University',
-      'Dambi Dollo University',
-      'Debark University',
-      'Debre Berhan University',
-      'Debre Markos University',
-      'Debre Tabor University',
-      'Defence University',
-      'Dilla University',
-      'Dire Dawa University',
-      'Gambella University',
-      'Gondar University',
-      'Haramaya University',
-      'Hawassa University',
-      'Injibara University',
-      'Jijiga University',
-      'Jimma University',
-      'Jinka University',
-      'Kebri Dehar University',
-      'Kotebe Metropolitan University',
-      'Madda Walabu University',
-      'Mekdela Amba University',
-      'Mekelle University',
-      'Mettu University',
-      'Mizan Tepi University',
-      'Oda Bultum University',
-      'Raya University',
-      'Salale University',
-      'Semera University',
-      'Wachamo University',
-      'Werabe University',
-      'Wolaita Sodo University',
-      'Woldia University',
-      'Wollega University',
-      'Wollo University',
-      'Wolkite University',
-    ];
-
-    return universities
-        .where((university) =>
-            university.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-  }
-
   Widget _buildGradientButton({
     required BuildContext context,
     required String text,
@@ -1267,6 +1352,38 @@ class _InstitutionInfoPageState extends State<_InstitutionInfoPage> {
           ),
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RegistrationBloc, RegistrationState>(
+      builder: (context, state) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              const ExamSelectionWidget(),
+              const SizedBox(height: 30),
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, authState) {
+                  return _buildGradientButton(
+                    context: context,
+                    text: 'Complete Registration',
+                    onPressed: state.institutionInfo.examType.id != -1 &&
+                            !authState.isRegistrationLoading
+                        ? () {
+                            _showReferralDialog();
+                          }
+                        : null,
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

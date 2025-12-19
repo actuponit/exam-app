@@ -104,7 +104,6 @@ class QuestionRepositoryImpl implements QuestionRepository {
     void Function(DownloadProgress)? onProgress,
   }) async {
     try {
-      await _localDatasource.clearQuestions();
       if (ensureBackend) {
         await _localDatasource.clearQuestions();
       }

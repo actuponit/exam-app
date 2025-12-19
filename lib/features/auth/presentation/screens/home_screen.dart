@@ -33,7 +33,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<void> initFCM() async {
-    await FCMService().initialize();
+    try {
+      await FCMService().initialize();
+    } catch (e) {
+      print("FCM Initialization Error: $e");
+    }
   }
 
   @override

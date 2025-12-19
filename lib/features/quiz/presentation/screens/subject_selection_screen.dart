@@ -31,7 +31,7 @@ class SubjectSelectionScreen extends StatelessWidget {
       } else if (state is SubjectLoaded) {
         final subjects = state.subjects;
         final index = subjects.indexWhere((subject) => !subject.isLocked);
-        print("INDEX OF LOCKED SUBJECT: $index");
+
         if (isLocked && index != -1) {
           final temp = subjects[index];
           subjects[index] = subjects[0];

@@ -34,9 +34,11 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
 
     // Configure download manager
     FileDownloader().configureNotification(
+      groupNotificationId: 'exam_app_image_downloads',
       running: TaskNotification(
         'Downloading exam images',
         'In progress',
+
       ),
       complete: const TaskNotification(
         'Download complete',
