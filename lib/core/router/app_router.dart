@@ -5,7 +5,6 @@ import 'package:exam_app/features/auth/presentation/screens/registration_screen.
 import 'package:exam_app/features/auth/presentation/screens/video_walkthrough_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:exam_app/features/contacts/presentation/screens/contacts_screen.dart';
-import 'package:exam_app/features/notes/presentation/screens/notes_screen.dart';
 import 'package:exam_app/features/notes/presentation/screens/note_detail_screen.dart';
 import 'package:exam_app/features/payment/presentation/screens/transaction_verification_screen.dart';
 import 'package:exam_app/features/profile/presentation/screens/profile_screen.dart';

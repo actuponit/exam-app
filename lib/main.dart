@@ -1,6 +1,5 @@
 import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/router/app_router.dart';
-import 'package:exam_app/core/services/fcm_service.dart';
 import 'package:exam_app/core/theme.dart';
 import 'package:exam_app/core/theme_cubit.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
@@ -29,7 +28,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FCMService().initialize();
 
   await configureDependencies();
   runApp(const MainApp());

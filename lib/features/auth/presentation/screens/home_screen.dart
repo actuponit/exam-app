@@ -1,8 +1,10 @@
 import 'package:exam_app/core/presentation/utils/dialog_utils.dart';
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
+import 'package:exam_app/core/services/fcm_service.dart';
 import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_cubit.dart';
 import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_state.dart';
+import 'package:exam_app/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
 import 'package:exam_app/features/profile/presentation/bloc/profile_cubit.dart';
@@ -30,14 +32,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future<void> initFCM() async {
+    await FCMService().initialize();
+  }
+
   @override
   void initState() {
     super.initState();
+    initFCM();
     // Start periodic status checking when screen loads
     context.read<SubscriptionBloc>().add(const CheckSubscriptionStatus());
     context.read<QuestionBloc>().add(const FetchQuestions());
     context.read<ProfileCubit>().loadProfile();
     context.read<PermissionCubit>().checkPermission();
+    context.read<NotificationBloc>().add(GetNotificationsEvent());
   }
 
   @override
@@ -75,6 +83,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 actions: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_rounded),
+                    onPressed: () {
+                      context.push(RoutePaths.notifications);
+                    },
+                  ),
                   IconButton(
                     icon: const Icon(Icons.share),
                     onPressed: () async {
@@ -125,8 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             .headlineMedium
                             ?.copyWith(
                               fontSize: 20,
-                              color:
-                                  Theme.of(context).colorScheme.onBackground,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                       ),
                       const SizedBox(height: 16),
