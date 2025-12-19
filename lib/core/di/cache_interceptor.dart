@@ -65,7 +65,7 @@ class CacheInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     final cacheKey = err.requestOptions.uri.toString();
-    final useCache = err.requestOptions.extra['useCache'] ?? false;
+    final useCache = err.requestOptions.extra['fallbackToCache'] ?? false;
 
     if (useCache && cacheBox.containsKey(cacheKey)) {
       final cached = cacheBox.get(cacheKey)!;

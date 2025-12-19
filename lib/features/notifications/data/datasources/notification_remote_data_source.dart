@@ -20,7 +20,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     final response = await dio.get(
       'notifications',
       options: Options(
-        extra: {'useCache': true, 'cacheResponse': true},
+        extra: {'cacheResponse': true, 'fallbackToCache': true},
       ),
     );
 
@@ -41,7 +41,10 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   }
 
   @override
-  Future<void> commentNotification(int id, String comment) async {
+  Future<void> commentNotification(
+    int id,
+    String comment,
+  ) async {
     await dio.post(
       'notifications/$id/comment',
       data: {
