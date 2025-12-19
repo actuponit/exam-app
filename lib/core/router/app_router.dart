@@ -16,6 +16,7 @@ import 'package:exam_app/features/quiz/presentation/screens/year_chapter_selecti
 import 'package:exam_app/features/faq/presentation/screens/faq_screen.dart';
 import 'package:exam_app/features/splash/presentation/screens/splash_screen.dart';
 import 'package:exam_app/features/settings/presentation/settings_screen.dart';
+import 'package:exam_app/features/notifications/presentation/pages/notification_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
@@ -40,10 +41,15 @@ class RoutePaths {
 
   // Deep link paths
   static const String deepLinkQuestions = '/questions/:questionId';
+  static const String notifications = '/notifications';
 }
 
 class AppRouter {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+
   static final GoRouter router = GoRouter(
+    navigatorKey: navigatorKey,
     routes: [
       GoRoute(
         path: '/',
@@ -164,6 +170,11 @@ class AppRouter {
         path: RoutePaths.transactionVerification,
         name: 'TransactionVerification',
         builder: (context, state) => const TransactionVerificationScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.notifications,
+        name: 'Notifications',
+        builder: (context, state) => const NotificationPage(),
       ),
     ],
     initialLocation: RoutePaths.splash,

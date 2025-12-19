@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "606901341010",
+    "project_id": "ethio-exam-hub",
+    "storage_bucket": "ethio-exam-hub.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606901341010:android:ad7aacfe24e7e004bd888b",
+        "android_client_info": {
+          "package_name": "com.ethioexam.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAT2AZS3TOVr30y0s25Ch0dD95fehnFbR4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

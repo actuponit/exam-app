@@ -1,11 +1,13 @@
 import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/router/app_router.dart';
+import 'package:exam_app/core/services/fcm_service.dart';
 import 'package:exam_app/core/theme.dart';
 import 'package:exam_app/core/theme_cubit.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
 import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_cubit.dart';
+import 'package:exam_app/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:exam_app/features/profile/presentation/bloc/profile_cubit.dart';
 import 'package:exam_app/features/quiz/domain/repositories/question_repository.dart';
@@ -17,11 +19,17 @@ import 'package:exam_app/features/notes/domain/repositories/notes_repository.dar
 import 'package:exam_app/features/referral/presentation/bloc/referral_bloc.dart';
 import 'package:exam_app/features/permission/presentation/cubit/permission_cubit.dart';
 import 'package:exam_app/features/splash/presentation/cubit/splash_cubit.dart';
+import 'package:exam_app/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FCMService().initialize();
 
   await configureDependencies();
   runApp(const MainApp());
@@ -97,6 +105,9 @@ class _MainAppState extends State<MainApp> {
         ),
         BlocProvider(
           create: (context) => getIt<PermissionCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<NotificationBloc>(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
