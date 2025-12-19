@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:exam_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
@@ -58,6 +59,7 @@ class FCMService {
 
     // Subscribe to the 'all' topic
     if (token != null) {
+      debugPrint("FCM Token: $token");
       await _firebaseMessaging.subscribeToTopic("all");
     }
   }

@@ -20,6 +20,7 @@ class HiveService {
     Hive.registerAdapter(NoteChapterModelAdapter());
     Hive.registerAdapter(NotesListModelAdapter());
     Hive.registerAdapter(NoteModelAdapter());
+    Hive.registerAdapter(CacheItemAdapter());
 
     // Open Boxes
     await Hive.openBox<CacheItem>(HiveBoxNames.httpCache);
