@@ -30,6 +30,12 @@ class SubjectSelectionScreen extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       } else if (state is SubjectLoaded) {
         final subjects = state.subjects;
+        final index = subjects.indexWhere((subject) => subject.isLocked);
+        if (isLocked && index != -1) {
+          final temp = subjects[index];
+          subjects[index] = subjects[0];
+          subjects[0] = temp;
+        }
         return SingleChildScrollView(
           child: Column(
             children: [
