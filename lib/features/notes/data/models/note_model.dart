@@ -33,6 +33,8 @@ class NoteModel extends Equatable {
   final String? imageUrl;
   @HiveField(12)
   final bool isLocked;
+  @HiveField(13)
+  final String? language;
 
   const NoteModel({
     required this.id,
@@ -48,6 +50,7 @@ class NoteModel extends Equatable {
     this.tags = const [],
     this.imageUrl,
     this.isLocked = false,
+    this.language,
   });
 
   factory NoteModel.fromJson(Map<String, dynamic> json) {
@@ -65,6 +68,7 @@ class NoteModel extends Equatable {
       tags: (json['tags'] as List<dynamic>?)?.cast<String>() ?? [],
       imageUrl: json['imageUrl'] as String?,
       isLocked: json['isLocked'] as bool? ?? false,
+      language: json['language'] as String?,
     );
   }
 
@@ -227,6 +231,7 @@ extension NoteModelExtension on NoteModel {
       chapterName: chapterName,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      language: language,
     );
   }
 }

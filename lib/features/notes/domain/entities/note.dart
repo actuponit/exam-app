@@ -9,6 +9,7 @@ class Note extends Equatable {
   final int grade;
   final String chapterId;
   final String chapterName;
+  final String? language;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -23,6 +24,7 @@ class Note extends Equatable {
     required this.chapterName,
     required this.createdAt,
     required this.updatedAt,
+    this.language,
   });
 
   Note copyWith({
