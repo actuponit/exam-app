@@ -174,6 +174,11 @@ Future<_i174.GetIt> init(
             gh<_i361.Dio>(),
             gh<_i516.IQuestionsLocalDatasource>(),
           ));
+  gh.lazySingleton<_i367.NotificationRepository>(
+      () => _i361.NotificationRepositoryImpl(
+            gh<_i757.NotificationRemoteDataSource>(),
+            gh<_i970.LocalAuthDataSource>(),
+          ));
   gh.singleton<_i43.NotesLocalDataSource>(() =>
       notesModule.notesLocalDatasource(gh<_i979.Box<_i214.NotesListModel>>()));
   gh.singleton<_i506.IExamLocalDatasource>(() => examModule.examLocalDatasource(
@@ -188,9 +193,6 @@ Future<_i174.GetIt> init(
       subjectModule.subjectRepository(gh<_i156.ISubjectLocalDatasource>()));
   gh.factory<_i321.PermissionCubit>(
       () => _i321.PermissionCubit(gh<_i606.PermissionRepository>()));
-  gh.lazySingleton<_i367.NotificationRepository>(() =>
-      _i361.NotificationRepositoryImpl(
-          gh<_i757.NotificationRemoteDataSource>()));
   gh.lazySingleton<_i854.ReferralRepository>(
       () => referralModule.referralRepository(
             gh<_i591.ReferralRemoteDataSource>(),

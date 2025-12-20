@@ -6,7 +6,7 @@ abstract class NotificationRemoteDataSource {
   Future<List<NotificationModel>> getNotifications();
   Future<NotificationModel> likeNotification(int id);
   Future<NotificationModel> dislikeNotification(int id);
-  Future<void> commentNotification(int id, String comment);
+  Future<void> commentNotification(int id, String comment, int userId);
 }
 
 @LazySingleton(as: NotificationRemoteDataSource)
@@ -44,12 +44,12 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   Future<void> commentNotification(
     int id,
     String comment,
+    int userId,
   ) async {
     await dio.post(
       'notifications/$id/comment',
       data: {
-        'user_id':
-            123, // Hardcoded as per request example, ideally should come from auth
+        'user_id': userId,  
         'comment': comment,
       },
     );

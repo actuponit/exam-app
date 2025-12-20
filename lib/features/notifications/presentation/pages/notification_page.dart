@@ -1,4 +1,5 @@
 import 'package:exam_app/core/di/injection.dart';
+import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:exam_app/features/notifications/presentation/widgets/notification_item.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,12 @@ class NotificationPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Notifications'),
         ),
-        body: BlocBuilder<NotificationBloc, NotificationState>(
+        body: BlocConsumer<NotificationBloc, NotificationState>(
+          listener: (context, state) {
+            if (state is NotificationError) {
+              AppSnackBar.error(context: context, message: state.message);
+            }
+          },
           builder: (context, state) {
             if (state is NotificationLoading) {
               return const Center(child: CircularProgressIndicator());

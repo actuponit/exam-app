@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:exam_app/core/error/failures.dart';
+import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/notifications/data/datasources/notification_remote_data_source.dart';
 import 'package:exam_app/features/notifications/domain/entities/notification.dart';
 import 'package:exam_app/features/notifications/domain/repositories/notification_repository.dart';
@@ -9,8 +10,9 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: NotificationRepository)
 class NotificationRepositoryImpl implements NotificationRepository {
   final NotificationRemoteDataSource remoteDataSource;
+  final LocalAuthDataSource authDataSource; 
 
-  NotificationRepositoryImpl(this.remoteDataSource);
+  NotificationRepositoryImpl(this.remoteDataSource, this.authDataSource);
 
   Future<Either<Failure, T>> _handleRequest<T>(
       Future<T> Function() request) async {
@@ -49,7 +51,12 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   Future<Either<Failure, void>> commentNotification(
       int id, String comment) async {
+    final userId = await authDataSource.getUserId();
+    if (userId == null) {
+      return Left(ServerFailure("User is not authenticated."));
+    } 
+
     return _handleRequest(
-        () => remoteDataSource.commentNotification(id, comment));
+        () => remoteDataSource.commentNotification(id, comment, userId));
   }
 }
