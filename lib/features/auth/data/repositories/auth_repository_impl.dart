@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:exam_app/core/error/exceptions.dart';
+import 'package:exam_app/core/services/fcm_service.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:exam_app/features/auth/data/models/exam_type.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
@@ -45,6 +46,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
+      final fcm = FCMService();
+      await fcm.initialize(examType.id.toString());
       // Register user with remote data source
       final deviceId = await DeviceManager.getDeviceId();
       final user = await _remoteDataSource.register(
@@ -58,6 +61,7 @@ class AuthRepositoryImpl implements AuthRepository {
         referralCode: referralCode,
         deviceId: deviceId,
         password: password,
+        fcmToken: fcm.getToken,
       );
 
       // If registration is successful and a referral code was provided, save it locally
@@ -79,6 +83,7 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         institutionType: institutionType,
         institutionName: institutionName,
+
       );
     } on DioException catch (e) {
       if (e.response?.data != null) {

@@ -4,11 +4,9 @@ import 'package:exam_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:exam_app/core/router/app_router.dart';
-import 'package:exam_app/features/notifications/presentation/bloc/notification_bloc.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -24,7 +22,7 @@ class FCMService {
 
   late String fcmToken;
 
-  Future<void> initialize() async {
+  Future<void> initialize(String examType) async {
     // Request notification permissions (iOS-specific)
     await _requestPermission();
 
@@ -60,7 +58,7 @@ class FCMService {
     // Subscribe to the 'all' topic
     if (token != null) {
       debugPrint("FCM Token: $token");
-      await _firebaseMessaging.subscribeToTopic("all");
+      await _firebaseMessaging.subscribeToTopic(examType);
     }
   }
 
@@ -152,7 +150,7 @@ class FCMService {
     final context = AppRouter.navigatorKey.currentContext;
     if (context != null) {
       // Refresh notifications list
-      context.read<NotificationBloc>().add(GetNotificationsEvent());
+      // context.read<NotificationBloc>().add(GetNotificationsEvent());
     }
 
     // Generate unique notification ID

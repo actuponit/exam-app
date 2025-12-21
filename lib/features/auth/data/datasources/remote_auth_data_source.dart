@@ -32,6 +32,7 @@ class RemoteAuthDataSource implements AuthDataSource {
     required String password,
     required String deviceId,
     String? referralCode,
+    String? fcmToken,
   }) async {
     final response = await _dio.post('/register', data: {
       'name': "$firstName $lastName",
@@ -44,6 +45,7 @@ class RemoteAuthDataSource implements AuthDataSource {
       'device_id': deviceId,
       if (referralCode != null && referralCode.isNotEmpty)
         'referral_code': referralCode,
+      if (fcmToken != null && fcmToken.isNotEmpty) 'fcm_token': fcmToken,
     });
     return response.data;
   }

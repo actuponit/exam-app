@@ -14,6 +14,7 @@ abstract class AuthDataSource {
     required String password,
     required String deviceId,
     String? referralCode,
+    String? fcmToken,
   });
 
   Future<Map<String, dynamic>> login({
