@@ -20,7 +20,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/presentation/widgets/app_drawer.dart';
 import '../../../../core/theme.dart';
-// import '../../../../core/theme_cubit.dart';
+import '../../../../core/theme_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -71,30 +71,102 @@ class _HomeScreenState extends State<HomeScreen> {
           if (state.status == QuestionStatus.success) {
             return Scaffold(
               appBar: AppBar(
-                title: Text(
-                  'Home',
-                  style: displayStyle.copyWith(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                ),
                 actions: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications_rounded),
-                    onPressed: () {
-                      context.push(RoutePaths.notifications);
+                  BlocBuilder<ThemeCubit, ThemeState>(
+                    builder: (context, state) {
+                      final brightness = Theme.of(context).brightness;
+                      final isDarkMode = state.themeMode == ThemeMode.dark ||
+                          (state.themeMode == ThemeMode.system &&
+                              brightness == Brightness.dark);
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            context.read<ThemeCubit>().toggleTheme();
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 220),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: LinearGradient(
+                                colors: isDarkMode
+                                    ? [
+                                        Theme.of(context).colorScheme.secondary,
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .secondary
+                                            .withOpacity(0.8),
+                                      ]
+                                    : [
+                                        Theme.of(context).primaryColor,
+                                        Theme.of(context)
+                                            .primaryColor
+                                            .withOpacity(0.85),
+                                      ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.12),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 220),
+                                  child: Icon(
+                                    isDarkMode
+                                        ? Icons.wb_sunny_rounded
+                                        : Icons.nights_stay_rounded,
+                                    key: ValueKey(isDarkMode),
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  isDarkMode ? 'Light' : 'Dark',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
                     },
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.share),
-                    onPressed: () async {
+                  _buildAppBarAction(
+                    context,
+                    icon: Icons.notifications_rounded,
+                    tooltip: 'Notifications',
+                    onTap: () => context.push(RoutePaths.notifications),
+                  ),
+                  _buildAppBarAction(
+                    context,
+                    icon: Icons.share,
+                    tooltip: 'Share app',
+                    onTap: () async {
                       final uri = Uri.parse(
-                          'https://play.google.com/store/apps/details?id=com.ethioexam.app');
+                        'https://play.google.com/store/apps/details?id=com.ethioexam.app',
+                      );
                       final params = ShareParams(uri: uri);
                       await SharePlus.instance.share(params);
                     },
                   ),
-                  // Theme toggle button removed from here. Now in Settings.
                 ],
               ),
               drawer: const AppDrawer(),
@@ -227,6 +299,47 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBarAction(
+    BuildContext context, {
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onTap,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      child: Tooltip(
+        message: tooltip,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: colorScheme.surface.withAlpha(80),
+              border: Border.all(color: colorScheme.outlineVariant),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(
+              icon,
+              color: colorScheme.onSurface,
+              size: 22,
+            ),
+          ),
         ),
       ),
     );
