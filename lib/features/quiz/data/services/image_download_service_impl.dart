@@ -33,12 +33,11 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
     yield _createProgress(SyncPhase.downloadingImages);
 
     // Configure download manager
-    FileDownloader().configureNotification(
-      groupNotificationId: 'exam_app_image_downloads',
+    FileDownloader().configureNotificationForGroup(
+      'exam_app_image_downloads',
       running: TaskNotification(
         'Downloading exam images',
         'In progress',
-
       ),
       complete: const TaskNotification(
         'Download complete',
@@ -51,7 +50,7 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
       progressBar: true,
     );
 
-    // Track tasks
+    // Track tasks '$path/${entry.key}'
     final tasks = <DownloadTask>[];
 
     // Create download tasks
@@ -60,14 +59,10 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
       final url = entry.value;
 
       final task = DownloadTask(
-        taskId: fileName,
         url: url,
         filename: fileName,
         directory: downloadDirectory,
-        baseDirectory: BaseDirectory.applicationDocuments,
-        updates: Updates.statusAndProgress,
-        retries: maxRetries,
-        allowPause: true,
+        group: 'exam_app_image_downloads',
       );
 
       tasks.add(task);

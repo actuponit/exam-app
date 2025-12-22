@@ -50,6 +50,13 @@ class SyncProgressIndicator extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '${(progress.overallProgress * 100).toStringAsFixed(1)}%',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
             LinearProgressIndicator(
               value: progress.overallProgress,
               backgroundColor: Theme.of(context).colorScheme.surface,

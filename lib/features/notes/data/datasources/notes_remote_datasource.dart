@@ -2,7 +2,8 @@ import 'package:dio/dio.dart';
 import '../models/note_model.dart';
 
 abstract class NotesRemoteDataSource {
-  Future<List<NoteSubjectModel>> getNotesByGrade(int id);
+  Future<List<NoteSubjectModel>> getNotesByGrade(
+      int id, Function(int, int) onProgress);
   Future<List<NoteModel>> getNotesByChapter(String chapterId);
   Future<NoteModel?> getNoteById(String noteId);
   Future<List<NoteModel>> searchNotes(String query);
@@ -14,11 +15,16 @@ class NotesRemoteDataSourceImpl implements NotesRemoteDataSource {
   NotesRemoteDataSourceImpl({required this.dio});
 
   @override
-  Future<List<NoteSubjectModel>> getNotesByGrade(int id) async {
+  Future<List<NoteSubjectModel>> getNotesByGrade(
+      int id, Function(int, int) onProgress) async {
     try {
-      final response = await dio.get('/notes/for-user-grouped', data: {
-        'user_id': id,
-      });
+      final response = await dio.get(
+        '/notes/for-user-grouped',
+        data: {
+          'user_id': id,
+        },
+        onReceiveProgress: onProgress,
+      );
 
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;

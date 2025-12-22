@@ -8,8 +8,11 @@ import 'package:exam_app/features/quiz/domain/models/question.dart';
 import 'package:path_provider/path_provider.dart';
 
 abstract class IQuestionsRemoteDatasource {
-  Future<Map<String, List<Question>>> getQuestions(String userId);
-  Future<List<String>> downloadImages(Map<String, String> urls);
+  Future<Map<String, List<Question>>> getQuestions(
+      String userId, Function(int, int) onReceiveProgress);
+  Future<List<String>> downloadImages(
+    Map<String, String> urls,
+  );
 }
 
 class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
@@ -20,10 +23,12 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
   });
 
   @override
-  Future<Map<String, List<Question>>> getQuestions(String userId) async {
+  Future<Map<String, List<Question>>> getQuestions(
+      String userId, Function(int, int) onReceiveProgress) async {
     final response = await dio.post(
       'get-questions',
       data: {'user_id': userId},
+      onReceiveProgress: onReceiveProgress,
     );
 
     final Map<String, dynamic> responseData = response.data['response'];

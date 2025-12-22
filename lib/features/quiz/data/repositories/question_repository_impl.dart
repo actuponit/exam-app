@@ -46,6 +46,11 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
   final Map<String, models.Answer> _answers = {};
 
+  int _total = 1977010;
+  int _count = 0;
+  int _totalNote = 81977010;
+  int _countNote = 0;
+
   @override
   Future<List<Question>> getQuestions({
     required String subjectId,
@@ -135,8 +140,16 @@ class QuestionRepositoryImpl implements QuestionRepository {
       }
 
       final [questionsMapDynamic, notesDynamic] = await Future.wait([
-        _remoteDatasource.getQuestions(userId.toString()),
-        _notesRemoteDataSource.getNotesByGrade(userId),
+        _remoteDatasource.getQuestions(userId.toString(), (count, total) {
+          _total = total > 0 ? total : _total;
+          _count = count;
+          _notifyFetchingProgress(onProgress);
+        }),
+        _notesRemoteDataSource.getNotesByGrade(userId, (count, total) {
+          _totalNote = total > 0 ? total : _totalNote;
+          _countNote = count;
+          _notifyFetchingProgress(onProgress);
+        }),
       ]);
 
       onProgress?.call(const DownloadProgress(
@@ -182,7 +195,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
         dataSaveTasksCompleted: 3,
       ));
 
-      if (allQuestions.first.region == null) {
+      if (allQuestions.isNotEmpty && allQuestions.first.region == null) {
         await createExamsFromQuestions(allQuestions);
       } else {
         await createExamsFromQuestionsByRegion(allQuestions);
@@ -223,6 +236,19 @@ class QuestionRepositoryImpl implements QuestionRepository {
       throw ServerException(
           "An unexpected error ocured during fetching questions");
     }
+  }
+
+  void _notifyFetchingProgress(void Function(DownloadProgress)? onProgress) {
+    final total = _total + _totalNote;
+    final progress = total > 0 ? (_count + _countNote) / total : 0.0;
+
+    onProgress?.call(DownloadProgress(
+      phase: SyncPhase.fetchingQuestions,
+      apiTasksTotal: 2,
+      apiTasksCompleted: 0,
+      message: 'Fetching questions and notes...',
+      overallProgress: progress,
+    ));
   }
 
   Future<void> saveSubjects(List<Question> questions,
