@@ -35,7 +35,9 @@ class SubjectSelectionScreen extends StatelessWidget {
         if (isLocked && index != -1) {
           final temp = subjects[index];
           subjects[index] = subjects[0];
-          subjects[0] = temp;
+          subjects[0] = temp.copyWith(
+            name: '${temp.name} (Sample)',
+          );
         }
         return SingleChildScrollView(
           child: Column(
