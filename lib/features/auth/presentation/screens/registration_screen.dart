@@ -112,38 +112,45 @@ class _RegistrationScreenState extends State<RegistrationScreen>
               ],
             ),
           ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 10),
-                _buildCreativeHeader(),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    onPageChanged: (page) {
-                      final step = page == 0
-                          ? RegistrationStep.personalInfo
-                          : page == 1
-                              ? RegistrationStep.institutionInfo
-                              : RegistrationStep.examSelection;
+          child: SingleChildScrollView(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  _buildCreativeHeader(),
+                  const SizedBox(height: 20),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.sizeOf(context).height - 290,
+                    ),
+                    child: PageView(
+                      controller: _pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      onPageChanged: (page) {
+                        final step = page == 0
+                            ? RegistrationStep.personalInfo
+                            : page == 1
+                                ? RegistrationStep.institutionInfo
+                                : RegistrationStep.examSelection;
 
-                      if (context.read<RegistrationBloc>().state.currentStep !=
-                          step) {
-                        context
-                            .read<RegistrationBloc>()
-                            .add(RegistrationStepChanged(step));
-                      }
-                    },
-                    children: [
-                      const _PersonalInfoPage(),
-                      const _InstitutionInfoPage(),
-                      const _ExamSelectionPage(),
-                    ],
+                        if (context
+                                .read<RegistrationBloc>()
+                                .state
+                                .currentStep !=
+                            step) {
+                          context
+                              .read<RegistrationBloc>()
+                              .add(RegistrationStepChanged(step));
+                        }
+                      },
+                      children: [
+                        const _PersonalInfoPage(),
+                        const _InstitutionInfoPage(),
+                        const _ExamSelectionPage(),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -347,7 +354,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
 
                   // Progress Bar
                   Container(
@@ -383,8 +390,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   Widget _buildStepCircle(int step, bool isActive, bool isCompleted) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
-      width: 48,
-      height: 48,
+      width: 42,
+      height: 42,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: isActive || isCompleted
