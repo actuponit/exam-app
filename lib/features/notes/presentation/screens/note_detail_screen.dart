@@ -1,4 +1,5 @@
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
+import 'package:exam_app/core/theme_cubit.dart';
 import 'package:exam_app/features/quiz/presentation/widgets/markdown_latex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -217,6 +218,69 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
           floating: false,
           pinned: true,
           leading: SizedBox.shrink(),
+          actions: [
+            BlocBuilder<ThemeCubit, ThemeState>(
+              builder: (context, state) {
+                final brightness = Theme.of(context).brightness;
+                final isDarkMode = state.themeMode == ThemeMode.dark ||
+                    (state.themeMode == ThemeMode.system &&
+                        brightness == Brightness.dark);
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      context.read<ThemeCubit>().toggleTheme();
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 220),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: LinearGradient(
+                          colors: isDarkMode
+                              ? [
+                                  Theme.of(context).colorScheme.secondary,
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.secondary.withOpacity(0.8),
+                                ]
+                              : [
+                                  Theme.of(context).primaryColor,
+                                  Theme.of(
+                                    context,
+                                  ).primaryColor.withOpacity(0.85),
+                                ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.12),
+                            blurRadius: 10,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        child: Icon(
+                          isDarkMode
+                              ? Icons.wb_sunny_rounded
+                              : Icons.nights_stay_rounded,
+                          key: ValueKey(isDarkMode),
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
               note.title,

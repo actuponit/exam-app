@@ -20,7 +20,6 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/presentation/widgets/app_drawer.dart';
 import '../../../../core/theme.dart';
-import '../../../../core/theme_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -72,83 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
             return Scaffold(
               appBar: AppBar(
                 actions: [
-                  BlocBuilder<ThemeCubit, ThemeState>(
-                    builder: (context, state) {
-                      final brightness = Theme.of(context).brightness;
-                      final isDarkMode = state.themeMode == ThemeMode.dark ||
-                          (state.themeMode == ThemeMode.system &&
-                              brightness == Brightness.dark);
-
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            context.read<ThemeCubit>().toggleTheme();
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 220),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: LinearGradient(
-                                colors: isDarkMode
-                                    ? [
-                                        Theme.of(context).colorScheme.secondary,
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .secondary
-                                            .withOpacity(0.8),
-                                      ]
-                                    : [
-                                        Theme.of(context).primaryColor,
-                                        Theme.of(context)
-                                            .primaryColor
-                                            .withOpacity(0.85),
-                                      ],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.12),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 220),
-                                  child: Icon(
-                                    isDarkMode
-                                        ? Icons.wb_sunny_rounded
-                                        : Icons.nights_stay_rounded,
-                                    key: ValueKey(isDarkMode),
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  isDarkMode ? 'Light' : 'Dark',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
                   _buildAppBarAction(
                     context,
                     icon: Icons.notifications_rounded,
