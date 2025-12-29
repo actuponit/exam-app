@@ -60,8 +60,9 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
 
       final task = DownloadTask(
         url: url,
-        filename: fileName,
-        directory: downloadDirectory,
+        filename: "$fileName.jpg",
+        directory: 'images',
+        baseDirectory: BaseDirectory.applicationDocuments,
         group: 'exam_app_image_downloads',
       );
 
@@ -70,7 +71,7 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
 
     // Process downloads with concurrency control
     // final batches = _batchTasks(tasks, maxConcurrentDownloads);
-    FileDownloader().downloadBatch(tasks,
+    final res = await FileDownloader().downloadBatch(tasks,
         batchProgressCallback: (succeeded, failed) {
       _downloadedImages = succeeded;
       _failedImages = failed;
@@ -86,6 +87,7 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
         _progressController.add(_createProgress(SyncPhase.downloadingImages));
       }
     });
+    print(" Download result: ${res.results}");
 
     // for (final batch in batches) {
     //   final results = await Future.wait(
