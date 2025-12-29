@@ -106,7 +106,7 @@ class _NotesTabContentState extends State<NotesTabContent> {
     }
 
     final notesByChapter = _groupNotesByChapter(_filteredNotes);
-    final showFilter = _availableLanguages.isNotEmpty;
+    final showFilter = _availableLanguages.length > 1;
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -229,20 +229,15 @@ class _NotesTabContentState extends State<NotesTabContent> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final chips = [
-      _LanguageChip(
-        label: 'All',
-        selected: _languageFilter == null,
-        onSelected: () => _updateLanguageFilter(null),
-      ),
-      ...languages.map(
-        (lang) => _LanguageChip(
-          label: lang,
-          selected: _languageFilter?.toLowerCase() == lang.toLowerCase(),
-          onSelected: () => _updateLanguageFilter(lang),
-        ),
-      ),
-    ];
+    final chips = languages
+        .map(
+          (lang) => _LanguageChip(
+            label: lang,
+            selected: _languageFilter?.toLowerCase() == lang.toLowerCase(),
+            onSelected: () => _updateLanguageFilter(lang),
+          ),
+        )
+        .toList();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -307,7 +302,9 @@ class _NotesTabContentState extends State<NotesTabContent> {
           ),
           child: Icon(
             Icons.menu_book_rounded,
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Theme.of(context).primaryColor,
             size: 20,
           ),
         ),
