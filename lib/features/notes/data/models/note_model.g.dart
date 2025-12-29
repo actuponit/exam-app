@@ -30,13 +30,14 @@ class NoteModelAdapter extends TypeAdapter<NoteModel> {
       tags: (fields[10] as List).cast<String>(),
       imageUrl: fields[11] as String?,
       isLocked: fields[12] as bool,
+      language: fields[13] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, NoteModel obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -62,7 +63,9 @@ class NoteModelAdapter extends TypeAdapter<NoteModel> {
       ..writeByte(11)
       ..write(obj.imageUrl)
       ..writeByte(12)
-      ..write(obj.isLocked);
+      ..write(obj.isLocked)
+      ..writeByte(13)
+      ..write(obj.language);
   }
 
   @override

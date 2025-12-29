@@ -39,9 +39,10 @@ class CachedImage extends StatelessWidget {
             errorWidget ?? const Icon(Icons.error),
       );
     } else {
+      File(imageUrl).existsSync();
       // Handle local file images
       return Image.file(
-        File(imageUrl),
+        File("$imageUrl.jpg"),
         fit: fit,
         errorBuilder: (context, error, stackTrace) =>
             errorWidget ?? const Icon(Icons.error),

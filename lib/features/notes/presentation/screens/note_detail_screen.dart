@@ -1,5 +1,6 @@
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/theme_cubit.dart';
+import 'package:exam_app/features/notes/domain/entities/note.dart';
 import 'package:exam_app/features/quiz/presentation/widgets/markdown_latex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -208,7 +209,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     );
   }
 
-  Widget _buildNoteContent(note) {
+  Widget _buildNoteContent(Note note) {
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
@@ -374,13 +375,13 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        color: Theme.of(context).primaryColor.withAlpha(25),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         note.subjectName,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w600,
                             ),
                       ),
@@ -490,9 +491,9 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
             ),
             child: SingleChildScrollView(
               child: MarkdownLatexWidget(
-                data: note.content,
-                shrinkWrap: true,
-              ),
+                  data: note.content,
+                  shrinkWrap: true,
+                  textStyle: Theme.of(context).textTheme.titleMedium),
             ),
           ),
         ),
