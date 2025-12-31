@@ -116,6 +116,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
             child: SafeArea(
               child: Column(
                 children: [
+                  const SizedBox(height: 10),
                   _buildCreativeHeader(),
                   const SizedBox(height: 20),
                   ConstrainedBox(
