@@ -4,8 +4,8 @@ import 'package:injectable/injectable.dart';
 
 abstract class NotificationRemoteDataSource {
   Future<List<NotificationModel>> getNotifications();
-  Future<NotificationModel> likeNotification(int id);
-  Future<NotificationModel> dislikeNotification(int id);
+  Future<NotificationModel> likeNotification(int id, int userId);
+  Future<NotificationModel> dislikeNotification(int id, int userId);
   Future<void> commentNotification(int id, String comment, int userId);
 }
 
@@ -29,14 +29,18 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   }
 
   @override
-  Future<NotificationModel> likeNotification(int id) async {
-    final response = await dio.post('notifications/$id/like');
+  Future<NotificationModel> likeNotification(int id, int userId) async {
+    final response = await dio.post('notifications/$id/like', data: {
+      'user_id': userId,
+    });
     return NotificationModel.fromJson(response.data['data']);
   }
 
   @override
-  Future<NotificationModel> dislikeNotification(int id) async {
-    final response = await dio.post('notifications/$id/dislike');
+  Future<NotificationModel> dislikeNotification(int id, int userId) async {
+    final response = await dio.post('notifications/$id/dislike', data: {
+      'user_id': userId,
+    });
     return NotificationModel.fromJson(response.data['data']);
   }
 
@@ -49,7 +53,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     await dio.post(
       'notifications/$id/comment',
       data: {
-        'user_id': userId,  
+        'user_id': userId,
         'comment': comment,
       },
     );

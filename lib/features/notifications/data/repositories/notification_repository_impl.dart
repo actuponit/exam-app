@@ -10,7 +10,7 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: NotificationRepository)
 class NotificationRepositoryImpl implements NotificationRepository {
   final NotificationRemoteDataSource remoteDataSource;
-  final LocalAuthDataSource authDataSource; 
+  final LocalAuthDataSource authDataSource;
 
   NotificationRepositoryImpl(this.remoteDataSource, this.authDataSource);
 
@@ -40,12 +40,21 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Future<Either<Failure, Notification>> likeNotification(int id) async {
-    return _handleRequest(() => remoteDataSource.likeNotification(id));
+    final userId = await authDataSource.getUserId();
+    if (userId == null) {
+      return Left(ServerFailure("User is not authenticated."));
+    }
+    return _handleRequest(() => remoteDataSource.likeNotification(id, userId));
   }
 
   @override
   Future<Either<Failure, Notification>> dislikeNotification(int id) async {
-    return _handleRequest(() => remoteDataSource.dislikeNotification(id));
+    final userId = await authDataSource.getUserId();
+    if (userId == null) {
+      return Left(ServerFailure("User is not authenticated."));
+    }
+    return _handleRequest(
+        () => remoteDataSource.dislikeNotification(id, userId));
   }
 
   @override
@@ -54,7 +63,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
     final userId = await authDataSource.getUserId();
     if (userId == null) {
       return Left(ServerFailure("User is not authenticated."));
-    } 
+    }
 
     return _handleRequest(
         () => remoteDataSource.commentNotification(id, comment, userId));
