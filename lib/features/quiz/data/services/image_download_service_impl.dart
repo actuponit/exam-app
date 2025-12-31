@@ -48,6 +48,7 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
         'Some images failed',
       ),
       progressBar: true,
+      groupNotificationId: 'exam_app_image_downloads',
     );
 
     // Track tasks '$path/${entry.key}'
