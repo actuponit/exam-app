@@ -57,6 +57,7 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
 
     final chapter = ExamChapter.fromJson(json['chapter']);
     final subject = Subject.fromJson(json['subject']);
+    final isCOC = subject.name.contains('COC');
 
     // Build question text with image if present
     String questionText = json['question_text'] ?? '';
@@ -69,14 +70,17 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
     String explanationText = json['explanation'] ?? '';
     final explanationImagePath = json['explanation_image_path'];
 
+    final year = json['subject']?['year'].toString() ?? 'Unknown';
+
     return Question(
       id: json['id'].toString(),
       text: questionText,
       options: choices,
       correctOption: json['correct_choice_id'].toString(),
       explanation: explanationText,
-      chapter: chapter,
-      year: int.tryParse(json['subject']?['year']),
+      chapter:
+          isCOC ? ExamChapter(id: year, questionCount: 0, name: year) : chapter,
+      year: isCOC ? chapter.name : json['subject']?['year'].toString(),
       createdAt: DateTime.parse(json['created_at']),
       subject: subject,
       region: json['subject']?['region'],

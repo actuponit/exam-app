@@ -9,7 +9,7 @@ class Question extends Equatable {
   final List<Option> options;
   final String correctOption;
   final String? explanation;
-  final int? year;
+  final String? year;
   final DateTime createdAt;
   final bool isAttempted;
   final ExamChapter chapter;
@@ -65,7 +65,7 @@ class Question extends Equatable {
     String? correctOption,
     String? explanation,
     ExamChapter? chapter,
-    int? year,
+    String? year,
     DateTime? createdAt,
     bool? isAttempted,
     Subject? subject,

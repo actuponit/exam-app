@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 class Exam extends Equatable {
   final String id;
   final String subjectId;
-  final int year;
+  final String year;
   final String title;
   final int totalQuestions;
   final int durationMins;
@@ -25,7 +25,7 @@ class Exam extends Equatable {
     return Exam(
       id: json['id'],
       subjectId: json['subjectId'],
-      year: json['year'],
+      year: json['year'].toString(),
       title: json['title'],
       totalQuestions: json['totalQuestions'],
       durationMins: json['durationMins'],

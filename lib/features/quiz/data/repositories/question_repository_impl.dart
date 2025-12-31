@@ -268,7 +268,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
   Future<void> createExamsFromQuestions(List<Question> questions) async {
     // Group questions by year and subject
-    final Map<String, Map<int, List<Question>>> groupedQuestions = {};
+    final Map<String, Map<String, List<Question>>> groupedQuestions = {};
 
     for (final question in questions) {
       if (question.year == null) continue;
@@ -277,8 +277,9 @@ class QuestionRepositoryImpl implements QuestionRepository {
       final year = question.year!;
 
       groupedQuestions.putIfAbsent(subjectId, () => {});
-      groupedQuestions[subjectId]!.putIfAbsent(year, () => []);
-      groupedQuestions[subjectId]![year]!.add(question);
+
+      groupedQuestions[subjectId]!.putIfAbsent(year.toString(), () => []);
+      groupedQuestions[subjectId]![year.toString()]!.add(question);
     }
 
     // Create exams for each year-subject combination
@@ -311,7 +312,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
         final exam = Exam(
           id: 'exam_${subjectId}_$year',
           subjectId: subjectId,
-          year: year,
+          year: year.toString(),
           title: '${questions.first.subject.name} Exam',
           totalQuestions: questions.length,
           durationMins: 60,
@@ -329,8 +330,8 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<void> createExamsFromQuestionsByRegion(
       List<Question> questions) async {
     // Group questions by year and subject
-    final Map<String, Map<int, Map<String, List<Question>>>> groupedQuestions =
-        {};
+    final Map<String, Map<String, Map<String, List<Question>>>>
+        groupedQuestions = {};
 
     for (final question in questions) {
       if (question.year == null) continue;
@@ -374,7 +375,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
           final exam = Exam(
             id: 'exam_${subjectId}_$year _ $region',
             subjectId: subjectId,
-            year: year,
+            year: year.toString(),
             title: '${questions.first.subject.name} Exam',
             totalQuestions: questions.length,
             durationMins: 60,

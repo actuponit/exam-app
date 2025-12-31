@@ -22,7 +22,7 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       options: (fields[2] as List).cast<OptionModel>(),
       correctOption: fields[3] as String,
       explanation: fields[4] as String?,
-      year: fields[5] as int?,
+      year: fields[5] as String?,
       createdAt: fields[6] as DateTime,
       isAttempted: fields[7] as bool,
       chapter: fields[8] as ExamChapterModel,

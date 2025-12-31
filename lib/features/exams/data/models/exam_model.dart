@@ -16,7 +16,7 @@ class ExamModel extends Exam {
 
   @HiveField(2)
   @override
-  final int year;
+  final String year;
 
   @HiveField(3)
   @override

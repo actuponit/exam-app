@@ -74,9 +74,7 @@ class YearSelectionScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isChaptter
-                            ? 'Filter by Chapter'
-                            : 'Filter by University',
+                        isChaptter ? 'Filter by Chapter' : 'Filter by year',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontSize: 16,
                               color: Theme.of(context)
@@ -91,10 +89,9 @@ class YearSelectionScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(cardRadius),
                         ),
-                        height: isChaptter ? 40 : 120,
+                        height: 40,
                         child: ListView.separated(
-                          scrollDirection:
-                              isChaptter ? Axis.horizontal : Axis.vertical,
+                          scrollDirection: Axis.horizontal,
                           itemCount: state.chapters.length + 1,
                           shrinkWrap: true,
                           separatorBuilder: (_, __) => const SizedBox(width: 8),
@@ -200,6 +197,7 @@ class YearListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final validYear = int.tryParse(exam.year) != null;
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -218,40 +216,29 @@ class YearListItem extends StatelessWidget {
         child: ListTile(
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          leading: Container(
-            width: 60,
-            height: 60,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  exam.year.toString(),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontSize: 18,
-                      ),
-                ),
-                if (selectedChapter != null)
-                  Text(
-                    'Unit',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.7),
-                          fontSize: 12,
+          leading: validYear
+              ? Container(
+                  width: 60,
+                  height: 60,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    exam.year.toString(),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 18,
                         ),
                   ),
-              ],
-            ),
-          ),
+                )
+              : null,
           title: Text(
-            selectedChapter == null
+            selectedChapter == null || !validYear
                 ? '${exam.title} (${exam.year})'
                 : '${selectedChapter?.name} (${exam.year})',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(

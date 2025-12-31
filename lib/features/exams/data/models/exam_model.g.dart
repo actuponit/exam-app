@@ -19,7 +19,7 @@ class ExamModelAdapter extends TypeAdapter<ExamModel> {
     return ExamModel(
       id: fields[0] as String,
       subjectId: fields[1] as String,
-      year: fields[2] as int,
+      year: fields[2] as String,
       title: fields[3] as String,
       totalQuestions: fields[4] as int,
       durationMins: fields[5] as int,

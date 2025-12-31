@@ -30,7 +30,7 @@ class QuestionModel extends Question {
 
   @HiveField(5)
   @override
-  final int? year;
+  final String? year;
 
   @HiveField(6)
   @override

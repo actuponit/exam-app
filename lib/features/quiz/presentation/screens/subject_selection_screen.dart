@@ -35,8 +35,11 @@ class SubjectSelectionScreen extends StatelessWidget {
         if (isLocked && index != -1) {
           final temp = subjects[index];
           subjects[index] = subjects[0];
+
           subjects[0] = temp.copyWith(
-            name: '${temp.name} (Sample)',
+            name: temp.name.endsWith('(Sample)')
+                ? temp.name
+                : '${temp.name} (Sample)',
           );
         }
         return SingleChildScrollView(
@@ -166,6 +169,8 @@ class SubjectCard extends StatelessWidget {
                       child: Text(
                         subject.name.toUpperCase(),
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontSize: 18,
