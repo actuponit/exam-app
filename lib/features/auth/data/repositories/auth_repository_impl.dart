@@ -83,7 +83,6 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         institutionType: institutionType,
         institutionName: institutionName,
-
       );
     } on DioException catch (e) {
       if (e.response?.data != null) {
@@ -131,6 +130,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> login({required String phone, required String password}) async {
     try {
+      final fcm = FCMService();
       final deviceId = await DeviceManager.getDeviceId();
       final user = await _remoteDataSource.login(
         phone: phone,
@@ -149,6 +149,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final examTypes = await _remoteDataSource.getExamTypes();
       final examType =
           examTypes.firstWhere((e) => e.id.toString() == user['type_id']);
+      await fcm.initialize(examType.id.toString());
 
       // Save exam type info
       await _localDataSource.saveExamInfo(examType.name, examType.price);
