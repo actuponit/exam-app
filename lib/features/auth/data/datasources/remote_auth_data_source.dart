@@ -55,11 +55,13 @@ class RemoteAuthDataSource implements AuthDataSource {
     required String phone,
     required String password,
     required String deviceId,
+    String? fcmToken,
   }) async {
     final response = await _dio.post('/login', data: {
       'login': phone,
       'password': password,
       'device_id': deviceId,
+      'token': fcmToken,
     });
     return response.data['user'];
   }

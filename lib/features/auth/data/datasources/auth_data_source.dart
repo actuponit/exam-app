@@ -21,6 +21,7 @@ abstract class AuthDataSource {
     required String phone,
     required String password,
     required String deviceId,
+    String? fcmToken,
   });
 }
 

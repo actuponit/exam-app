@@ -21,7 +21,7 @@ class FetchQuestions extends QuestionEvent {
 class QuestionStarted extends QuestionEvent {
   final String subjectId;
   final String? chapterId;
-  final int year;
+  final String year;
   final bool isQuizMode;
   final String? region;
 

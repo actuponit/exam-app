@@ -6,7 +6,7 @@ abstract class QuestionRepository {
   Future<List<Question>> getQuestions({
     required String subjectId,
     String? chapterId,
-    required int year,
+    required String year,
     String? region,
   });
 

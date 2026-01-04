@@ -14,7 +14,7 @@ class QuestionState extends Equatable {
   final String? error;
   final String subjectId;
   final String? chapterId;
-  final int year;
+  final String year;
   final bool isQuizMode;
   final bool isSubmitted;
   final int currentPage;
@@ -30,7 +30,7 @@ class QuestionState extends Equatable {
     this.error,
     this.subjectId = '',
     this.chapterId,
-    this.year = 0,
+    this.year = '',
     this.isQuizMode = false,
     this.isSubmitted = false,
     this.currentPage = 0,
@@ -64,7 +64,7 @@ class QuestionState extends Equatable {
     String? error,
     String? subjectId,
     String? chapterId,
-    int? year,
+    String? year,
     bool? isQuizMode,
     bool? isSubmitted,
     int? currentPage,

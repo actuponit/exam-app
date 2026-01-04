@@ -111,7 +111,7 @@ class AppRouter {
         name: 'Questions',
         builder: (context, state) {
           final subjectId = state.pathParameters['subjectId'] ?? '';
-          final year = int.tryParse(state.pathParameters['year'] ?? '') ?? 0;
+          final year = state.pathParameters['year'] ?? '';
 
           final extra = state.extra as Map<String, dynamic>? ?? {};
           final chapterId = extra['chapterId'];

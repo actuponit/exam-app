@@ -17,7 +17,7 @@ import '../widgets/quiz_result_dialog.dart';
 class QuestionScreen extends StatelessWidget {
   final String subjectId;
   final String? chapterId;
-  final int year;
+  final String year;
   final bool isQuizMode;
   final String? region;
   const QuestionScreen({
@@ -31,9 +31,10 @@ class QuestionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final myYeah = int.tryParse(year);
     context.read<RecentExamCubit>().saveRecentExam(
           subjectId,
-          year,
+          myYeah ?? 2026,
           chapterId,
           region,
         );

@@ -55,7 +55,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
   Future<List<Question>> getQuestions({
     required String subjectId,
     String? chapterId,
-    required int year,
+    required String year,
     String? region,
   }) async {
     final localQuestions = await _localDatasource.getQuestions();
@@ -67,9 +67,9 @@ class QuestionRepositoryImpl implements QuestionRepository {
       if (chapterId != null && chapterId.isNotEmpty) {
         isMatch = isMatch && q.chapter.id == chapterId;
       }
-      if (year > 0) {
-        isMatch = isMatch && q.year == year;
-      }
+
+      isMatch = isMatch && q.year == year;
+
       if (region != null && region.isNotEmpty) {
         isMatch = isMatch && q.region == region;
       }
@@ -110,7 +110,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
   }) async {
     try {
       if (ensureBackend) {
-        await _localDatasource.clearQuestions();
+        // await _localDatasource.clearQuestions();
       }
 
       // First check if we have data in local storage

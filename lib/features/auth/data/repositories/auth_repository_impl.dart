@@ -132,10 +132,12 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final fcm = FCMService();
       final deviceId = await DeviceManager.getDeviceId();
+      await fcm.initialize('all');
       final user = await _remoteDataSource.login(
         phone: phone,
         password: password,
         deviceId: deviceId,
+        fcmToken: fcm.getToken,
       );
       final int? userId = user['id'];
       final String? code = user['referral_code'];
