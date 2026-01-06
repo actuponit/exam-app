@@ -30,6 +30,13 @@ class SubjectSelectionScreen extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       } else if (state is SubjectLoaded) {
         final subjects = state.subjects;
+        final index = subjects.indexWhere((subject) => !subject.isLocked);
+
+        if (isLocked && index != -1) {
+          final temp = subjects[index];
+          subjects[index] = subjects[0];
+          subjects[0] = temp;
+        }
 
         return SingleChildScrollView(
           child: Column(
@@ -42,23 +49,21 @@ class SubjectSelectionScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.9,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                    ),
-                    itemCount: subjects.length,
-                    itemBuilder: (context, index) {
-                      SubjectCard(
-                        subject: subjects[index],
-                        region: state.region == '' ? null : state.region,
-                        isLocked: isLocked,
-                      );
-                    }),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.9,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                  ),
+                  itemCount: subjects.length,
+                  itemBuilder: (context, index) => SubjectCard(
+                    subject: subjects[index],
+                    region: state.region == '' ? null : state.region,
+                    isLocked: isLocked,
+                  ),
+                ),
               ),
             ],
           ),
@@ -95,8 +100,14 @@ class SubjectCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.2),
+            Theme.of(context)
+                .colorScheme
+                .primaryContainer
+                .withAlpha((0.3 * 255).toInt()),
+            Theme.of(context)
+                .colorScheme
+                .secondaryContainer
+                .withAlpha((0.2 * 255).toInt()),
           ],
         ),
       ),
@@ -159,7 +170,7 @@ class SubjectCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Flexible(
                       child: Text(
-                        '${subject.name.toUpperCase()} ${isReallyLocked ? " (Sample)" : ""}',
+                        '${subject.name.toUpperCase()} ${!isReallyLocked ? " (Sample)" : ""}',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         textAlign: TextAlign.center,
@@ -200,7 +211,7 @@ class SubjectCard extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .surface
-                          .withOpacity(0.7),
+                          .withAlpha((0.7 * 255).toInt()),
                       borderRadius: BorderRadius.circular(cardRadius),
                     ),
                     child: Center(
@@ -252,12 +263,21 @@ class _RegionFilterWidgetState extends State<RegionFilterWidget> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Theme.of(context).colorScheme.primaryContainer.withOpacity(0.15),
-            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.1),
+            Theme.of(context)
+                .colorScheme
+                .primaryContainer
+                .withAlpha((0.15 * 255).toInt()),
+            Theme.of(context)
+                .colorScheme
+                .secondaryContainer
+                .withAlpha((0.10 * 255).toInt()),
           ],
         ),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+          color: Theme.of(context)
+              .colorScheme
+              .outline
+              .withAlpha((0.3 * 255).toInt()),
           width: 1,
         ),
       ),
@@ -318,7 +338,7 @@ class _RegionFilterWidgetState extends State<RegionFilterWidget> {
                             : Theme.of(context)
                                 .colorScheme
                                 .outline
-                                .withOpacity(0.5),
+                                .withAlpha(128),
                         width: 1.5,
                       ),
                     ),
@@ -327,7 +347,7 @@ class _RegionFilterWidgetState extends State<RegionFilterWidget> {
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     elevation: isSelected ? 2 : 0,
                     shadowColor:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        Theme.of(context).colorScheme.primary.withAlpha(77),
                   ),
                 );
               },
