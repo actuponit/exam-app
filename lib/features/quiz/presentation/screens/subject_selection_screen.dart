@@ -30,18 +30,7 @@ class SubjectSelectionScreen extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       } else if (state is SubjectLoaded) {
         final subjects = state.subjects;
-        final index = subjects.indexWhere((subject) => !subject.isLocked);
 
-        if (isLocked && index != -1) {
-          final temp = subjects[index];
-          subjects[index] = subjects[0];
-
-          subjects[0] = temp.copyWith(
-            name: temp.name.endsWith('(Sample)')
-                ? temp.name
-                : '${temp.name} (Sample)',
-          );
-        }
         return SingleChildScrollView(
           child: Column(
             children: [
@@ -53,21 +42,23 @@ class SubjectSelectionScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.9,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                  ),
-                  itemCount: subjects.length,
-                  itemBuilder: (context, index) => SubjectCard(
-                    subject: subjects[index],
-                    region: state.region == '' ? null : state.region,
-                    isLocked: isLocked,
-                  ),
-                ),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.9,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                    ),
+                    itemCount: subjects.length,
+                    itemBuilder: (context, index) {
+                      SubjectCard(
+                        subject: subjects[index],
+                        region: state.region == '' ? null : state.region,
+                        isLocked: isLocked,
+                      );
+                    }),
               ),
             ],
           ),
@@ -96,6 +87,7 @@ class SubjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isReallyLocked = isLocked && subject.isLocked;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(cardRadius),
@@ -167,7 +159,7 @@ class SubjectCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Flexible(
                       child: Text(
-                        subject.name.toUpperCase(),
+                        '${subject.name.toUpperCase()} ${isReallyLocked ? " (Sample)" : ""}',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         textAlign: TextAlign.center,
