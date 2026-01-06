@@ -3,10 +3,11 @@ import 'package:exam_app/features/notifications/data/models/notification_model.d
 import 'package:injectable/injectable.dart';
 
 abstract class NotificationRemoteDataSource {
-  Future<List<NotificationModel>> getNotifications();
+  Future<List<NotificationModel>> getNotifications(int userId);
   Future<NotificationModel> likeNotification(int id, int userId);
   Future<NotificationModel> dislikeNotification(int id, int userId);
   Future<void> commentNotification(int id, String comment, int userId);
+  Future<void> markAllNotificationsAsRead(int userId);
 }
 
 @LazySingleton(as: NotificationRemoteDataSource)
@@ -16,9 +17,12 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   NotificationRemoteDataSourceImpl(this.dio);
 
   @override
-  Future<List<NotificationModel>> getNotifications() async {
+  Future<List<NotificationModel>> getNotifications(int userId) async {
     final response = await dio.get(
       'notifications',
+      queryParameters: {
+        'user_id': userId,
+      },
       options: Options(
         extra: {'cacheResponse': true, 'fallbackToCache': true},
       ),
@@ -55,6 +59,16 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       data: {
         'user_id': userId,
         'comment': comment,
+      },
+    );
+  }
+
+  @override
+  Future<void> markAllNotificationsAsRead(int userId) async {
+    await dio.post(
+      'notifications/mark-all-read',
+      data: {
+        'user_id': userId,
       },
     );
   }

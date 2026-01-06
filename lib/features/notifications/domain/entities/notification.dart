@@ -10,6 +10,7 @@ class Notification extends Equatable {
   final int commentCount;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool isRead;
 
   const Notification({
     required this.id,
@@ -21,6 +22,7 @@ class Notification extends Equatable {
     required this.commentCount,
     required this.createdAt,
     required this.updatedAt,
+    this.isRead = false,
   });
 
   @override
@@ -34,5 +36,6 @@ class Notification extends Equatable {
         commentCount,
         createdAt,
         updatedAt,
+        isRead,
       ];
 }

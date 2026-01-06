@@ -28,3 +28,10 @@ class NotificationError extends NotificationState {
   @override
   List<Object> get props => [message];
 }
+
+class NotificationsRead extends NotificationState {
+  const NotificationsRead();
+
+  @override
+  List<Object> get props => [];
+}

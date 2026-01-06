@@ -11,6 +11,7 @@ class NotificationModel extends Notification {
     required super.commentCount,
     required super.createdAt,
     required super.updatedAt,
+    super.isRead,
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -24,6 +25,7 @@ class NotificationModel extends Notification {
       commentCount: int.tryParse(json['comment_count'] as String) ?? 0,
       createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
       updatedAt: DateTime.parse(json['updated_at'] as String).toLocal(),
+      isRead: json['is_read'] as bool? ?? false,
     );
   }
 

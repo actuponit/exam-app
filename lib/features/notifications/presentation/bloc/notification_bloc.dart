@@ -16,6 +16,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<LikeNotificationEvent>(_onLikeNotification);
     on<DislikeNotificationEvent>(_onDislikeNotification);
     on<CommentNotificationEvent>(_onCommentNotification);
+    on<MarkAllNotificationsAsReadEvent>(_onMarkAllNotificationsAsRead);
   }
 
   Future<void> _onGetNotifications(
@@ -98,6 +99,21 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       (failure) => emit(NotificationError(failure.message)),
       (_) {
         // Success. Ideally we should re-fetch to get updated comment count if the server updates it.
+        add(GetNotificationsEvent());
+      },
+    );
+  }
+
+  Future<void> _onMarkAllNotificationsAsRead(
+    MarkAllNotificationsAsReadEvent event,
+    Emitter<NotificationState> emit,
+  ) async {
+    final result = await _repository.markAllNotificationsAsRead();
+    result.fold(
+      (failure) => emit(NotificationError(failure.message)),
+      (_) {
+        emit(const NotificationsRead());
+        // Success. Re-fetch notifications to reflect the read status.
         add(GetNotificationsEvent());
       },
     );

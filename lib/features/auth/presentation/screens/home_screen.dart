@@ -3,6 +3,7 @@ import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_cubit.dart';
 import 'package:exam_app/features/exams/presentation/bloc/recent_exam_bloc/recent_exam_state.dart';
+import 'package:exam_app/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:exam_app/features/payment/presentation/bloc/subscription_bloc.dart';
 import 'package:exam_app/features/payment/presentation/widgets/status_banner.dart';
 import 'package:exam_app/features/profile/presentation/bloc/profile_cubit.dart';
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<QuestionBloc>().add(const FetchQuestions());
     context.read<ProfileCubit>().loadProfile();
     context.read<PermissionCubit>().checkPermission();
+    context.read<NotificationBloc>().add(GetNotificationsEvent());
   }
 
   @override
@@ -71,11 +73,34 @@ class _HomeScreenState extends State<HomeScreen> {
             return Scaffold(
               appBar: AppBar(
                 actions: [
-                  _buildAppBarAction(
-                    context,
-                    icon: Icons.notifications_rounded,
-                    tooltip: 'Notifications',
-                    onTap: () => context.push(RoutePaths.notifications),
+                  BlocConsumer<NotificationBloc, NotificationState>(
+                    listener: (context, state) {
+                      if (state is NotificationsRead) {
+                        AppSnackBar.success(
+                          context: context,
+                          message: 'All notifications marked as read',
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      int unreadCount = 0;
+                      if (state is NotificationLoaded) {
+                        unreadCount =
+                            state.notifications.where((n) => !n.isRead).length;
+                      }
+                      return _buildNotificationAction(
+                        context,
+                        unreadCount: unreadCount,
+                        onTap: () {
+                          context.push(RoutePaths.notifications);
+                          if (unreadCount > 0) {
+                            context
+                                .read<NotificationBloc>()
+                                .add(const MarkAllNotificationsAsReadEvent());
+                          }
+                        },
+                      );
+                    },
                   ),
                   _buildAppBarAction(
                     context,
@@ -261,6 +286,81 @@ class _HomeScreenState extends State<HomeScreen> {
               color: colorScheme.onSurface,
               size: 22,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationAction(
+    BuildContext context, {
+    required int unreadCount,
+    required VoidCallback onTap,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      child: Tooltip(
+        message: 'Notifications',
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: colorScheme.surface.withAlpha(80),
+                  border: Border.all(color: colorScheme.outlineVariant),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.notifications_rounded,
+                  color: colorScheme.onSurface,
+                  size: 22,
+                ),
+              ),
+              if (unreadCount > 0)
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.error,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colorScheme.error.withOpacity(0.4),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      unreadCount > 99 ? '99+' : unreadCount.toString(),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),

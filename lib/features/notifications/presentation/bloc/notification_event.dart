@@ -36,3 +36,6 @@ class CommentNotificationEvent extends NotificationEvent {
   @override
   List<Object> get props => [id, comment];
 }
+class MarkAllNotificationsAsReadEvent extends NotificationEvent {
+  const MarkAllNotificationsAsReadEvent();
+}

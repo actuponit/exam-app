@@ -7,4 +7,5 @@ abstract class NotificationRepository {
   Future<Either<Failure, Notification>> likeNotification(int id);
   Future<Either<Failure, Notification>> dislikeNotification(int id);
   Future<Either<Failure, void>> commentNotification(int id, String comment);
+  Future<Either<Failure, void>> markAllNotificationsAsRead();
 }

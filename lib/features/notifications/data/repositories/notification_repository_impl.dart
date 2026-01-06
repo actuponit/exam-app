@@ -35,7 +35,12 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Future<Either<Failure, List<Notification>>> getNotifications() async {
-    return _handleRequest(() => remoteDataSource.getNotifications());
+    final userId = await authDataSource.getUserId();
+    if (userId == null) {
+      return Left(ServerFailure("User is not authenticated."));
+    }
+
+    return _handleRequest(() => remoteDataSource.getNotifications(userId));
   }
 
   @override
@@ -67,5 +72,16 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
     return _handleRequest(
         () => remoteDataSource.commentNotification(id, comment, userId));
+  }
+
+  @override
+  Future<Either<Failure, void>> markAllNotificationsAsRead() async {
+    final userId = await authDataSource.getUserId();
+    if (userId == null) {
+      return Left(ServerFailure("User is not authenticated."));
+    }
+
+    return _handleRequest(
+        () => remoteDataSource.markAllNotificationsAsRead(userId));
   }
 }
