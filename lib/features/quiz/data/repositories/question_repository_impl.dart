@@ -110,7 +110,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
   }) async {
     try {
       if (ensureBackend) {
-        // await _localDatasource.clearQuestions();
+        await _localDatasource.clearQuestions();
       }
 
       // First check if we have data in local storage
