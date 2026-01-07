@@ -46,9 +46,9 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
   final Map<String, models.Answer> _answers = {};
 
-  int _total = 1977010;
+  int _total = 0;
   int _count = 0;
-  int _totalNote = 81977010;
+  int _totalNote = 0;
   int _countNote = 0;
 
   @override
@@ -109,6 +109,12 @@ class QuestionRepositoryImpl implements QuestionRepository {
     void Function(DownloadProgress)? onProgress,
   }) async {
     try {
+      // Reset progress counters to avoid stale values from previous calls
+      _total = 16958887;
+      _count = 0;
+      _totalNote = 1831788;
+      _countNote = 0;
+
       if (ensureBackend) {
         await _localDatasource.clearQuestions();
       }
@@ -240,13 +246,17 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
   void _notifyFetchingProgress(void Function(DownloadProgress)? onProgress) {
     final total = _total + _totalNote;
-    final progress = total > 0 ? (_count + _countNote) / total : 0.0;
+    final count = _count + _countNote;
+    // Clamp progress to [0.0, 1.0] for safety
+    final progress = total > 0 ? (count / total).clamp(0.0, 1.0) : 0.0;
 
     onProgress?.call(DownloadProgress(
       phase: SyncPhase.fetchingQuestions,
       apiTasksTotal: 2,
       apiTasksCompleted: 0,
-      message: 'Fetching questions and notes...',
+      message: progress >= 1.0
+          ? 'Decompressing them.'
+          : 'Fetching questions and notes...',
       overallProgress: progress,
     ));
   }

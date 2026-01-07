@@ -92,7 +92,7 @@ class SubjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isReallyLocked = isLocked && subject.isLocked;
+    final isReallyLocked = isLocked && !subject.isLocked;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(cardRadius),
@@ -170,13 +170,13 @@ class SubjectCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Flexible(
                       child: Text(
-                        '${subject.name.toUpperCase()} ${!isReallyLocked ? " (Sample)" : ""}',
+                        '${subject.name.toUpperCase()} ${isReallyLocked ? " (Sample)" : ""}',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         textAlign: TextAlign.center,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                       ),
