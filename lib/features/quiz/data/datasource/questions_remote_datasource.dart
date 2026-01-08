@@ -57,7 +57,7 @@ class QuestionsRemoteDatasource implements IQuestionsRemoteDatasource {
 
     final chapter = ExamChapter.fromJson(json['chapter']);
     final subject = Subject.fromJson(json['subject']);
-    final isCOC = subject.name.contains('COC');
+    final isCOC = subject.name.toLowerCase().contains('coc');
 
     // Build question text with image if present
     String questionText = json['question_text'] ?? '';

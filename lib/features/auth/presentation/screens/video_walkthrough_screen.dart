@@ -19,6 +19,7 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
   bool _isLoading = true;
   bool _hasError = false;
   String? _errorMessage;
+  bool _isPaused = false;
 
   @override
   void initState() {
@@ -69,7 +70,11 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
             },
           );
           _isLoading = false;
+          _isPaused = !_videoPlayerController.value.isPlaying;
         });
+
+        // Listen to playback state changes to show/hide center button
+        _videoPlayerController.addListener(_onPlaybackStateChanged);
 
         // Listen for video completion
         // _videoPlayerController.addListener(() {
@@ -88,6 +93,23 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
               'Unable to load walkthrough video. Please check your internet connection.';
         });
       }
+    }
+  }
+
+  void _onPlaybackStateChanged() {
+    final bool nowPaused = !_videoPlayerController.value.isPlaying;
+    if (mounted && nowPaused != _isPaused) {
+      setState(() {
+        _isPaused = nowPaused;
+      });
+    }
+  }
+
+  Future<void> _onCenterPlayPressed() async {
+    try {
+      await _videoPlayerController.play();
+    } catch (_) {
+      // No-op: rely on Chewie's error handling
     }
   }
 
@@ -115,6 +137,7 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
 
   @override
   void dispose() {
+    _videoPlayerController.removeListener(_onPlaybackStateChanged);
     _videoPlayerController.dispose();
     _chewieController?.dispose();
     super.dispose();
@@ -173,18 +196,63 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
       child: Center(
         child: AspectRatio(
           aspectRatio: _videoPlayerController.value.aspectRatio,
-          child: _chewieController != null
-              ? Chewie(controller: _chewieController!)
-              : Container(
-                  color: Colors.black,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).colorScheme.primary,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              _chewieController != null
+                  ? Chewie(controller: _chewieController!)
+                  : Container(
+                      color: Colors.black,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+              if (_isPaused) _buildCenterPlayButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterPlayButton() {
+    return AnimatedOpacity(
+      opacity: _isPaused ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 200),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _onCenterPlayPressed,
+          customBorder: const CircleBorder(),
+          child: Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.primary.withOpacity(0.85),
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.35),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
                 ),
+              ],
+            ),
+            child: Icon(
+              Icons.play_arrow,
+              size: 48,
+              color: Colors.white,
+            ),
+          ),
         ),
       ),
     );
