@@ -364,8 +364,8 @@ class _StatusBannerState extends State<StatusBanner> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '''These are sample questions in $text.
-Pay now to unlock full access to all subjects, all years, chapters, notes, and features!''',
+                  '''These sample questions are provided for preview purposes.
+Complete your payment to unlock full access to all subjects, years, chapters, notes, and premium features.''',
                   style: bodyStyle.copyWith(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 14,
