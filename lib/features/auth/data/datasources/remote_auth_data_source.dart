@@ -65,4 +65,49 @@ class RemoteAuthDataSource implements AuthDataSource {
     });
     return response.data['user'];
   }
+
+  @override
+  Future<void> sendPasswordResetOtp({required String email}) async {
+    try {
+      await _dio.post('/auth/password-reset/request', data: {"email": email});
+    } on DioException {
+      // rethrow and let repository map to domain errors
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String> verifyPasswordResetOtp(
+      {required String email, required String otp}) async {
+    try {
+      final resp = await _dio.post('/auth/password-reset/verify',
+          data: {"email": email, "otp": otp});
+      if (resp.statusCode == 200) {
+        final data = resp.data;
+        if (data is Map && data['reset_token'] != null) {
+          return data['reset_token'] as String;
+        }
+        throw Exception('Missing reset_token in response');
+      }
+      throw Exception('Unexpected status code: ${resp.statusCode}');
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> resetPassword(
+      {required String email,
+      required String resetToken,
+      required String newPassword}) async {
+    try {
+      await _dio.post('/auth/password-reset/confirm', data: {
+        "email": email,
+        "reset_token": resetToken,
+        "new_password": newPassword,
+      });
+    } on DioException {
+      rethrow;
+    }
+  }
 }

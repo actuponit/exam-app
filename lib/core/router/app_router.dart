@@ -1,8 +1,14 @@
+import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/features/about/presentation/screens/about_us_screen.dart';
+import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
+import 'package:exam_app/features/auth/presentation/blocs/password_reset/password_reset_bloc.dart';
 import 'package:exam_app/features/auth/presentation/screens/home_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/registration_screen.dart';
+import 'package:exam_app/features/auth/presentation/screens/reset_password_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/video_walkthrough_screen.dart';
+import 'package:exam_app/features/auth/presentation/screens/forget_password_email_screen.dart';
+import 'package:exam_app/features/auth/presentation/screens/forget_password_otp_screen.dart';
 import 'package:exam_app/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:exam_app/features/contacts/presentation/screens/contacts_screen.dart';
 import 'package:exam_app/features/notes/presentation/screens/note_detail_screen.dart';
@@ -16,6 +22,7 @@ import 'package:exam_app/features/faq/presentation/screens/faq_screen.dart';
 import 'package:exam_app/features/splash/presentation/screens/splash_screen.dart';
 import 'package:exam_app/features/settings/presentation/settings_screen.dart';
 import 'package:exam_app/features/notifications/presentation/pages/notification_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +32,9 @@ class RoutePaths {
   static const String videoWalkthrough = '/video-walkthrough';
   static const String login = '/login';
   static const String signUp = '/signup';
+  static const String forgetPassword = '/forget-password';
+  static const String forgetPasswordOtp = '/forget-password/otp';
+  static const String forgetPasswordReset = '/forget-password/reset';
   static const String home = '/home';
   static const String subjects = '/subjects';
   static const String years = '/years';
@@ -75,9 +85,40 @@ class AppRouter {
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
+        path: RoutePaths.forgetPassword,
+        name: 'ForgetPassword',
+        builder: (context, state) => const ForgetPasswordEmailScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.forgetPasswordReset,
+        name: 'ForgetPasswordReset',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final email = extra != null ? extra['email'] as String? : null;
+          final resetToken =
+              extra != null ? extra['resetToken'] as String? : null;
+          return BlocProvider(
+            create: (_) => PasswordResetBloc(getIt<AuthRepository>()),
+            child: ResetPasswordScreen(email: email, resetToken: resetToken),
+          );
+        },
+      ),
+      GoRoute(
         path: RoutePaths.signUp,
         name: 'SignUp',
         builder: (context, state) => const RegistrationScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.forgetPasswordOtp,
+        name: 'ForgetPasswordOtp',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final email = extra != null ? extra['email'] as String? : null;
+          return BlocProvider(
+            create: (context) => PasswordResetBloc(getIt<AuthRepository>()),
+            child: ForgetPasswordOtpScreen(email: email),
+          );
+        },
       ),
       GoRoute(
         path: RoutePaths.home,

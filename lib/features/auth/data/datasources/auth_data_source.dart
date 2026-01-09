@@ -23,6 +23,19 @@ abstract class AuthDataSource {
     required String deviceId,
     String? fcmToken,
   });
+
+  /// Sends a password reset OTP to the supplied email.
+  Future<void> sendPasswordResetOtp({required String email});
+
+  /// Verifies the OTP and returns a `resetToken` for confirming password reset.
+  Future<String> verifyPasswordResetOtp(
+      {required String email, required String otp});
+
+  /// Resets the password using the `resetToken` obtained from verification.
+  Future<void> resetPassword(
+      {required String email,
+      required String resetToken,
+      required String newPassword});
 }
 
 abstract class LocalAuthDataSource {

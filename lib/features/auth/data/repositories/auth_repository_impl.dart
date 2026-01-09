@@ -189,4 +189,56 @@ class AuthRepositoryImpl implements AuthRepository {
       throw ServerException("An error occurred during logout");
     }
   }
+
+  @override
+  Future<void> sendPasswordResetOtp({required String email}) async {
+    try {
+      await _remoteDataSource.sendPasswordResetOtp(email: email);
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final message = e.response?.data["message"];
+        throw ServerException(message ?? "Failed to send OTP");
+      }
+      throw ServerException("Server Error: ${e.message}");
+    } catch (e) {
+      throw ServerException("Failed to send OTP");
+    }
+  }
+
+  @override
+  Future<String> verifyPasswordResetOtp(
+      {required String email, required String otp}) async {
+    try {
+      final token = await _remoteDataSource.verifyPasswordResetOtp(
+          email: email, otp: otp);
+      return token;
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final message = e.response?.data["message"];
+        throw ServerException(message ?? "Failed to verify OTP");
+      }
+      throw ServerException("Server Error: ${e.message}");
+    } catch (e) {
+      throw ServerException("Failed to verify OTP");
+    }
+  }
+
+  @override
+  Future<void> resetPassword(
+      {required String email,
+      required String resetToken,
+      required String newPassword}) async {
+    try {
+      await _remoteDataSource.resetPassword(
+          email: email, resetToken: resetToken, newPassword: newPassword);
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final message = e.response?.data["message"];
+        throw ServerException(message ?? "Failed to reset password");
+      }
+      throw ServerException("Server Error: ${e.message}");
+    } catch (e) {
+      throw ServerException("Failed to reset password");
+    }
+  }
 }

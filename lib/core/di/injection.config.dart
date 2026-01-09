@@ -20,6 +20,8 @@ import '../../features/auth/data/datasources/auth_data_source.dart' as _i970;
 import '../../features/auth/data/repositories/auth_repository.dart' as _i573;
 import '../../features/auth/presentation/blocs/auth_bloc/auth_bloc.dart'
     as _i661;
+import '../../features/auth/presentation/blocs/password_reset/password_reset_bloc.dart'
+    as _i681;
 import '../../features/exams/data/datasource/exam_local_datasource.dart'
     as _i506;
 import '../../features/exams/data/datasource/recent_exam_local_datasource.dart'
@@ -220,6 +222,8 @@ Future<_i174.GetIt> init(
       ));
   gh.lazySingleton<_i399.NotesRepository>(
       () => notesModule.notesRepository(gh<_i43.NotesLocalDataSource>()));
+  gh.factory<_i681.PasswordResetBloc>(
+      () => _i681.PasswordResetBloc(gh<_i573.AuthRepository>()));
   gh.factory<_i354.SubjectBloc>(() => subjectModule.subjectBloc(
         gh<_i634.SubjectRepository>(),
         gh<_i254.ExamRepository>(),
