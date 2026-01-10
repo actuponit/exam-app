@@ -34,12 +34,4 @@ class ProfileCubit extends Cubit<ProfileState> {
       ));
     }
   }
-
-  Future<void> copyReferralCode() async {
-    // TODO: Implement copy to clipboard functionality
-  }
-
-  Future<void> shareReferralCode() async {
-    // TODO: Implement share functionality
-  }
 }
