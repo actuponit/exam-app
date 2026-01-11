@@ -23,13 +23,14 @@ class SubjectModelAdapter extends TypeAdapter<SubjectModel> {
       total: fields[3] as int,
       attempted: fields[4] as int,
       duration: fields[5] as int?,
+      isSample: fields[6] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, SubjectModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class SubjectModelAdapter extends TypeAdapter<SubjectModel> {
       ..writeByte(4)
       ..write(obj.attempted)
       ..writeByte(5)
-      ..write(obj.duration);
+      ..write(obj.duration)
+      ..writeByte(6)
+      ..write(obj.isSample);
   }
 
   @override

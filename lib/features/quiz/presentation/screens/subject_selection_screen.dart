@@ -30,7 +30,7 @@ class SubjectSelectionScreen extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       } else if (state is SubjectLoaded) {
         final subjects = state.subjects;
-        final index = subjects.indexWhere((subject) => !subject.isLocked);
+        final index = subjects.indexWhere((subject) => subject.isSample);
 
         if (isLocked && index != -1) {
           final temp = subjects[index];
@@ -92,7 +92,7 @@ class SubjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isReallyLocked = isLocked && !subject.isLocked;
+    final isReallyLocked = isLocked && subject.isSample;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(cardRadius),
@@ -121,7 +121,7 @@ class SubjectCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(cardRadius),
           onTap: () {
             // print(subject.name);
-            if (isLocked && subject.isLocked) {
+            if (isLocked && !subject.isSample) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
@@ -204,7 +204,7 @@ class SubjectCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (isLocked && subject.isLocked)
+              if (isLocked && !subject.isSample)
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(

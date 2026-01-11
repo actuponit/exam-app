@@ -10,6 +10,7 @@ class Subject extends Equatable {
   final int total;
   final int attempted;
   final int? duration;
+  final bool isSample;
 
   const Subject({
     required this.id,
@@ -19,6 +20,7 @@ class Subject extends Equatable {
     this.attempted = 0,
     this.region,
     this.duration = 2,
+    required this.isSample,
   });
 
   double get progress {
@@ -35,9 +37,6 @@ class Subject extends Equatable {
         'region': region,
       };
 
-  bool get isLocked => !(name.trim().toLowerCase().contains("logic") ||
-      name.trim().toLowerCase().contains("general science"));
-
   Subject copyWith({
     String? id,
     String? name,
@@ -46,6 +45,7 @@ class Subject extends Equatable {
     int? attempted,
     String? region,
     int? duration,
+    bool? isSample,
   }) {
     return Subject(
       id: id ?? this.id,
@@ -55,6 +55,7 @@ class Subject extends Equatable {
       attempted: attempted ?? this.attempted,
       region: region ?? this.region,
       duration: duration ?? this.duration,
+      isSample: isSample ?? this.isSample,
     );
   }
 
@@ -64,6 +65,7 @@ class Subject extends Equatable {
         iconName: json['name'] as String,
         region: json['region'] as String?,
         duration: int.tryParse(json['default_duration']) ?? 1,
+        isSample: json['is_sample'],
       );
 
   @override
@@ -75,5 +77,6 @@ class Subject extends Equatable {
         attempted,
         region,
         duration,
+        isSample,
       ];
 }
