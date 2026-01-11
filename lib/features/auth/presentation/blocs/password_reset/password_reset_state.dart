@@ -33,8 +33,8 @@ class PasswordResetState {
     return PasswordResetState(
       sendStatus: sendStatus ?? this.sendStatus,
       sendError: sendError ?? this.sendError,
-      verifyStatus: verifyStatus ?? this.verifyStatus,
-      verifyError: verifyError ?? this.verifyError,
+      verifyStatus: verifyStatus ?? RequestStatus.initial,
+      verifyError: verifyError ?? '',
       resetToken: resetToken ?? this.resetToken,
       confirmStatus: confirmStatus ?? this.confirmStatus,
       confirmError: confirmError ?? this.confirmError,

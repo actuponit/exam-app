@@ -1,8 +1,10 @@
+import 'package:exam_app/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exam_app/features/auth/presentation/widgets/password_text_field.dart';
 import 'package:exam_app/features/auth/presentation/blocs/password_reset/password_reset_bloc.dart';
 import 'package:exam_app/core/presentation/widgets/app_snackbar.dart';
+import 'package:go_router/go_router.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   final String? email;
@@ -72,9 +74,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           // show progress if needed
         } else if (state.confirmStatus == RequestStatus.success) {
           AppSnackBar.success(
-              context: context, message: 'Password reset successful');
-          // navigate to login
-          Navigator.of(context).popUntil((route) => route.isFirst);
+              context: context,
+              message:
+                  'Password reset successful. Now you can log in with your new password.');
+          context.go(RoutePaths.login);
         } else if (state.confirmStatus == RequestStatus.error) {
           AppSnackBar.error(context: context, message: state.confirmError);
         }
@@ -116,20 +119,29 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   errorText: confirmError,
                 ),
                 const SizedBox(height: 12),
-                Expanded(child: Container()),
-                SizedBox(
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: _isValid() ? _submit : null,
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      backgroundColor: theme.colorScheme.primary,
-                    ),
-                    child: Text('Reset Password',
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(color: Colors.white)),
-                  ),
+                Spacer(),
+                BlocBuilder<PasswordResetBloc, PasswordResetState>(
+                  builder: (context, state) {
+                    final isLoading =
+                        state.confirmStatus == RequestStatus.loading;
+                    return ElevatedButton(
+                      onPressed: _isValid() && !isLoading ? _submit : null,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        backgroundColor: theme.colorScheme.primary,
+                      ),
+                      child: isLoading
+                          ? SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(),
+                            )
+                          : Text('Reset Password',
+                              style: theme.textTheme.titleMedium
+                                  ?.copyWith(color: Colors.white)),
+                    );
+                  },
                 ),
               ],
             ),

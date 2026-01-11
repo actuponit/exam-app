@@ -87,7 +87,10 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.forgetPassword,
         name: 'ForgetPassword',
-        builder: (context, state) => const ForgetPasswordEmailScreen(),
+        builder: (context, state) => BlocProvider(
+          create: (context) => PasswordResetBloc(getIt<AuthRepository>()),
+          child: const ForgetPasswordEmailScreen(),
+        ),
       ),
       GoRoute(
         path: RoutePaths.forgetPasswordReset,
