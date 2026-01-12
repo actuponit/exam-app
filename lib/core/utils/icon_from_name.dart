@@ -10,6 +10,14 @@ IconData iconFromName(String name) {
     return Icons.book;
   }
 
+  if (lowerName.contains('law')) {
+    return Icons.book_outlined;
+  }
+
+  if (lowerName.contains('coc')) {
+    return Icons.quiz_outlined;
+  }
+
   // Mathematics related
   if (lowerName.contains('math') ||
       lowerName.contains('mathematics') ||
