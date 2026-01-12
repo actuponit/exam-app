@@ -251,7 +251,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.purpleAccent[300]
-                  : Colors.purpleAccent[700],
+                  : Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.w500,
               decoration: TextDecoration.underline,
             ),

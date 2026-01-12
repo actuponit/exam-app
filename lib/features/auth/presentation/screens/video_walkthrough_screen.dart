@@ -155,8 +155,8 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
 
             // Browser Button
             Positioned(
-              top: 20,
-              right: 20,
+              top: 40,
+              right: 10,
               child: AnimatedOpacity(
                 opacity: 1.0,
                 duration: const Duration(milliseconds: 300),
@@ -166,8 +166,8 @@ class _VideoWalkthroughScreenState extends State<VideoWalkthroughScreen> {
 
             // Back Button
             Positioned(
-              top: 20,
-              left: 20,
+              top: 40,
+              left: 10,
               child: _buildBackButton(),
             ),
           ],
