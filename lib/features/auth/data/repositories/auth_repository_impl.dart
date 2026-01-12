@@ -196,7 +196,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await _remoteDataSource.sendPasswordResetOtp(email: email);
     } on DioException catch (e) {
       if (e.response?.data != null) {
-        final message = e.response?.data["message"];
+        final message = e.response?.data["message"] ?? e.message;
         throw ServerException(message ?? "Failed to send OTP");
       }
       throw ServerException("Server Error: ${e.message}");
@@ -214,7 +214,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return token;
     } on DioException catch (e) {
       if (e.response?.data != null) {
-        final message = e.response?.data["message"];
+        final message = e.response?.data["message"] ?? e.message;
         throw ServerException(message ?? "Failed to verify OTP");
       }
       throw ServerException("Server Error: ${e.message}");
@@ -233,7 +233,7 @@ class AuthRepositoryImpl implements AuthRepository {
           email: email, resetToken: resetToken, newPassword: newPassword);
     } on DioException catch (e) {
       if (e.response?.data != null) {
-        final message = e.response?.data["message"];
+        final message = e.response?.data["message"] ?? e.message;
         throw ServerException(message ?? "Failed to reset password");
       }
       throw ServerException("Server Error: ${e.message}");

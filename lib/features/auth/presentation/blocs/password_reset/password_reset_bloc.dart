@@ -1,3 +1,4 @@
+import 'package:exam_app/core/error/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:injectable/injectable.dart';
@@ -23,9 +24,20 @@ class PasswordResetBloc extends Bloc<PasswordResetEvent, PasswordResetState> {
       emit(state.copyWith(sendStatus: RequestStatus.loading, sendError: ''));
       await _authRepository.sendPasswordResetOtp(email: event.email);
       emit(state.copyWith(sendStatus: RequestStatus.success));
+    } on ServerException catch (e) {
+      emit(
+        state.copyWith(
+          sendStatus: RequestStatus.error,
+          sendError: e.message,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-          sendStatus: RequestStatus.error, sendError: e.toString()));
+      emit(
+        state.copyWith(
+          sendStatus: RequestStatus.error,
+          sendError: 'Something went wrong',
+        ),
+      );
     }
   }
 
@@ -40,9 +52,20 @@ class PasswordResetBloc extends Bloc<PasswordResetEvent, PasswordResetState> {
           email: event.email, otp: event.otp);
       emit(state.copyWith(
           verifyStatus: RequestStatus.success, resetToken: token));
+    } on ServerException catch (e) {
+      emit(
+        state.copyWith(
+          verifyStatus: RequestStatus.error,
+          verifyError: e.message,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-          verifyStatus: RequestStatus.error, verifyError: e.toString()));
+      emit(
+        state.copyWith(
+          verifyStatus: RequestStatus.error,
+          verifyError: 'Something went wrong',
+        ),
+      );
     }
   }
 
@@ -58,9 +81,20 @@ class PasswordResetBloc extends Bloc<PasswordResetEvent, PasswordResetState> {
           resetToken: event.resetToken,
           newPassword: event.newPassword);
       emit(state.copyWith(confirmStatus: RequestStatus.success));
+    } on ServerException catch (e) {
+      emit(
+        state.copyWith(
+          confirmStatus: RequestStatus.error,
+          confirmError: e.message,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-          confirmStatus: RequestStatus.error, confirmError: e.toString()));
+      emit(
+        state.copyWith(
+          confirmStatus: RequestStatus.error,
+          confirmError: 'Something went wrong',
+        ),
+      );
     }
   }
 }
