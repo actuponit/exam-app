@@ -46,9 +46,10 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
+      // Register user with remote data source
       final fcm = FCMService();
       await fcm.initialize(examType.id.toString());
-      // Register user with remote data source
+
       final deviceId = await DeviceManager.getDeviceId();
       final user = await _remoteDataSource.register(
         firstName: firstName,
@@ -132,7 +133,6 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final fcm = FCMService();
       final deviceId = await DeviceManager.getDeviceId();
-      await fcm.initialize('all');
       final user = await _remoteDataSource.login(
         phone: phone,
         password: password,
@@ -153,7 +153,6 @@ class AuthRepositoryImpl implements AuthRepository {
           examTypes.firstWhere((e) => e.id.toString() == user['type_id']);
       await fcm.initialize(examType.id.toString());
 
-      // Save exam type info
       await _localDataSource.saveExamInfo(examType.name, examType.price);
       await _localDataSource.setAllUserInfo(
         firstName: user['name'],

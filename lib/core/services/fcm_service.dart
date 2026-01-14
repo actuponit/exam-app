@@ -22,7 +22,7 @@ class FCMService {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  late String fcmToken;
+  String fcmToken = '';
 
   Future<void> initialize(String examType) async {
     // Request notification permissions (iOS-specific)
@@ -61,9 +61,9 @@ class FCMService {
     } catch (e) {
       // Handle error
     }
-    // Get the FCM token for the device
-    fcmToken = '';
-    // Subscribe to the 'all' topic
+
+    fcmToken = fcmToken;
+
     if (fcmToken.isNotEmpty) {
       debugPrint("FCM Token: $fcmToken");
       await _firebaseMessaging.subscribeToTopic(examType);
