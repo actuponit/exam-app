@@ -72,6 +72,7 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
 
     // Process downloads with concurrency control
     // final batches = _batchTasks(tasks, maxConcurrentDownloads);
+    if (tasks.isNotEmpty) {
     final res = await FileDownloader().downloadBatch(tasks,
         batchProgressCallback: (succeeded, failed) {
       _downloadedImages = succeeded;
@@ -89,6 +90,7 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
       }
     });
     print(" Download result: ${res.results}");
+    }
 
     // for (final batch in batches) {
     //   final results = await Future.wait(
