@@ -358,7 +358,7 @@ class ProfileScreen extends StatelessWidget {
                           onPressed: () {
                             if (state.referralCode != null) {
                               Clipboard.setData(
-                                ClipboardData(text: state.referralCode!),
+                                ClipboardData(text: state.referralCode ?? ''),
                               );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(

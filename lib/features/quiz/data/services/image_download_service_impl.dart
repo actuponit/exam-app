@@ -73,23 +73,23 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
     // Process downloads with concurrency control
     // final batches = _batchTasks(tasks, maxConcurrentDownloads);
     if (tasks.isNotEmpty) {
-    final res = await FileDownloader().downloadBatch(tasks,
-        batchProgressCallback: (succeeded, failed) {
-      _downloadedImages = succeeded;
-      _failedImages = failed;
+      final res = await FileDownloader().downloadBatch(tasks,
+          batchProgressCallback: (succeeded, failed) {
+        _downloadedImages = succeeded;
+        _failedImages = failed;
 
-      if (succeeded + failed == _totalImages) {
-        _isDownloading = false;
+        if (succeeded + failed == _totalImages) {
+          _isDownloading = false;
 
-        // Emit final state
-        _progressController.add(_createProgress(
-          _failedImages > 0 ? SyncPhase.error : SyncPhase.completed,
-        ));
-      } else {
-        _progressController.add(_createProgress(SyncPhase.downloadingImages));
-      }
-    });
-    print(" Download result: ${res.results}");
+          // Emit final state
+          _progressController.add(_createProgress(
+            _failedImages > 0 ? SyncPhase.error : SyncPhase.completed,
+          ));
+        } else {
+          _progressController.add(_createProgress(SyncPhase.downloadingImages));
+        }
+      });
+      print(" Download result: ${res.results}");
     }
 
     // for (final batch in batches) {

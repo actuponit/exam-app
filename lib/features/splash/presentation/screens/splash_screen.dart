@@ -5,6 +5,7 @@ import 'package:exam_app/features/splash/presentation/widgets/splash_animation.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,6 +19,7 @@ class _SplashScreenState extends State<SplashScreen>
   bool _showOnboarding = false;
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
+  String _appVersion = '';
 
   @override
   void initState() {
@@ -36,6 +38,18 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Check if onboarding should be shown
     _checkOnboardingStatus();
+    _loadPackageInfo();
+  }
+
+  Future<void> _loadPackageInfo() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      setState(() {
+        _appVersion = info.version;
+      });
+    } catch (_) {
+      // ignore errors and keep version empty
+    }
   }
 
   Future<void> _checkOnboardingStatus() async {
@@ -54,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (state.isLoggedIn) {
       // If onboarding was completed before, navigate to home
-      context.go(RoutePaths.home);
+      // context.go(RoutePaths.home);
     } else if (!state.isComplete) {
       // Otherwise show onboarding screens
       setState(() {
@@ -93,11 +107,33 @@ class _SplashScreenState extends State<SplashScreen>
             ),
 
           // Particles overlay animation (optional)
+          // Version label (fetched from package_info_plus)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 24,
+            child: SafeArea(
+              top: false,
+              child: Center(
+                child: AnimatedOpacity(
+                  opacity: _appVersion.isEmpty ? 0 : 1,
+                  duration: const Duration(milliseconds: 350),
+                  child: Text(
+                    _appVersion.isEmpty ? '' : 'v$_appVersion',
+                    style: Theme.of(context).textTheme.bodySmall ??
+                        const TextStyle(fontSize: 12, color: Colors.black),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
+// Add version display in bottom area
 
 // Custom painter for animated particles in the background
 class ParticlesPainter extends CustomPainter {

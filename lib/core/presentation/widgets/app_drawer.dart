@@ -197,13 +197,6 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            'Version 1.0.0',
-            style: bodyStyle.copyWith(
-              color: textLight,
-              fontSize: 12,
-            ),
-          ),
         ],
       ),
     );
