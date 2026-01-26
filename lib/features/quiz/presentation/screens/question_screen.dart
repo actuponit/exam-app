@@ -436,19 +436,22 @@ class _QuestionScreenContentState extends State<QuestionScreenContent> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        state.totalPages,
-                        (index) => Container(
-                          width: 8,
-                          height: 8,
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: index == _currentPage
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.grey[300],
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          state.totalPages,
+                          (index) => Container(
+                            width: 8,
+                            height: 8,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: index == _currentPage
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.grey[300],
+                            ),
                           ),
                         ),
                       ),

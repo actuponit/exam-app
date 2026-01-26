@@ -68,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (state.isLoggedIn) {
       // If onboarding was completed before, navigate to home
-      // context.go(RoutePaths.home);
+      context.go(RoutePaths.home);
     } else if (!state.isComplete) {
       // Otherwise show onboarding screens
       setState(() {
@@ -111,7 +111,7 @@ class _SplashScreenState extends State<SplashScreen>
           Positioned(
             left: 0,
             right: 0,
-            bottom: 24,
+            bottom: 10,
             child: SafeArea(
               top: false,
               child: Center(
