@@ -2,6 +2,7 @@ import 'package:exam_app/core/di/injection.dart';
 import 'package:exam_app/core/router/app_router.dart';
 import 'package:exam_app/core/theme.dart';
 import 'package:exam_app/core/theme_cubit.dart';
+import 'package:exam_app/core/utils/update_checker.dart';
 import 'package:exam_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:exam_app/features/auth/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:exam_app/features/auth/presentation/blocs/registration_form_bloc/registration_form_bloc.dart';
@@ -42,6 +43,7 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   late ThemeCubit themeCubit;
+  late final UpdateChecker _updateChecker;
 
   @override
   void initState() {
@@ -49,6 +51,15 @@ class _MainAppState extends State<MainApp> {
     themeCubit = ThemeCubit();
     // Initialize theme from saved preferences
     themeCubit.initializeTheme();
+
+    _updateChecker = UpdateChecker(
+        // TODO: Set iOSId if your App Store bundle ID differs from your app's bundle ID.
+        // Example: iOSId: 'com.yourcompany.examapp',
+        );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateChecker.checkForUpdates();
+    });
   }
 
   @override

@@ -73,7 +73,7 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
     // Process downloads with concurrency control
     // final batches = _batchTasks(tasks, maxConcurrentDownloads);
     if (tasks.isNotEmpty) {
-      final res = await FileDownloader().downloadBatch(tasks,
+      await FileDownloader().downloadBatch(tasks,
           batchProgressCallback: (succeeded, failed) {
         _downloadedImages = succeeded;
         _failedImages = failed;
@@ -89,55 +89,8 @@ class ImageDownloadServiceImpl implements ImageDownloadService {
           _progressController.add(_createProgress(SyncPhase.downloadingImages));
         }
       });
-      print(" Download result: ${res.results}");
     }
-
-    // for (final batch in batches) {
-    //   final results = await Future.wait(
-    //     batch.map((task) => _downloadWithProgress(task)),
-    //   );
-
-    //   for (final success in results) {
-    //     if (success) {
-    //       _downloadedImages++;
-    //     } else {
-    //       _failedImages++;
-    //     }
-
-    //     // Emit progress
-    //     yield _createProgress(SyncPhase.downloadingImages);
-    //   }
-    // }
   }
-
-  // Future<bool> _downloadWithProgress(DownloadTask task) async {
-  //   try {
-  //     // Listen to progress updates
-  //     FileDownloader().updates.listen((update) {
-  //       if (update is TaskProgressUpdate && update.task.taskId == task.taskId) {
-  //         // Progress updates are handled in the stream
-  //         _progressController.add(_createProgress(SyncPhase.downloadingImages));
-  //       }
-  //     });
-
-  //     final result = await FileDownloader().download(task);
-  //     return result.status == TaskStatus.complete;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
-
-  // List<List<DownloadTask>> _batchTasks(
-  //   List<DownloadTask> tasks,
-  //   int batchSize,
-  // ) {
-  //   final batches = <List<DownloadTask>>[];
-  //   for (var i = 0; i < tasks.length; i += batchSize) {
-  //     final end = (i + batchSize < tasks.length) ? i + batchSize : tasks.length;
-  //     batches.add(tasks.sublist(i, end));
-  //   }
-  //   return batches;
-  // }
 
   DownloadProgress _createProgress(SyncPhase phase) {
     return DownloadProgress(

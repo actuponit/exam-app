@@ -9,7 +9,7 @@ abstract class NetworkModule {
   @singleton
   Dio dio(HiveService hiveService) {
     final dio = Dio(BaseOptions(
-      baseUrl: 'https://ethioexamhub.com/api/',
+      baseUrl: 'https://dashboard.ethioexamhub.com/api/',
       connectTimeout: const Duration(seconds: 120 * 2),
       receiveTimeout: const Duration(seconds: 120 * 2),
       headers: {
