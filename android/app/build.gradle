@@ -16,8 +16,8 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.ethioexam.app"
-    compileSdk = 36
-    ndkVersion = "28.0.13004108"
+    compileSdk = 37
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         // Flag to enable support for the new language APIs
