@@ -99,15 +99,17 @@ class FCMService {
       iOS: initializationSettingsIOS,
     );
 
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
+    await _flutterLocalNotificationsPlugin.initialize(
+        settings: initializationSettings,
         onDidReceiveNotificationResponse: (response) async {
-      try {
-        // Navigate to notifications page on click
-        AppRouter.navigatorKey.currentContext?.push(RoutePaths.notifications);
-      } catch (e) {
-        // Handle error
-      }
-    });
+          try {
+            // Navigate to notifications page on click
+            AppRouter.navigatorKey.currentContext
+                ?.push(RoutePaths.notifications);
+          } catch (e) {
+            // Handle error
+          }
+        });
 
     // Create Android notification channel
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -177,10 +179,10 @@ class FCMService {
 
     if (title != null || body != null) {
       await _flutterLocalNotificationsPlugin.show(
-        notificationId,
-        title,
-        body,
-        platformChannelSpecifics,
+        id: notificationId,
+        title: title,
+        body: body,
+        notificationDetails: platformChannelSpecifics,
         payload: jsonEncode(message.data),
       );
     }
