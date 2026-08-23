@@ -26,9 +26,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await configureDependencies();
   runApp(const MainApp());
@@ -52,10 +50,7 @@ class _MainAppState extends State<MainApp> {
     // Initialize theme from saved preferences
     themeCubit.initializeTheme();
 
-    _updateChecker = UpdateChecker(
-        // TODO: Set iOSId if your App Store bundle ID differs from your app's bundle ID.
-        // Example: iOSId: 'com.yourcompany.examapp',
-        );
+    _updateChecker = UpdateChecker();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateChecker.checkForUpdates();
@@ -73,29 +68,16 @@ class _MainAppState extends State<MainApp> {
     return MultiBlocProvider(
       providers: [
         // ...existing BlocProviders...
+        BlocProvider(create: (context) => getIt<AuthBloc>()),
+        BlocProvider(create: (context) => RegistrationBloc()),
+        BlocProvider(create: (context) => getIt<SubscriptionBloc>()),
+        BlocProvider(create: (context) => getIt<SplashCubit>()),
+        BlocProvider(create: (context) => getIt<ExamBloc>()),
         BlocProvider(
-          create: (context) => getIt<AuthBloc>(),
+          create: (context) =>
+              QuestionBloc(repository: getIt<QuestionRepository>()),
         ),
-        BlocProvider(
-          create: (context) => RegistrationBloc(),
-        ),
-        BlocProvider(
-          create: (context) => getIt<SubscriptionBloc>(),
-        ),
-        BlocProvider(
-          create: (context) => getIt<SplashCubit>(),
-        ),
-        BlocProvider(
-          create: (context) => getIt<ExamBloc>(),
-        ),
-        BlocProvider(
-          create: (context) => QuestionBloc(
-            repository: getIt<QuestionRepository>(),
-          ),
-        ),
-        BlocProvider(
-          create: (context) => getIt<SubjectBloc>(),
-        ),
+        BlocProvider(create: (context) => getIt<SubjectBloc>()),
         BlocProvider(
           create: (context) => getIt<RecentExamCubit>()..loadRecentExam(),
         ),
@@ -103,21 +85,13 @@ class _MainAppState extends State<MainApp> {
           create: (context) =>
               ProfileCubit(authRepository: getIt<AuthRepository>()),
         ),
-        BlocProvider.value(
-          value: themeCubit,
-        ),
-        BlocProvider(
-          create: (context) => getIt<ReferralBloc>(),
-        ),
+        BlocProvider.value(value: themeCubit),
+        BlocProvider(create: (context) => getIt<ReferralBloc>()),
         BlocProvider(
           create: (context) => NotesCubit(repository: getIt<NotesRepository>()),
         ),
-        BlocProvider(
-          create: (context) => getIt<PermissionCubit>(),
-        ),
-        BlocProvider(
-          create: (context) => getIt<NotificationBloc>(),
-        ),
+        BlocProvider(create: (context) => getIt<PermissionCubit>()),
+        BlocProvider(create: (context) => getIt<NotificationBloc>()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
