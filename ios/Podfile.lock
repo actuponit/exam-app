@@ -3,6 +3,8 @@ PODS:
     - Flutter
   - connectivity_plus (0.0.1):
     - Flutter
+  - device_info_plus (0.0.1):
+    - Flutter
   - Firebase/CoreOnly (12.6.0):
     - FirebaseCore (~> 12.6.0)
   - Firebase/Messaging (12.6.0):
@@ -103,6 +105,7 @@ PODS:
 DEPENDENCIES:
   - background_downloader (from `.symlinks/plugins/background_downloader/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
@@ -137,6 +140,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/background_downloader/ios"
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
   firebase_messaging:
@@ -171,6 +176,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   background_downloader: 50e91d979067b82081aba359d7d916b3ba5fadad
   connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
+  device_info_plus: 71ffc6ab7634ade6267c7a93088ed7e4f74e5896
   Firebase: a451a7b61536298fd5cbfe3a746fd40443a50679
   firebase_core: ba00a168e719694f38960502ceb560285603d073
   firebase_messaging: bf0e29321927edc02a563c984dbfa5b063864b15
