@@ -20,6 +20,7 @@ import 'package:exam_app/features/quiz/presentation/screens/subject_selection_sc
 import 'package:exam_app/features/quiz/presentation/screens/year_chapter_selection_screen.dart';
 import 'package:exam_app/features/faq/presentation/screens/faq_screen.dart';
 import 'package:exam_app/features/splash/presentation/screens/splash_screen.dart';
+import 'package:exam_app/features/videos/presentation/screens/video_player_screen.dart';
 import 'package:exam_app/features/settings/presentation/settings_screen.dart';
 import 'package:exam_app/features/notifications/presentation/pages/notification_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,6 +47,7 @@ class RoutePaths {
   static const String settings = '/settings';
   static const String notes = '/notes';
   static const String noteDetail = '/notes/detail';
+  static const String videoPlayer = '/videos/player';
   static const String transactionVerification = '/transaction-verification';
 
   // Deep link paths
@@ -207,6 +209,14 @@ class AppRouter {
         builder: (context, state) {
           final noteId = state.pathParameters['noteId'] ?? '';
           return NoteDetailScreen(noteId: noteId);
+        },
+      ),
+      GoRoute(
+        path: '${RoutePaths.videoPlayer}/:videoId',
+        name: 'VideoPlayer',
+        builder: (context, state) {
+          final videoId = state.pathParameters['videoId'] ?? '';
+          return VideoPlayerScreen(videoId: videoId);
         },
       ),
       GoRoute(

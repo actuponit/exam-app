@@ -1,6 +1,7 @@
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 
 import '../../domain/entities/video.dart';
+import '../../domain/entities/video_download.dart';
 import '../../domain/repositories/videos_repository.dart';
 import '../datasources/videos_local_datasource.dart';
 import '../datasources/videos_remote_datasource.dart';
@@ -41,5 +42,16 @@ class VideosRepositoryImpl implements VideosRepository {
     } catch (_) {
       return null;
     }
+  }
+
+  @override
+  Future<VideoDownload?> getDownload(String videoId) async {
+    final model = await localDataSource.getDownload(videoId);
+    return model?.toEntity();
+  }
+
+  @override
+  Future<void> saveResumePosition(String videoId, int seconds) {
+    return localDataSource.saveResumePosition(videoId, seconds);
   }
 }

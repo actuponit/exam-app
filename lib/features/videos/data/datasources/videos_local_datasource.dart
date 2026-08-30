@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:hive/hive.dart';
 
 import '../models/video_download_model.dart';
@@ -30,6 +32,16 @@ abstract class VideosLocalDataSource {
   Future<void> putDownload(VideoDownloadModel download);
 
   Future<void> deleteDownload(String videoId);
+
+  /// Drops every download record whose file is no longer on disk (OS cleanup,
+  /// a manual delete, a reinstall) and returns the video ids that were
+  /// dropped, so their cards fall back to "not downloaded" instead of opening
+  /// a player over nothing.
+  Future<List<String>> reconcileDownloads();
+
+  /// Stores the playback position of a saved download. A record that is not
+  /// there (deleted while the player was open) is left alone.
+  Future<void> saveResumePosition(String videoId, int seconds);
 
   /// Metadata snapshot of a video whose download is in flight.
   Future<VideoModel?> getPendingVideo(String videoId);
@@ -91,6 +103,27 @@ class VideosLocalDataSourceImpl implements VideosLocalDataSource {
   @override
   Future<void> deleteDownload(String videoId) {
     return _box.delete(downloadKey(videoId));
+  }
+
+  @override
+  Future<List<String>> reconcileDownloads() async {
+    final removed = <String>[];
+    final downloads = await getAllDownloads();
+    for (final download in downloads.values) {
+      if (File(download.localPath).existsSync()) continue;
+      await _box.delete(downloadKey(download.videoId));
+      removed.add(download.videoId);
+    }
+    return removed;
+  }
+
+  @override
+  Future<void> saveResumePosition(String videoId, int seconds) async {
+    final existing = await getDownload(videoId);
+    if (existing == null) return;
+    final position = seconds < 0 ? 0 : seconds;
+    if (existing.resumePositionSeconds == position) return;
+    await putDownload(existing.copyWith(resumePositionSeconds: position));
   }
 
   @override

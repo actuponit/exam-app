@@ -13,11 +13,16 @@ class VideoCard extends StatelessWidget {
   final VideoDownloadStatus status;
   final VoidCallback? onTap;
 
+  /// Delete affordance. Wired only for a saved download; every other state
+  /// passes `null` so a long-press does nothing at all.
+  final VoidCallback? onLongPress;
+
   const VideoCard({
     super.key,
     required this.video,
     this.status = VideoDownloadStatus.none,
     this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -36,6 +41,7 @@ class VideoCard extends StatelessWidget {
         ),
         child: InkWell(
           onTap: locked ? null : onTap,
+          onLongPress: locked ? null : onLongPress,
           borderRadius: BorderRadius.circular(8),
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -115,10 +121,31 @@ class _DownloadControl extends StatelessWidget {
         return _label(theme, 'Waiting', muted);
 
       case VideoDownloadState.running:
-        return _ProgressRing(progress: status.progress);
+        // The ring is the whole control unless the server let us pause: then
+        // a pause glyph beside it says the tap now opens a choice.
+        if (!status.canPause) return _ProgressRing(progress: status.progress);
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.pause_circle_outline, size: 20, color: muted),
+            const SizedBox(width: 6),
+            _ProgressRing(progress: status.progress),
+          ],
+        );
 
       case VideoDownloadState.paused:
-        return _label(theme, 'Paused', muted);
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.play_circle_outline,
+              size: 20,
+              color: theme.primaryColor,
+            ),
+            const SizedBox(width: 4),
+            _label(theme, 'Paused', muted),
+          ],
+        );
 
       case VideoDownloadState.verifying:
         return _label(theme, 'Verifying', muted);

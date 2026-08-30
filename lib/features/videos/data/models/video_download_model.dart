@@ -45,6 +45,22 @@ class VideoDownloadModel extends Equatable {
     );
   }
 
+  VideoDownloadModel copyWith({
+    String? localPath,
+    bool? verified,
+    int? resumePositionSeconds,
+    VideoModel? video,
+  }) {
+    return VideoDownloadModel(
+      videoId: videoId,
+      localPath: localPath ?? this.localPath,
+      verified: verified ?? this.verified,
+      resumePositionSeconds:
+          resumePositionSeconds ?? this.resumePositionSeconds,
+      video: video ?? this.video,
+    );
+  }
+
   VideoDownload toEntity() {
     return VideoDownload(
       videoId: videoId,

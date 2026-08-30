@@ -6,12 +6,12 @@
 
 **Blocked by:** 04 — Completed downloads are verified and saved; failures show a reason and Retry
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Against a range-supporting server, downloading card tap shows Pause / Cancel sheet; Pause stops the task and card shows "Paused"
-- [ ] Tap on a paused card resumes; progress continues from the paused percentage, not from zero
-- [ ] Against a server without range support, downloading card tap cancels only (no pause offered)
-- [ ] Long-press on a Saved card shows a delete sheet; confirm deletes file + record; card shows download icon again
-- [ ] Long-press on any non-Saved card does nothing
-- [ ] Deleting the file outside the app, then opening the tab, resets that card to "not downloaded"
-- [ ] `flutter analyze` clean
+- [x] Against a range-supporting server, downloading card tap shows Pause / Cancel sheet; Pause stops the task and card shows "Paused"
+- [x] Tap on a paused card resumes; progress continues from the paused percentage, not from zero
+- [x] Against a server without range support, downloading card tap cancels only (no pause offered)
+- [x] Long-press on a Saved card shows a delete sheet; confirm deletes file + record; card shows download icon again
+- [x] Long-press on any non-Saved card does nothing
+- [x] Deleting the file outside the app, then opening the tab, resets that card to "not downloaded"
+- [x] `flutter analyze` clean

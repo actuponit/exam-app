@@ -19,9 +19,6 @@ Flutter app (Ethiopian exam prep). Features live under `lib/features/<name>/{dat
 
 Runs after every ticket and after any standalone code change.
 
-**Always compact first.** `/compact` is a user-typed command — the agent cannot invoke it. So before running `coderabbit`, stop and say: *"Slice built, `flutter analyze` clean. Run `/compact`, then say 'run the CodeRabbit gate' and I'll continue."* Then end the turn. Build output and analyzer noise are the bulk of the context at that point, and dropping them keeps room for the review findings.
-
-After the user compacts, re-read before triaging (the summary may have dropped the detail):
 
 - the ticket file `.scratch/<feature>/issues/NN-<slug>.md`
 - the spec sections it references

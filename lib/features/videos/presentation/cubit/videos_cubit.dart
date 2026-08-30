@@ -40,12 +40,21 @@ class VideosCubit extends Cubit<VideosState> {
     });
   }
 
-  /// One tap target per card: start, cancel or retry depending on the state.
-  /// Returns a message to show the student, or `null` when there is nothing
-  /// to say.
+  /// One tap target per card: start, resume, cancel or retry depending on the
+  /// state. Returns a message to show the student, or `null` when there is
+  /// nothing to say.
+  ///
+  /// Two states are settled by the widget before it gets here, because both
+  /// end in UI this cubit has no business owning: a saved download opens the
+  /// player, and a *pausable* running download opens the Pause / Cancel
+  /// sheet. Everything else is one unambiguous action.
   Future<String?> onVideoTapped(Video video) async {
     if (video.locked) return null;
     final status = _downloads[video.id] ?? VideoDownloadStatus.none;
+    if (status.isPaused) {
+      await downloadService.resume(video.id);
+      return null;
+    }
     if (status.isActive) {
       await downloadService.cancel(video.id);
       return null;
@@ -53,12 +62,25 @@ class VideosCubit extends Cubit<VideosState> {
     // Mid-verification the file exists but is not recorded yet: a tap must
     // neither cancel it nor start a second download.
     if (status.isSettling) return null;
-    // Playback of a saved download lands in a later ticket.
+    // Handled by the widget, which pushes the player route.
     if (status.isDownloaded) return null;
     // Everything left — never downloaded, or failed — enqueues, so the failed
     // card's Retry is the same call as a first download.
     return downloadService.enqueue(video);
   }
+
+  /// Pauses a running, resumable download. Chosen from the card's sheet.
+  Future<void> pauseDownload(String videoId) =>
+      downloadService.pause(videoId);
+
+  /// Cancels a queued, running or paused download. Chosen from the card's
+  /// sheet, or straight from a tap when the server does not support pausing.
+  Future<void> cancelDownload(String videoId) =>
+      downloadService.cancel(videoId);
+
+  /// Deletes a saved download after the student confirms the long-press sheet.
+  Future<void> deleteDownload(String videoId) =>
+      downloadService.deleteDownload(videoId);
 
   @override
   Future<void> close() {
@@ -73,6 +95,11 @@ class VideosCubit extends Cubit<VideosState> {
     if (previous is VideosLoaded && previous.subjectId != subjectId) {
       emit(const VideosLoading());
     }
+    // A record whose file the OS reclaimed must not survive into the list as
+    // a "Saved" card that opens a player over nothing.
+    await downloadService.reconcile();
+    if (isClosed || _subjectId != subjectId) return;
+
     final cached = await repository.getCachedVideosBySubject(subjectId);
     if (isClosed || _subjectId != subjectId) return;
 
@@ -102,6 +129,10 @@ class VideosCubit extends Cubit<VideosState> {
     } else if (current is! VideosLoading) {
       emit(const VideosLoading());
     }
+    // A refresh is also the student's way of saying "check again", so the
+    // disk sweep runs here as well as on open.
+    await downloadService.reconcile();
+    if (isClosed || _subjectId != subjectId) return;
     await _fetch(subjectId);
   }
 

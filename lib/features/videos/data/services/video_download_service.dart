@@ -48,6 +48,24 @@ abstract class VideoDownloadService {
 
   /// Cancels a queued or running download and removes any partial file.
   Future<void> cancel(String videoId);
+
+  /// Pauses a running download. Only meaningful while the video's status
+  /// reports [VideoDownloadStatus.canPause]; otherwise the engine refuses and
+  /// the download keeps running.
+  Future<void> pause(String videoId);
+
+  /// Resumes a paused download from where it stopped, back through the serial
+  /// queue so it still waits its turn.
+  Future<void> resume(String videoId);
+
+  /// Deletes a saved download: the file, its Hive record, and the card's
+  /// "Saved" state.
+  Future<void> deleteDownload(String videoId);
+
+  /// Drops every download record whose file has vanished from disk, so a card
+  /// never claims "Saved" over a file the OS reclaimed. Called on every
+  /// Videos tab open.
+  Future<void> reconcile();
 }
 
 class VideoDownloadServiceImpl implements VideoDownloadService {
@@ -76,10 +94,14 @@ class VideoDownloadServiceImpl implements VideoDownloadService {
   /// videoIds with a verification/hand-off in flight, so it runs exactly once.
   final _finalizing = <String>{};
 
+  /// taskIds with a `canPause` probe outstanding, so one running task never
+  /// stacks up a probe per progress tick.
+  final _probing = <String>{};
+
   final _controller =
       StreamController<Map<String, VideoDownloadStatus>>.broadcast();
 
-  final MemoryTaskQueue _queue = MemoryTaskQueue()..maxConcurrent = 1;
+  final _VideoTaskQueue _queue = _VideoTaskQueue()..maxConcurrent = 1;
 
   /// Video ids with an [enqueue] or [cancel] in flight — a per-video lock.
   ///
@@ -222,6 +244,83 @@ class VideoDownloadServiceImpl implements VideoDownloadService {
     }
   }
 
+  @override
+  Future<void> pause(String videoId) async {
+    if (!_busy.add(videoId)) return;
+    try {
+      final task = _tasks[videoId];
+      final status = _statuses[videoId];
+      if (task == null || status == null || !status.isRunning) return;
+      // Nothing is set optimistically: the engine reports `paused` on its own
+      // update stream, and a pause it refuses must leave the card running.
+      await FileDownloader().pause(task);
+    } finally {
+      _busy.remove(videoId);
+    }
+  }
+
+  @override
+  Future<void> resume(String videoId) async {
+    if (!_busy.add(videoId)) return;
+    try {
+      final task = _tasks[videoId];
+      final status = _statuses[videoId];
+      if (task == null || status == null || !status.isPaused) return;
+      // Pausing handed this task's slot back to the serial queue, so resuming
+      // has to queue for one again. Progress is carried over so the card does
+      // not blink back to zero while it waits.
+      _set(videoId, status.copyWith(state: VideoDownloadState.queued));
+      _queue.addForResume(task);
+    } finally {
+      _busy.remove(videoId);
+    }
+  }
+
+  @override
+  Future<void> deleteDownload(String videoId) async {
+    if (!_busy.add(videoId)) return;
+    try {
+      final status = _statuses[videoId];
+      if (status == null || !status.isDownloaded) return;
+      final path = status.localPath;
+      if (path != null) {
+        try {
+          final file = File(path);
+          if (file.existsSync()) await file.delete();
+        } catch (_) {
+          // An undeletable file is still worth forgetting: the record is what
+          // makes the card claim "Saved".
+        }
+      }
+      await _localDataSource.deleteDownload(videoId);
+      _statuses.remove(videoId);
+      _emit();
+    } catch (_) {
+      // The record survived, so the card stays "Saved" rather than lying
+      // about a file that is still there.
+    } finally {
+      _busy.remove(videoId);
+    }
+  }
+
+  @override
+  Future<void> reconcile() async {
+    List<String> removed;
+    try {
+      removed = await _localDataSource.reconcileDownloads();
+    } catch (_) {
+      return;
+    }
+    var changed = false;
+    for (final videoId in removed) {
+      if (_statuses[videoId]?.isDownloaded ?? false) {
+        _statuses.remove(videoId);
+        changed = true;
+      }
+    }
+    if (changed) _emit();
+  }
+
   /// `<videoId>.<ext>` with the extension taken from the server's mime type,
   /// defaulting to `mp4`.
   static String fileNameFor(Video video) => '${video.id}.${_extension(video)}';
@@ -240,6 +339,32 @@ class VideoDownloadServiceImpl implements VideoDownloadService {
     final ext = aliases[subtype] ?? subtype;
     // Anything exotic still has to look like a plausible file extension.
     return RegExp(r'^[a-z0-9]{1,5}$').hasMatch(ext) ? ext : 'mp4';
+  }
+
+  /// Asks the engine whether the server will let this task be resumed, and
+  /// grants the card its Pause control once the answer is yes.
+  ///
+  /// Never awaited: the answer only arrives after the task is running and has
+  /// heard back from the server, and on a server without range support it may
+  /// never arrive at all — which is exactly the "cancel only" case the card
+  /// already renders by default.
+  void _probeCanPause(String videoId, DownloadTask task) {
+    if (!task.allowPause) return;
+    if (!_probing.add(task.taskId)) return;
+    unawaited(
+      FileDownloader().taskCanResume(task).then((canPause) {
+        _probing.remove(task.taskId);
+        if (!canPause) return;
+        // Only the task that was asked may change its own card, and only
+        // while that card is still the running one.
+        if (_tasks[videoId]?.taskId != task.taskId) return;
+        final existing = _statuses[videoId];
+        if (existing == null || !existing.isRunning) return;
+        _set(videoId, existing.copyWith(canPause: true));
+      }).catchError((Object _) {
+        _probing.remove(task.taskId);
+      }),
+    );
   }
 
   /// Seeds the saved state from Hive, the only owner of finished downloads.
@@ -293,6 +418,11 @@ class VideoDownloadServiceImpl implements VideoDownloadService {
             ? VideoDownloadFailure.failed
             : null,
       );
+      // A task the engine rescheduled across the app kill gets no fresh
+      // `running` update, so ask about its pausability here too.
+      if (state == VideoDownloadState.running) {
+        _probeCanPause(videoId, task);
+      }
     }
     _emit();
   }
@@ -330,13 +460,18 @@ class VideoDownloadServiceImpl implements VideoDownloadService {
         } else if (state == VideoDownloadState.failed) {
           await _fail(videoId, await _failureReason());
         } else {
+          final existing = _statuses[videoId];
           _set(
             videoId,
             VideoDownloadStatus(
               state: state,
-              progress: _statuses[videoId]?.progress ?? 0,
+              progress: existing?.progress ?? 0,
+              canPause: existing?.canPause ?? false,
             ),
           );
+          if (state == VideoDownloadState.running && task is DownloadTask) {
+            _probeCanPause(videoId, task);
+          }
         }
 
       case TaskProgressUpdate():
@@ -361,6 +496,7 @@ class VideoDownloadServiceImpl implements VideoDownloadService {
           VideoDownloadStatus(
             state: state,
             progress: _cleanProgress(update.progress),
+            canPause: existing.canPause,
           ),
         );
     }
@@ -567,5 +703,44 @@ class VideoDownloadServiceImpl implements VideoDownloadService {
     await _enqueueErrors?.cancel();
     await _updates?.cancel();
     await _controller.close();
+  }
+}
+
+
+/// The serial download queue.
+///
+/// [MemoryTaskQueue] with `maxConcurrent = 1` is the queue itself — the only
+/// addition is resumption. Pausing a task hands its slot back to the queue
+/// (the engine notifies task queues on `paused` exactly as it does on a
+/// finished task), so a resume has to queue for a slot again; but going back
+/// through [MemoryTaskQueue.add] alone would start a *fresh* download and
+/// throw away the bytes already on disk. Overriding the queue's documented
+/// enqueue hook keeps the `maxConcurrent` accounting intact while resuming
+/// properly.
+class _VideoTaskQueue extends MemoryTaskQueue {
+  /// taskIds added by [addForResume] and not yet handed to the engine.
+  final _toResume = <String>{};
+
+  /// Queue [task] for resumption rather than for a fresh download.
+  void addForResume(DownloadTask task) {
+    _toResume.add(task.taskId);
+    add(task);
+  }
+
+  @override
+  void remove(Task task) {
+    _toResume.remove(task.taskId);
+    super.remove(task);
+  }
+
+  @override
+  Future<bool> enqueue(Task task) async {
+    if (!_toResume.remove(task.taskId)) return super.enqueue(task);
+    if (task is DownloadTask && await FileDownloader().resume(task)) {
+      return true;
+    }
+    // The engine no longer holds resume data for this task. Starting over
+    // beats stranding the student on a paused card that will never move.
+    return super.enqueue(task);
   }
 }

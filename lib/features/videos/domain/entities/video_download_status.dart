@@ -16,7 +16,7 @@ enum VideoDownloadState {
   /// Bytes are moving.
   running,
 
-  /// Paused by the student (resume affordance lands in a later ticket).
+  /// Paused by the student. Tapping the card resumes from where it stopped.
   paused,
 
   /// Bytes are all here; the checksum is being computed.
@@ -64,11 +64,18 @@ class VideoDownloadStatus extends Equatable {
   /// [VideoDownloadState.downloaded]; read back from the Hive record.
   final String? localPath;
 
+  /// The running task reported that the server supports resuming it, so the
+  /// card may offer Pause. False until the engine has heard back from the
+  /// server, and on servers without range support it stays false forever —
+  /// which is exactly the "cancel only" case.
+  final bool canPause;
+
   const VideoDownloadStatus({
     required this.state,
     this.progress = 0,
     this.failure,
     this.localPath,
+    this.canPause = false,
   });
 
   static const none = VideoDownloadStatus(state: VideoDownloadState.none);
@@ -87,20 +94,26 @@ class VideoDownloadStatus extends Equatable {
   /// the record that makes it playable is not written yet.
   bool get isSettling => isVerifying;
 
+  /// True when a tap on a downloading card must offer Pause alongside Cancel
+  /// rather than cancelling outright.
+  bool get isPausable => isRunning && canPause;
+
   VideoDownloadStatus copyWith({
     VideoDownloadState? state,
     double? progress,
     VideoDownloadFailure? failure,
     String? localPath,
+    bool? canPause,
   }) {
     return VideoDownloadStatus(
       state: state ?? this.state,
       progress: progress ?? this.progress,
       failure: failure ?? this.failure,
       localPath: localPath ?? this.localPath,
+      canPause: canPause ?? this.canPause,
     );
   }
 
   @override
-  List<Object?> get props => [state, progress, failure, localPath];
+  List<Object?> get props => [state, progress, failure, localPath, canPause];
 }

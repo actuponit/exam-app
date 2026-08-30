@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme.dart';
 import '../../domain/entities/video.dart';
 import '../../domain/entities/video_download_status.dart';
@@ -90,15 +92,56 @@ class _VideosList extends StatelessWidget {
 
   const _VideosList({required this.groups, required this.downloads});
 
-  /// One tap target per card. The cubit decides start / cancel / retry; a
-  /// non-null answer is a refusal to surface (no free space).
+  /// One tap target per card. Two states need UI the cubit cannot own — a
+  /// saved download opens the player, a pausable download opens a choice —
+  /// and everything else is handed to the cubit, whose non-null answer is a
+  /// refusal to surface (no free space).
   Future<void> _onTap(BuildContext context, Video video) async {
+    if (video.locked) return;
+    final cubit = context.read<VideosCubit>();
     final messenger = ScaffoldMessenger.of(context);
-    final message = await context.read<VideosCubit>().onVideoTapped(video);
+    final status = downloads[video.id] ?? VideoDownloadStatus.none;
+
+    if (status.isDownloaded) {
+      context.push('${RoutePaths.videoPlayer}/${video.id}');
+      return;
+    }
+
+    // Pause is offered only once the engine has confirmed the server will let
+    // this task resume; without that, a tap cancels as it always did.
+    if (status.isPausable) {
+      final action = await showModalBottomSheet<_DownloadAction>(
+        context: context,
+        builder: (_) => _DownloadActionSheet(title: video.title),
+      );
+      switch (action) {
+        case _DownloadAction.pause:
+          await cubit.pauseDownload(video.id);
+        case _DownloadAction.cancel:
+          await cubit.cancelDownload(video.id);
+        case null:
+          break;
+      }
+      return;
+    }
+
+    final message = await cubit.onVideoTapped(video);
     if (message == null) return;
     messenger
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// Long-press deletes, and only ever on a saved download — every other card
+  /// passes a null callback so the gesture is inert.
+  Future<void> _onLongPress(BuildContext context, Video video) async {
+    final cubit = context.read<VideosCubit>();
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      builder: (_) => _DeleteDownloadSheet(title: video.title),
+    );
+    if (confirmed != true) return;
+    await cubit.deleteDownload(video.id);
   }
 
   @override
@@ -128,11 +171,19 @@ class _VideosList extends StatelessWidget {
                 videoCount: group.videos.length,
               ),
               for (final video in group.videos)
-                VideoCard(
-                  video: video,
-                  status:
-                      downloads[video.id] ?? VideoDownloadStatus.none,
-                  onTap: () => _onTap(context, video),
+                Builder(
+                  builder: (context) {
+                    final status =
+                        downloads[video.id] ?? VideoDownloadStatus.none;
+                    return VideoCard(
+                      video: video,
+                      status: status,
+                      onTap: () => _onTap(context, video),
+                      onLongPress: status.isDownloaded
+                          ? () => _onLongPress(context, video)
+                          : null,
+                    );
+                  },
                 ),
               const SizedBox(height: 8),
             ],
@@ -305,6 +356,112 @@ class _EmptyState extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+/// What the student picked from the downloading card's sheet.
+enum _DownloadAction { pause, cancel }
+
+/// Offered on a tap while a download is running *and* the server has told the
+/// engine the task can be resumed.
+class _DownloadActionSheet extends StatelessWidget {
+  final String title;
+
+  const _DownloadActionSheet({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _SheetTitle(title: title),
+          ListTile(
+            leading: const Icon(Icons.pause_circle_outline),
+            title: const Text('Pause download'),
+            subtitle: const Text('Continue later from where it stopped'),
+            onTap: () => Navigator.of(context).pop(_DownloadAction.pause),
+          ),
+          ListTile(
+            leading: Icon(Icons.close, color: theme.colorScheme.error),
+            title: Text(
+              'Cancel download',
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+            subtitle: const Text('Discards what has downloaded so far'),
+            onTap: () => Navigator.of(context).pop(_DownloadAction.cancel),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+}
+
+/// Long-press confirmation for a saved download.
+class _DeleteDownloadSheet extends StatelessWidget {
+  final String title;
+
+  const _DeleteDownloadSheet({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _SheetTitle(title: title),
+          ListTile(
+            leading: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+            title: Text(
+              'Delete download',
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+            subtitle: const Text('Frees the space; you can download it again'),
+            onTap: () => Navigator.of(context).pop(true),
+          ),
+          ListTile(
+            leading: const Icon(Icons.close),
+            title: const Text('Keep it'),
+            onTap: () => Navigator.of(context).pop(false),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+}
+
+/// The video's title above a sheet's actions, so a mis-pressed card is
+/// obvious before anything is chosen.
+class _SheetTitle extends StatelessWidget {
+  final String title;
+
+  const _SheetTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

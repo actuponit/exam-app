@@ -8,13 +8,13 @@ Player is `chewie` over `video_player` with a file controller, `allowedScreenSle
 
 **Blocked by:** 04 — Completed downloads are verified and saved; failures show a reason and Retry
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Route `/videos/player/:videoId` registered in `RoutePaths` and the router
-- [ ] Tap on a Saved card opens the player; video plays in airplane mode
-- [ ] Play/pause, seek, ±10 s, speed menu with all six speeds, landscape toggle all work
-- [ ] Screen does not dim during playback
-- [ ] Screenshot attempt inside the player is blocked; screenshots work again after leaving
-- [ ] Position persists: kill the app mid-video, reopen → Resume / Start over prompt when past 30 s; Resume lands within 5 s of where playback stopped
-- [ ] Under 30 s: playback starts at the stored position with no prompt
-- [ ] `flutter analyze` clean
+- [x] Route `/videos/player/:videoId` registered in `RoutePaths` and the router
+- [x] Tap on a Saved card opens the player; video plays in airplane mode
+- [x] Play/pause, seek, ±10 s, speed menu with all six speeds, landscape toggle all work
+- [x] Screen does not dim during playback
+- [x] Screenshot attempt inside the player is blocked; screenshots work again after leaving
+- [x] Position persists: kill the app mid-video, reopen → Resume / Start over prompt when past 30 s; Resume lands within 5 s of where playback stopped
+- [x] Under 30 s: playback starts at the stored position with no prompt
+- [x] `flutter analyze` clean
