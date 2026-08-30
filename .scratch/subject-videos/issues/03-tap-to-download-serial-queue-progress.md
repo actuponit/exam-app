@@ -8,15 +8,17 @@ Engine is `background_downloader`: `FileDownloader().start()` plus a `MemoryTask
 
 **Blocked by:** 02 — Cached video list paints instantly, revalidates in the background
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `FileDownloader().start()` and `addTaskQueue(MemoryTaskQueue(maxConcurrent: 1))` run once at app start, not per screen
-- [ ] Tap on a not-downloaded card enqueues a task in group `exam_app_video_downloads`; card shows progress ring + %
-- [ ] Second and later taps show "Waiting" and start only after the previous download ends
-- [ ] OS notification with progress bar for the active download; tapping it opens the app
-- [ ] Tap on a downloading or waiting card cancels it, removes the partial file, and the next waiting video starts
-- [ ] Insufficient free space blocks the enqueue with a clear message; nothing is queued
-- [ ] Leaving the subject screen or backgrounding the app does not stop the download
-- [ ] Killing the app mid-download: on relaunch the task continues or resumes and the card reflects its state
-- [ ] Image downloads (`exam_app_image_downloads` group) behave exactly as before
-- [ ] `flutter analyze` clean
+- [x] `FileDownloader().start()` and `addTaskQueue(MemoryTaskQueue(maxConcurrent: 1))` run once at app start, not per screen
+- [x] Tap on a not-downloaded card enqueues a task in group `exam_app_video_downloads`; card shows progress ring + %
+- [x] Second and later taps show "Waiting" and start only after the previous download ends
+- [x] OS notification with progress bar for the active download; tapping it opens the app
+- [x] Tap on a downloading or waiting card cancels it, removes the partial file, and the next waiting video starts
+- [x] Insufficient free space blocks the enqueue with a clear message; nothing is queued
+- [x] Leaving the subject screen or backgrounding the app does not stop the download
+- [x] Killing the app mid-download: on relaunch the task continues or resumes and the card reflects its state
+- [x] Image downloads (`exam_app_image_downloads` group) behave exactly as before
+- [x] `flutter analyze` clean
+
+**Known limitation:** `MemoryTaskQueue` holds not-yet-enqueued tasks in Dart memory only, so videos still showing "Waiting" at an app kill are lost (the one in-flight download survives, via the engine's task database). This follows the spec's explicit instruction to use `MemoryTaskQueue` and not hand-roll a queue; a durable alternative would be `Config.holdingQueue`.

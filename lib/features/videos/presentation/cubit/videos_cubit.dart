@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../data/services/video_download_service.dart';
 import '../../domain/entities/video.dart';
+import '../../domain/entities/video_download_status.dart';
 import '../../domain/repositories/videos_repository.dart';
 
 part 'videos_state.dart';
@@ -14,11 +18,48 @@ part 'videos_state.dart';
 /// [VideosError].
 class VideosCubit extends Cubit<VideosState> {
   final VideosRepository repository;
+  final VideoDownloadService downloadService;
 
   String? _subjectId;
   int _fetchSerial = 0;
 
-  VideosCubit({required this.repository}) : super(const VideosInitial());
+  /// Mirror of the download service's snapshot, merged into every
+  /// [VideosLoaded] so the cards render queue and progress state.
+  Map<String, VideoDownloadStatus> _downloads;
+  late final StreamSubscription<Map<String, VideoDownloadStatus>> _downloadsSub;
+
+  VideosCubit({required this.repository, required this.downloadService})
+      : _downloads = downloadService.current,
+        super(const VideosInitial()) {
+    _downloadsSub = downloadService.statuses.listen((downloads) {
+      _downloads = downloads;
+      final current = state;
+      if (current is VideosLoaded) {
+        emit(current.copyWith(downloads: downloads));
+      }
+    });
+  }
+
+  /// One tap target per card: start, cancel or retry depending on the state.
+  /// Returns a message to show the student, or `null` when there is nothing
+  /// to say.
+  Future<String?> onVideoTapped(Video video) async {
+    if (video.locked) return null;
+    final status = _downloads[video.id] ?? VideoDownloadStatus.none;
+    if (status.isActive) {
+      await downloadService.cancel(video.id);
+      return null;
+    }
+    // Playback of a completed download lands in a later ticket.
+    if (status.isComplete) return null;
+    return downloadService.enqueue(video);
+  }
+
+  @override
+  Future<void> close() {
+    _downloadsSub.cancel();
+    return super.close();
+  }
 
   Future<void> loadVideos(String subjectId) async {
     final previous = state;
@@ -34,6 +75,7 @@ class VideosCubit extends Cubit<VideosState> {
       emit(VideosLoaded(
         subjectId: subjectId,
         groups: VideoChapterGroup.fromVideos(cached),
+        downloads: _downloads,
         isRefreshing: true,
       ));
     } else {
@@ -66,6 +108,7 @@ class VideosCubit extends Cubit<VideosState> {
       emit(VideosLoaded(
         subjectId: subjectId,
         groups: VideoChapterGroup.fromVideos(videos),
+        downloads: _downloads,
       ));
     } catch (e) {
       if (!_isCurrent(serial, subjectId)) return;

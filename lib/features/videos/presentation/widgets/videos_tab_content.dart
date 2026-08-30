@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme.dart';
 import '../../domain/entities/video.dart';
+import '../../domain/entities/video_download_status.dart';
 import '../cubit/videos_cubit.dart';
 import 'video_card.dart';
 import 'video_chapter_header.dart';
@@ -37,7 +38,10 @@ class VideosTabContent extends StatelessWidget {
                   onRefresh: cubit.refresh,
                   child: state.isEmpty
                       ? _EmptyState(subjectName: subjectName)
-                      : _VideosList(groups: state.groups),
+                      : _VideosList(
+                          groups: state.groups,
+                          downloads: state.downloads,
+                        ),
                 ),
               ),
             ],
@@ -82,8 +86,20 @@ class _OfflineNote extends StatelessWidget {
 
 class _VideosList extends StatelessWidget {
   final List<VideoChapterGroup> groups;
+  final Map<String, VideoDownloadStatus> downloads;
 
-  const _VideosList({required this.groups});
+  const _VideosList({required this.groups, required this.downloads});
+
+  /// One tap target per card. The cubit decides start / cancel / retry; a
+  /// non-null answer is a refusal to surface (no free space).
+  Future<void> _onTap(BuildContext context, Video video) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final message = await context.read<VideosCubit>().onVideoTapped(video);
+    if (message == null) return;
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,8 +130,9 @@ class _VideosList extends StatelessWidget {
               for (final video in group.videos)
                 VideoCard(
                   video: video,
-                  // Download / play wiring lands in later tickets.
-                  onTap: () {},
+                  status:
+                      downloads[video.id] ?? VideoDownloadStatus.none,
+                  onTap: () => _onTap(context, video),
                 ),
               const SizedBox(height: 8),
             ],

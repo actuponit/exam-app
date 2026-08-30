@@ -8,6 +8,7 @@ import 'package:injectable/injectable.dart';
 import '../../../features/videos/data/datasources/videos_local_datasource.dart';
 import '../../../features/videos/data/datasources/videos_remote_datasource.dart';
 import '../../../features/videos/data/repositories/videos_repository_impl.dart';
+import '../../../features/videos/data/services/video_download_service.dart';
 import '../../../features/videos/domain/repositories/videos_repository.dart';
 import '../../../features/videos/presentation/cubit/videos_cubit.dart';
 
@@ -41,7 +42,15 @@ abstract class VideosModule {
         localAuthDataSource: localAuthDataSource,
       );
 
+  /// Singleton: it owns the one serial download queue and the one listener on
+  /// the engine's update stream, both of which must outlive any screen.
+  @singleton
+  VideoDownloadService videoDownloadService() => VideoDownloadServiceImpl();
+
   @factoryMethod
-  VideosCubit videosCubit(VideosRepository repository) =>
-      VideosCubit(repository: repository);
+  VideosCubit videosCubit(
+    VideosRepository repository,
+    VideoDownloadService downloadService,
+  ) =>
+      VideosCubit(repository: repository, downloadService: downloadService);
 }
