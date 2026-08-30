@@ -82,16 +82,21 @@ class VideoChapterGroup extends Equatable {
   String get displayName => chapterName ?? generalLabel;
 
   /// Groups [videos] by chapter: null-chapter videos first as "General",
-  /// remaining chapters in first-appearance order. Inactive videos dropped.
+  /// remaining chapters in first-appearance order. Inactive videos dropped,
+  /// unless their id is in [keepInactiveIds] — a video the student has
+  /// already downloaded stays on the list after the teacher deactivates it.
   ///
   /// Chapter identity is [Video.chapterId]; two chapters sharing a name stay
   /// separate groups. A video with a name but no id is keyed by its name.
-  static List<VideoChapterGroup> fromVideos(List<Video> videos) {
+  static List<VideoChapterGroup> fromVideos(
+    List<Video> videos, {
+    Set<String> keepInactiveIds = const {},
+  }) {
     final general = <Video>[];
     final byChapter = <String, VideoChapterGroup>{};
 
     for (final video in videos) {
-      if (!video.isActive) continue;
+      if (!video.isActive && !keepInactiveIds.contains(video.id)) continue;
       final id = video.chapterId?.trim();
       final name = video.chapterName?.trim();
       final hasId = id != null && id.isNotEmpty;

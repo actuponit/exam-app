@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import 'video.dart';
+
 /// State of one video download as the card sees it.
 ///
 /// Everything up to and including [verifying] is owned by the download
@@ -70,12 +72,18 @@ class VideoDownloadStatus extends Equatable {
   /// which is exactly the "cancel only" case.
   final bool canPause;
 
+  /// Metadata snapshot copied into the Hive record at download time. Set only
+  /// while [state] is [VideoDownloadState.downloaded], and the only way to
+  /// render a card for a video the server no longer returns.
+  final Video? video;
+
   const VideoDownloadStatus({
     required this.state,
     this.progress = 0,
     this.failure,
     this.localPath,
     this.canPause = false,
+    this.video,
   });
 
   static const none = VideoDownloadStatus(state: VideoDownloadState.none);
@@ -104,6 +112,7 @@ class VideoDownloadStatus extends Equatable {
     VideoDownloadFailure? failure,
     String? localPath,
     bool? canPause,
+    Video? video,
   }) {
     return VideoDownloadStatus(
       state: state ?? this.state,
@@ -111,9 +120,11 @@ class VideoDownloadStatus extends Equatable {
       failure: failure ?? this.failure,
       localPath: localPath ?? this.localPath,
       canPause: canPause ?? this.canPause,
+      video: video ?? this.video,
     );
   }
 
   @override
-  List<Object?> get props => [state, progress, failure, localPath, canPause];
+  List<Object?> get props =>
+      [state, progress, failure, localPath, canPause, video];
 }

@@ -6,12 +6,12 @@
 
 **Blocked by:** 04 — Completed downloads are verified and saved; failures show a reason and Retry
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Download record includes the card metadata copy (new nullable fields only, appended — existing records without them must still open)
-- [ ] Video removed from server response after download → card still rendered in its chapter group with "No longer available" tag, tap opens player
-- [ ] Video returned with `isActive == false` after download → same card and tag; tap opens player
-- [ ] Inactive video with no download record → hidden
-- [ ] Long-press delete on a "No longer available" card removes it entirely
-- [ ] Deleting and refreshing does not resurrect the card
-- [ ] `flutter analyze` clean; build_runner regenerated
+- [x] Download record includes the card metadata copy (new nullable fields only, appended — existing records without them must still open)
+- [x] Video removed from server response after download → card still rendered in its chapter group with "No longer available" tag, tap opens player
+- [x] Video returned with `isActive == false` after download → same card and tag; tap opens player
+- [x] Inactive video with no download record → hidden
+- [x] Long-press delete on a "No longer available" card removes it entirely
+- [x] Deleting and refreshing does not resurrect the card
+- [x] `flutter analyze` clean; build_runner regenerated

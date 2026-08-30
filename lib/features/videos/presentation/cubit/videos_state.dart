@@ -24,6 +24,11 @@ class VideosLoaded extends VideosState {
   /// Videos with nothing happening are absent.
   final Map<String, VideoDownloadStatus> downloads;
 
+  /// Videos that are on this list only because the student downloaded them:
+  /// the server dropped them from its response, or returned them with
+  /// `isActive == false`. Their cards carry a "No longer available" tag.
+  final Set<String> unavailableVideoIds;
+
   /// A network fetch is in flight behind this list (initial revalidation or
   /// an explicit refresh). Drives the app-bar icon spin.
   final bool isRefreshing;
@@ -35,6 +40,7 @@ class VideosLoaded extends VideosState {
     required this.subjectId,
     required this.groups,
     this.downloads = const {},
+    this.unavailableVideoIds = const {},
     this.isRefreshing = false,
     this.isOffline = false,
   });
@@ -44,9 +50,12 @@ class VideosLoaded extends VideosState {
   VideoDownloadStatus statusOf(String videoId) =>
       downloads[videoId] ?? VideoDownloadStatus.none;
 
+  bool isUnavailable(String videoId) => unavailableVideoIds.contains(videoId);
+
   VideosLoaded copyWith({
     List<VideoChapterGroup>? groups,
     Map<String, VideoDownloadStatus>? downloads,
+    Set<String>? unavailableVideoIds,
     bool? isRefreshing,
     bool? isOffline,
   }) {
@@ -54,14 +63,21 @@ class VideosLoaded extends VideosState {
       subjectId: subjectId,
       groups: groups ?? this.groups,
       downloads: downloads ?? this.downloads,
+      unavailableVideoIds: unavailableVideoIds ?? this.unavailableVideoIds,
       isRefreshing: isRefreshing ?? this.isRefreshing,
       isOffline: isOffline ?? this.isOffline,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [subjectId, groups, downloads, isRefreshing, isOffline];
+  List<Object?> get props => [
+        subjectId,
+        groups,
+        downloads,
+        unavailableVideoIds,
+        isRefreshing,
+        isOffline,
+      ];
 }
 
 class VideosError extends VideosState {

@@ -23,6 +23,10 @@ class VideosCubit extends Cubit<VideosState> {
   String? _subjectId;
   int _fetchSerial = 0;
 
+  /// Latest list on screen, cached or fetched, before any download merge.
+  /// Kept so a download change can rebuild the groups without a refetch.
+  List<Video> _videos = const [];
+
   /// Mirror of the download service's snapshot, merged into every
   /// [VideosLoaded] so the cards render queue and progress state.
   Map<String, VideoDownloadStatus> _downloads;
@@ -35,7 +39,13 @@ class VideosCubit extends Cubit<VideosState> {
       _downloads = downloads;
       final current = state;
       if (current is VideosLoaded) {
-        emit(current.copyWith(downloads: downloads));
+        // Groups are rebuilt, not just re-decorated: a finished download can
+        // add a card the server never returned, and a delete removes it.
+        emit(_loaded(
+          current.subjectId,
+          isRefreshing: current.isRefreshing,
+          isOffline: current.isOffline,
+        ));
       }
     });
   }
@@ -93,6 +103,7 @@ class VideosCubit extends Cubit<VideosState> {
     _subjectId = subjectId;
     // Never leave another subject's list on screen while its cache is read.
     if (previous is VideosLoaded && previous.subjectId != subjectId) {
+      _videos = const [];
       emit(const VideosLoading());
     }
     // A record whose file the OS reclaimed must not survive into the list as
@@ -104,12 +115,8 @@ class VideosCubit extends Cubit<VideosState> {
     if (isClosed || _subjectId != subjectId) return;
 
     if (cached != null) {
-      emit(VideosLoaded(
-        subjectId: subjectId,
-        groups: VideoChapterGroup.fromVideos(cached),
-        downloads: _downloads,
-        isRefreshing: true,
-      ));
+      _videos = cached;
+      emit(_loaded(subjectId, isRefreshing: true));
     } else {
       emit(const VideosLoading());
     }
@@ -141,11 +148,8 @@ class VideosCubit extends Cubit<VideosState> {
     try {
       final videos = await repository.getVideosBySubject(subjectId);
       if (!_isCurrent(serial, subjectId)) return;
-      emit(VideosLoaded(
-        subjectId: subjectId,
-        groups: VideoChapterGroup.fromVideos(videos),
-        downloads: _downloads,
-      ));
+      _videos = videos;
+      emit(_loaded(subjectId));
     } catch (e) {
       if (!_isCurrent(serial, subjectId)) return;
       final current = state;
@@ -156,6 +160,56 @@ class VideosCubit extends Cubit<VideosState> {
       }
     }
   }
+
+  /// Builds the state for [subjectId] out of [_videos] and the current
+  /// download map.
+  ///
+  /// A downloaded video outlives the server: one that vanished from the last
+  /// response is re-added from its record's metadata snapshot, one returned
+  /// with `isActive == false` is kept rather than dropped, and both are
+  /// flagged so the card can say "No longer available". An inactive video
+  /// with no download record stays hidden, as before.
+  VideosLoaded _loaded(
+    String subjectId, {
+    bool isRefreshing = false,
+    bool isOffline = false,
+  }) {
+    final unavailable = <String>{};
+    final serverIds = <String>{};
+
+    for (final video in _videos) {
+      serverIds.add(video.id);
+      if (!video.isActive && _isDownloaded(video.id)) unavailable.add(video.id);
+    }
+
+    final orphans = <Video>[];
+    for (final entry in _downloads.entries) {
+      if (serverIds.contains(entry.key)) continue;
+      if (!entry.value.isDownloaded) continue;
+      final snapshot = entry.value.video;
+      // No snapshot (a record written before this field existed) means there
+      // is nothing to render, and a snapshot from another subject belongs on
+      // that subject's tab.
+      if (snapshot == null || snapshot.subjectId != subjectId) continue;
+      unavailable.add(entry.key);
+      orphans.add(snapshot);
+    }
+
+    return VideosLoaded(
+      subjectId: subjectId,
+      groups: VideoChapterGroup.fromVideos(
+        orphans.isEmpty ? _videos : [..._videos, ...orphans],
+        keepInactiveIds: unavailable,
+      ),
+      downloads: _downloads,
+      unavailableVideoIds: unavailable,
+      isRefreshing: isRefreshing,
+      isOffline: isOffline,
+    );
+  }
+
+  bool _isDownloaded(String videoId) =>
+      _downloads[videoId]?.isDownloaded ?? false;
 
   /// Guards against a slow response landing after a newer fetch or after the
   /// cubit moved to another subject.

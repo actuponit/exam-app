@@ -376,6 +376,7 @@ class VideoDownloadServiceImpl implements VideoDownloadService {
           state: VideoDownloadState.downloaded,
           progress: 1,
           localPath: record.localPath,
+          video: record.video?.toEntity(),
         );
       }
       if (records.isNotEmpty) _emit();
@@ -586,6 +587,9 @@ class VideoDownloadServiceImpl implements VideoDownloadService {
         state: VideoDownloadState.downloaded,
         progress: 1,
         localPath: path,
+        // Carried on the status so a card survives the video being pulled
+        // from the server without waiting for a restart to read Hive back.
+        video: pending?.toEntity(),
       ),
     );
   }

@@ -17,12 +17,18 @@ class VideoCard extends StatelessWidget {
   /// passes `null` so a long-press does nothing at all.
   final VoidCallback? onLongPress;
 
+  /// The server no longer offers this video (dropped from the response, or
+  /// returned inactive) and it is on the list only because it is downloaded.
+  /// Adds a subtle tag beside the play control; nothing else changes.
+  final bool isUnavailable;
+
   const VideoCard({
     super.key,
     required this.video,
     this.status = VideoDownloadStatus.none,
     this.onTap,
     this.onLongPress,
+    this.isUnavailable = false,
   });
 
   @override
@@ -91,7 +97,10 @@ class VideoCard extends StatelessWidget {
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   )
                 else
-                  _DownloadControl(status: status),
+                  _DownloadControl(
+                    status: status,
+                    isUnavailable: isUnavailable,
+                  ),
               ],
             ),
           ),
@@ -105,8 +114,9 @@ class VideoCard extends StatelessWidget {
 /// signals what a tap will do.
 class _DownloadControl extends StatelessWidget {
   final VideoDownloadStatus status;
+  final bool isUnavailable;
 
-  const _DownloadControl({required this.status});
+  const _DownloadControl({required this.status, this.isUnavailable = false});
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +191,24 @@ class _DownloadControl extends StatelessWidget {
           children: [
             Icon(Icons.play_circle_fill, size: 22, color: theme.primaryColor),
             const SizedBox(width: 4),
-            _label(theme, 'Saved', muted),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _label(theme, 'Saved', muted),
+                if (isUnavailable) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    'No longer available',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      fontSize: 10,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ],
         );
     }

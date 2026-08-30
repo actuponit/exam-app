@@ -43,6 +43,7 @@ class VideosTabContent extends StatelessWidget {
                       : _VideosList(
                           groups: state.groups,
                           downloads: state.downloads,
+                          unavailableVideoIds: state.unavailableVideoIds,
                         ),
                 ),
               ),
@@ -90,7 +91,14 @@ class _VideosList extends StatelessWidget {
   final List<VideoChapterGroup> groups;
   final Map<String, VideoDownloadStatus> downloads;
 
-  const _VideosList({required this.groups, required this.downloads});
+  /// Ids the server no longer offers; their cards carry the tag.
+  final Set<String> unavailableVideoIds;
+
+  const _VideosList({
+    required this.groups,
+    required this.downloads,
+    required this.unavailableVideoIds,
+  });
 
   /// One tap target per card. Two states need UI the cubit cannot own — a
   /// saved download opens the player, a pausable download opens a choice —
@@ -178,6 +186,7 @@ class _VideosList extends StatelessWidget {
                     return VideoCard(
                       video: video,
                       status: status,
+                      isUnavailable: unavailableVideoIds.contains(video.id),
                       onTap: () => _onTap(context, video),
                       onLongPress: status.isDownloaded
                           ? () => _onLongPress(context, video)
