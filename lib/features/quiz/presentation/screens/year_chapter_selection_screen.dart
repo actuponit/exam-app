@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/theme.dart';
 import '../../../notes/presentation/cubit/notes_cubit.dart';
+import '../../../videos/presentation/cubit/videos_cubit.dart';
+import '../../../videos/presentation/widgets/videos_tab_content.dart';
 import '../widgets/notes_tab_content.dart';
 import 'year_selection_screen.dart';
 
@@ -30,18 +32,22 @@ class _YearChapterSelectionScreenState extends State<YearChapterSelectionScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late NotesCubit _notesCubit;
+  late VideosCubit _videosCubit;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _notesCubit = getIt<NotesCubit>();
     _notesCubit.loadNotes(widget.subjectName);
+    _videosCubit = getIt<VideosCubit>();
+    _videosCubit.loadVideos(widget.subjectId);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _videosCubit.close();
     super.dispose();
   }
 
@@ -68,6 +74,10 @@ class _YearChapterSelectionScreenState extends State<YearChapterSelectionScreen>
               icon: Icon(Icons.note_outlined),
               text: 'Note',
             ),
+            Tab(
+              icon: Icon(Icons.play_circle_outline),
+              text: 'Videos',
+            ),
           ],
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white.withOpacity(0.7),
@@ -89,6 +99,15 @@ class _YearChapterSelectionScreenState extends State<YearChapterSelectionScreen>
           BlocProvider.value(
             value: _notesCubit,
             child: NotesTabContent(
+              subjectId: widget.subjectId,
+              subjectName: widget.subjectName,
+            ),
+          ),
+
+          // Videos Tab - subject's lesson videos
+          BlocProvider.value(
+            value: _videosCubit,
+            child: VideosTabContent(
               subjectId: widget.subjectId,
               subjectName: widget.subjectName,
             ),
