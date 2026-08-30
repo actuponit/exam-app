@@ -5,10 +5,16 @@ import '../models/video_model.dart';
 
 /// Wraps `videos_box`.
 ///
-/// The box is untyped because it holds two kinds of record under prefixed
-/// keys: `subject:<subjectId>` → `List<VideoModel>` (the cached server list)
-/// and `download:<videoId>` → [VideoDownloadModel]. Download records are only
-/// read here; ticket 03 adds the writers.
+/// The box is untyped because it holds three kinds of record under prefixed
+/// keys: `subject:<subjectId>` → `List<VideoModel>` (the cached server list),
+/// `download:<videoId>` → [VideoDownloadModel] (a finished, recorded
+/// download) and `pending:<videoId>` → [VideoModel] (the metadata snapshot of
+/// a download that is still in flight).
+///
+/// The pending snapshot exists because a download can finish after an app
+/// kill, in a process that never saw the video list: without it the completion
+/// handler would know neither the checksum to verify against nor the metadata
+/// to keep in the record.
 abstract class VideosLocalDataSource {
   /// Last list fetched for [subjectId], or `null` when never cached.
   Future<List<VideoModel>?> getCachedVideos(String subjectId);
@@ -17,6 +23,20 @@ abstract class VideosLocalDataSource {
   Future<void> cacheVideos(String subjectId, List<VideoModel> videos);
 
   Future<VideoDownloadModel?> getDownload(String videoId);
+
+  /// Every finished download on this device, keyed by video id.
+  Future<Map<String, VideoDownloadModel>> getAllDownloads();
+
+  Future<void> putDownload(VideoDownloadModel download);
+
+  Future<void> deleteDownload(String videoId);
+
+  /// Metadata snapshot of a video whose download is in flight.
+  Future<VideoModel?> getPendingVideo(String videoId);
+
+  Future<void> putPendingVideo(VideoModel video);
+
+  Future<void> deletePendingVideo(String videoId);
 }
 
 class VideosLocalDataSourceImpl implements VideosLocalDataSource {
@@ -26,6 +46,7 @@ class VideosLocalDataSourceImpl implements VideosLocalDataSource {
 
   static String subjectKey(String subjectId) => 'subject:$subjectId';
   static String downloadKey(String videoId) => 'download:$videoId';
+  static String pendingKey(String videoId) => 'pending:$videoId';
 
   @override
   Future<List<VideoModel>?> getCachedVideos(String subjectId) async {
@@ -49,5 +70,42 @@ class VideosLocalDataSourceImpl implements VideosLocalDataSource {
   Future<VideoDownloadModel?> getDownload(String videoId) async {
     final raw = _box.get(downloadKey(videoId));
     return raw is VideoDownloadModel ? raw : null;
+  }
+
+  @override
+  Future<Map<String, VideoDownloadModel>> getAllDownloads() async {
+    final downloads = <String, VideoDownloadModel>{};
+    for (final key in _box.keys) {
+      if (key is! String || !key.startsWith('download:')) continue;
+      final raw = _box.get(key);
+      if (raw is VideoDownloadModel) downloads[raw.videoId] = raw;
+    }
+    return downloads;
+  }
+
+  @override
+  Future<void> putDownload(VideoDownloadModel download) {
+    return _box.put(downloadKey(download.videoId), download);
+  }
+
+  @override
+  Future<void> deleteDownload(String videoId) {
+    return _box.delete(downloadKey(videoId));
+  }
+
+  @override
+  Future<VideoModel?> getPendingVideo(String videoId) async {
+    final raw = _box.get(pendingKey(videoId));
+    return raw is VideoModel ? raw : null;
+  }
+
+  @override
+  Future<void> putPendingVideo(VideoModel video) {
+    return _box.put(pendingKey(video.id), video);
+  }
+
+  @override
+  Future<void> deletePendingVideo(String videoId) {
+    return _box.delete(pendingKey(videoId));
   }
 }

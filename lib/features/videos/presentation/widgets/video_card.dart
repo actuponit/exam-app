@@ -120,23 +120,41 @@ class _DownloadControl extends StatelessWidget {
       case VideoDownloadState.paused:
         return _label(theme, 'Paused', muted);
 
+      case VideoDownloadState.verifying:
+        return _label(theme, 'Verifying', muted);
+
       case VideoDownloadState.failed:
-        return Row(
+        // Reason on top, Retry under it: the card names what went wrong and
+        // what a tap will do about it.
+        final failure = status.failure ?? VideoDownloadFailure.failed;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 18, color: theme.colorScheme.error),
-            const SizedBox(width: 4),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 18,
+                  color: theme.colorScheme.error,
+                ),
+                const SizedBox(width: 4),
+                _label(theme, failure.label, theme.colorScheme.error),
+              ],
+            ),
+            const SizedBox(height: 2),
             _label(theme, 'Retry', theme.colorScheme.error),
           ],
         );
 
-      case VideoDownloadState.complete:
+      case VideoDownloadState.downloaded:
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.check_circle, size: 18, color: theme.primaryColor),
+            Icon(Icons.play_circle_fill, size: 22, color: theme.primaryColor),
             const SizedBox(width: 4),
-            _label(theme, 'Downloaded', muted),
+            _label(theme, 'Saved', muted),
           ],
         );
     }

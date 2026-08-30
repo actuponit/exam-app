@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:exam_app/core/constants/hive_constants.dart';
+import 'package:exam_app/core/network/network_info.dart';
 import 'package:exam_app/core/services/hive_service.dart';
 import 'package:exam_app/features/auth/data/datasources/auth_data_source.dart';
 import 'package:hive/hive.dart';
@@ -45,7 +46,14 @@ abstract class VideosModule {
   /// Singleton: it owns the one serial download queue and the one listener on
   /// the engine's update stream, both of which must outlive any screen.
   @singleton
-  VideoDownloadService videoDownloadService() => VideoDownloadServiceImpl();
+  VideoDownloadService videoDownloadService(
+    VideosLocalDataSource localDataSource,
+    NetworkInfo networkInfo,
+  ) =>
+      VideoDownloadServiceImpl(
+        localDataSource: localDataSource,
+        networkInfo: networkInfo,
+      );
 
   @factoryMethod
   VideosCubit videosCubit(

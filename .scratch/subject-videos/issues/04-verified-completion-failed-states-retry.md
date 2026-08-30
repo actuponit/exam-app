@@ -8,13 +8,13 @@ Tapping a "Saved" card does nothing yet (player is ticket 06).
 
 **Blocked by:** 03 — Tap a card to download it, one at a time, with progress and notification
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Download with matching checksum → Hive download record written, card shows play icon + "Saved"
-- [ ] Download with null checksum → record written without verification, card shows "Saved"
-- [ ] Checksum mismatch → file deleted, card shows failed state with "Corrupted" and Retry
-- [ ] Failure while offline → card shows "No connection" and Retry; failure while online → "Download failed" and Retry
-- [ ] Retry re-enqueues and the card returns to Waiting/downloading
-- [ ] MD5 computation does not jank the UI on a large file
-- [ ] Download record model uses typeId 12; no existing adapter touched
-- [ ] `flutter analyze` clean; build_runner regenerated
+- [x] Download with matching checksum → Hive download record written, card shows play icon + "Saved"
+- [x] Download with null checksum → record written without verification, card shows "Saved"
+- [x] Checksum mismatch → file deleted, card shows failed state with "Corrupted" and Retry
+- [x] Failure while offline → card shows "No connection" and Retry; failure while online → "Download failed" and Retry
+- [x] Retry re-enqueues and the card returns to Waiting/downloading
+- [x] MD5 computation does not jank the UI on a large file
+- [x] Download record model uses typeId 12; no existing adapter touched
+- [x] `flutter analyze` clean; build_runner regenerated

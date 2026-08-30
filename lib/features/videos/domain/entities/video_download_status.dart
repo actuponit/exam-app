@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-/// In-flight (and just-finished) state of one video download.
+/// State of one video download as the card sees it.
 ///
-/// Owned by the download engine's task database — never persisted by us.
-/// Completed downloads and resume positions live in the Hive download record
-/// instead, so the two never drift.
+/// Everything up to and including [verifying] is owned by the download
+/// engine's task database — never persisted by us. [downloaded] is owned by
+/// the Hive download record: the moment that record is written the in-flight
+/// entry is dropped, so the two never describe the same video at once.
 enum VideoDownloadState {
   /// Nothing is happening for this video on this device.
   none,
@@ -18,11 +19,35 @@ enum VideoDownloadState {
   /// Paused by the student (resume affordance lands in a later ticket).
   paused,
 
-  /// The task ended in failure. Tapping the card retries.
+  /// Bytes are all here; the checksum is being computed.
+  verifying,
+
+  /// The task ended in failure, or the file failed verification. Tapping the
+  /// card retries. See [VideoDownloadStatus.failure] for the reason.
   failed,
 
-  /// The file finished downloading. Checksum verification is a later ticket.
-  complete,
+  /// The file is on the device and has a Hive download record.
+  downloaded,
+}
+
+/// Why a download is in [VideoDownloadState.failed], so the card can name it.
+enum VideoDownloadFailure {
+  /// The file arrived but its MD5 did not match the server's checksum.
+  corrupted,
+
+  /// The task failed and the device has no connection.
+  noConnection,
+
+  /// The task failed for any other reason.
+  failed,
+}
+
+extension VideoDownloadFailureLabel on VideoDownloadFailure {
+  String get label => switch (this) {
+        VideoDownloadFailure.corrupted => 'Corrupted',
+        VideoDownloadFailure.noConnection => 'No connection',
+        VideoDownloadFailure.failed => 'Download failed',
+      };
 }
 
 class VideoDownloadStatus extends Equatable {
@@ -32,26 +57,50 @@ class VideoDownloadStatus extends Equatable {
   /// [VideoDownloadState.paused].
   final double progress;
 
-  const VideoDownloadStatus({required this.state, this.progress = 0});
+  /// Set only while [state] is [VideoDownloadState.failed].
+  final VideoDownloadFailure? failure;
+
+  /// Absolute path of the finished file. Set only while [state] is
+  /// [VideoDownloadState.downloaded]; read back from the Hive record.
+  final String? localPath;
+
+  const VideoDownloadStatus({
+    required this.state,
+    this.progress = 0,
+    this.failure,
+    this.localPath,
+  });
 
   static const none = VideoDownloadStatus(state: VideoDownloadState.none);
 
   bool get isQueued => state == VideoDownloadState.queued;
   bool get isRunning => state == VideoDownloadState.running;
   bool get isPaused => state == VideoDownloadState.paused;
+  bool get isVerifying => state == VideoDownloadState.verifying;
   bool get isFailed => state == VideoDownloadState.failed;
-  bool get isComplete => state == VideoDownloadState.complete;
+  bool get isDownloaded => state == VideoDownloadState.downloaded;
 
   /// True while the task occupies the queue and a tap should cancel it.
   bool get isActive => isQueued || isRunning || isPaused;
 
-  VideoDownloadStatus copyWith({VideoDownloadState? state, double? progress}) {
+  /// True while the card must not react to a tap at all: the file is here but
+  /// the record that makes it playable is not written yet.
+  bool get isSettling => isVerifying;
+
+  VideoDownloadStatus copyWith({
+    VideoDownloadState? state,
+    double? progress,
+    VideoDownloadFailure? failure,
+    String? localPath,
+  }) {
     return VideoDownloadStatus(
       state: state ?? this.state,
       progress: progress ?? this.progress,
+      failure: failure ?? this.failure,
+      localPath: localPath ?? this.localPath,
     );
   }
 
   @override
-  List<Object?> get props => [state, progress];
+  List<Object?> get props => [state, progress, failure, localPath];
 }

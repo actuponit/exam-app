@@ -129,13 +129,13 @@ Future<_i174.GetIt> init(
   final injectableModule = _$InjectableModule();
   final hiveModule = _$HiveModule();
   final quizModule = _$QuizModule();
-  final videosModule = _$VideosModule();
   final paymentModule = _$PaymentModule();
   final authModule = _$AuthModule();
   final examModule = _$ExamModule();
   final subjectModule = _$SubjectModule();
   final notesModule = _$NotesModule();
   final networkModule = _$NetworkModule();
+  final videosModule = _$VideosModule();
   final referralModule = _$ReferralModule();
   await gh.factoryAsync<_i460.SharedPreferences>(
     () => injectableModule.prefs,
@@ -147,8 +147,6 @@ Future<_i174.GetIt> init(
   );
   gh.singleton<_i8.ImageDownloadService>(
       () => quizModule.imageDownloadService());
-  gh.singleton<_i828.VideoDownloadService>(
-      () => videosModule.videoDownloadService());
   gh.lazySingleton<_i973.InternetConnectionChecker>(
       () => paymentModule.internetConnectionChecker());
   gh.lazySingleton<_i970.LocalAuthDataSource>(
@@ -280,10 +278,11 @@ Future<_i174.GetIt> init(
       () => _i125.SplashCubit(gh<_i421.UserPreferencesRepository>()));
   gh.factory<_i1020.ExamBloc>(
       () => examModule.examBloc(gh<_i254.ExamRepository>()));
-  gh.factory<_i823.VideosCubit>(() => videosModule.videosCubit(
-        gh<_i836.VideosRepository>(),
-        gh<_i828.VideoDownloadService>(),
-      ));
+  gh.singleton<_i828.VideoDownloadService>(
+      () => videosModule.videoDownloadService(
+            gh<_i270.VideosLocalDataSource>(),
+            gh<_i932.NetworkInfo>(),
+          ));
   gh.factory<_i267.NotesCubit>(
       () => notesModule.notesCubit(gh<_i399.NotesRepository>()));
   gh.lazySingleton<_i661.AuthBloc>(
@@ -292,6 +291,10 @@ Future<_i174.GetIt> init(
       () => paymentModule.subscriptionBloc(gh<_i611.SubscriptionRepository>()));
   gh.factory<_i638.RecentExamCubit>(
       () => examModule.recentExamCubit(gh<_i254.ExamRepository>()));
+  gh.factory<_i823.VideosCubit>(() => videosModule.videosCubit(
+        gh<_i836.VideosRepository>(),
+        gh<_i828.VideoDownloadService>(),
+      ));
   return getIt;
 }
 
@@ -300,8 +303,6 @@ class _$InjectableModule extends _i109.InjectableModule {}
 class _$HiveModule extends _i31.HiveModule {}
 
 class _$QuizModule extends _i697.QuizModule {}
-
-class _$VideosModule extends _i50.VideosModule {}
 
 class _$PaymentModule extends _i81.PaymentModule {}
 
@@ -314,5 +315,7 @@ class _$SubjectModule extends _i143.SubjectModule {}
 class _$NotesModule extends _i161.NotesModule {}
 
 class _$NetworkModule extends _i851.NetworkModule {}
+
+class _$VideosModule extends _i50.VideosModule {}
 
 class _$ReferralModule extends _i62.ReferralModule {}

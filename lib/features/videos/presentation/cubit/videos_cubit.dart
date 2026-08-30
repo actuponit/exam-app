@@ -50,8 +50,13 @@ class VideosCubit extends Cubit<VideosState> {
       await downloadService.cancel(video.id);
       return null;
     }
-    // Playback of a completed download lands in a later ticket.
-    if (status.isComplete) return null;
+    // Mid-verification the file exists but is not recorded yet: a tap must
+    // neither cancel it nor start a second download.
+    if (status.isSettling) return null;
+    // Playback of a saved download lands in a later ticket.
+    if (status.isDownloaded) return null;
+    // Everything left — never downloaded, or failed — enqueues, so the failed
+    // card's Retry is the same call as a first download.
     return downloadService.enqueue(video);
   }
 
