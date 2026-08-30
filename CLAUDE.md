@@ -10,13 +10,24 @@ Flutter app (Ethiopian exam prep). Features live under `lib/features/<name>/{dat
    1. Read the ticket and the spec sections it references.
    2. Build the full slice (schema, data, domain, presentation) until every acceptance checkbox can be ticked.
    3. Run `flutter analyze`; if any model or DI annotation changed, run `dart run build_runner build --delete-conflicting-outputs` first.
-   4. Run `coderabbit review --plain --type uncommitted` (see below).
-   5. Tick the acceptance checkboxes in the ticket file and set its status to `done`.
-   6. Report to the user: what was built, what CodeRabbit flagged and how each item was handled, what was left out and why. **Never commit, push, or open a PR** — the user does that.
+   4. **Compact checkpoint** — stop and ask the user to run `/compact` before the CodeRabbit gate (see below). Do not run `coderabbit` in the same turn.
+   5. Run `coderabbit review --plain --type uncommitted` (see below).
+   6. Tick the acceptance checkboxes in the ticket file and set its status to `done`.
+   7. Report to the user: what was built, what CodeRabbit flagged and how each item was handled, what was left out and why. **Never commit, push, or open a PR** — the user does that.
 
 ## CodeRabbit gate
 
-Runs after every ticket and after any standalone code change. Triage each finding:
+Runs after every ticket and after any standalone code change.
+
+**Always compact first.** `/compact` is a user-typed command — the agent cannot invoke it. So before running `coderabbit`, stop and say: *"Slice built, `flutter analyze` clean. Run `/compact`, then say 'run the CodeRabbit gate' and I'll continue."* Then end the turn. Build output and analyzer noise are the bulk of the context at that point, and dropping them keeps room for the review findings.
+
+After the user compacts, re-read before triaging (the summary may have dropped the detail):
+
+- the ticket file `.scratch/<feature>/issues/NN-<slug>.md`
+- the spec sections it references
+- `git diff` (plus `git status` for new files) — the review targets uncommitted work, so this is the actual subject
+
+Triage each finding:
 
 - **Valid** (real bug, spec deviation, broken convention below) → fix it, re-run `flutter analyze`, re-run `coderabbit review --plain --type uncommitted` until it is clean or only invalid findings remain.
 - **Invalid** (stylistic preference, contradicts the spec, out of the ticket's scope) → leave the code, and list it in the report with a one-line reason.
