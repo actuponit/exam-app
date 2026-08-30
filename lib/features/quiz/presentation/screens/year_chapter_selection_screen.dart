@@ -37,15 +37,24 @@ class _YearChapterSelectionScreenState extends State<YearChapterSelectionScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 3, vsync: this)
+      ..addListener(_onTabChanged);
     _notesCubit = getIt<NotesCubit>();
     _notesCubit.loadNotes(widget.subjectName);
     _videosCubit = getIt<VideosCubit>();
     _videosCubit.loadVideos(widget.subjectId);
   }
 
+  static const _videosTabIndex = 2;
+
+  void _onTabChanged() {
+    // Rebuild so the app-bar refresh icon follows the selected tab.
+    if (mounted) setState(() {});
+  }
+
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     _videosCubit.close();
     super.dispose();
@@ -63,6 +72,21 @@ class _YearChapterSelectionScreenState extends State<YearChapterSelectionScreen>
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          // Only the Videos tab has a refresh action; Exam and Note unchanged.
+          if (_tabController.index == _videosTabIndex)
+            BlocBuilder<VideosCubit, VideosState>(
+              bloc: _videosCubit,
+              builder: (context, state) {
+                final busy = state is VideosLoading ||
+                    (state is VideosLoaded && state.isRefreshing);
+                return _RefreshIconButton(
+                  spinning: busy,
+                  onPressed: busy ? null : _videosCubit.refresh,
+                );
+              },
+            ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -113,6 +137,63 @@ class _YearChapterSelectionScreenState extends State<YearChapterSelectionScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// App-bar refresh icon that rotates continuously while [spinning].
+class _RefreshIconButton extends StatefulWidget {
+  final bool spinning;
+  final VoidCallback? onPressed;
+
+  const _RefreshIconButton({required this.spinning, this.onPressed});
+
+  @override
+  State<_RefreshIconButton> createState() => _RefreshIconButtonState();
+}
+
+class _RefreshIconButtonState extends State<_RefreshIconButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.spinning) _controller.repeat();
+  }
+
+  @override
+  void didUpdateWidget(_RefreshIconButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.spinning == oldWidget.spinning) return;
+    if (widget.spinning) {
+      _controller.repeat();
+    } else {
+      // Finish the current turn so the icon settles upright.
+      _controller.animateTo(1.0).then((_) {
+        if (mounted) _controller.reset();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RotationTransition(
+      turns: _controller,
+      child: IconButton(
+        tooltip: 'Refresh videos',
+        icon: const Icon(Icons.refresh, color: Colors.white),
+        onPressed: widget.onPressed,
       ),
     );
   }

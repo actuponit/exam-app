@@ -92,6 +92,8 @@ import '../../features/splash/data/repositories/user_preferences_repository_impl
 import '../../features/splash/domain/repositories/user_preferences_repository.dart'
     as _i421;
 import '../../features/splash/presentation/cubit/splash_cubit.dart' as _i125;
+import '../../features/videos/data/datasources/videos_local_datasource.dart'
+    as _i270;
 import '../../features/videos/data/datasources/videos_remote_datasource.dart'
     as _i888;
 import '../../features/videos/domain/repositories/videos_repository.dart'
@@ -131,8 +133,8 @@ Future<_i174.GetIt> init(
   final subjectModule = _$SubjectModule();
   final notesModule = _$NotesModule();
   final networkModule = _$NetworkModule();
-  final referralModule = _$ReferralModule();
   final videosModule = _$VideosModule();
+  final referralModule = _$ReferralModule();
   await gh.factoryAsync<_i460.SharedPreferences>(
     () => injectableModule.prefs,
     preResolve: true,
@@ -162,6 +164,10 @@ Future<_i174.GetIt> init(
   gh.singleton<_i361.Dio>(() => networkModule.dio(gh<_i1047.HiveService>()));
   gh.lazySingleton<_i757.NotificationRemoteDataSource>(
       () => _i757.NotificationRemoteDataSourceImpl(gh<_i361.Dio>()));
+  gh.singleton<_i979.Box<dynamic>>(
+    () => videosModule.videosBox(gh<_i1047.HiveService>()),
+    instanceName: 'videos_box',
+  );
   gh.lazySingleton<_i606.PermissionRepository>(
       () => _i519.PermissionRepositoryImpl());
   gh.lazySingleton<_i900.SubscriptionDataSource>(
@@ -204,6 +210,16 @@ Future<_i174.GetIt> init(
       subjectModule.subjectRepository(gh<_i156.ISubjectLocalDatasource>()));
   gh.factory<_i321.PermissionCubit>(
       () => _i321.PermissionCubit(gh<_i606.PermissionRepository>()));
+  gh.singleton<_i270.VideosLocalDataSource>(() =>
+      videosModule.videosLocalDatasource(
+          gh<_i979.Box<dynamic>>(instanceName: 'videos_box')));
+  gh.lazySingleton<_i836.VideosRepository>(() => videosModule.videosRepository(
+        gh<_i888.VideosRemoteDataSource>(),
+        gh<_i270.VideosLocalDataSource>(),
+        gh<_i970.LocalAuthDataSource>(),
+      ));
+  gh.factory<_i823.VideosCubit>(
+      () => videosModule.videosCubit(gh<_i836.VideosRepository>()));
   gh.lazySingleton<_i854.ReferralRepository>(
       () => referralModule.referralRepository(
             gh<_i591.ReferralRemoteDataSource>(),
@@ -217,10 +233,6 @@ Future<_i174.GetIt> init(
             gh<_i293.UserPreferencesLocalDataSource>(),
             gh<_i970.LocalAuthDataSource>(),
           ));
-  gh.lazySingleton<_i836.VideosRepository>(() => videosModule.videosRepository(
-        gh<_i888.VideosRemoteDataSource>(),
-        gh<_i970.LocalAuthDataSource>(),
-      ));
   gh.singleton<_i254.ExamRepository>(() => examModule.examRepository(
         gh<_i506.IExamLocalDatasource>(),
         gh<_i123.IRecentExamLocalDatasource>(),
@@ -272,8 +284,6 @@ Future<_i174.GetIt> init(
       () => authModule.authBloc(gh<_i573.AuthRepository>()));
   gh.factory<_i383.SubscriptionBloc>(
       () => paymentModule.subscriptionBloc(gh<_i611.SubscriptionRepository>()));
-  gh.factory<_i823.VideosCubit>(
-      () => videosModule.videosCubit(gh<_i836.VideosRepository>()));
   gh.factory<_i638.RecentExamCubit>(
       () => examModule.recentExamCubit(gh<_i254.ExamRepository>()));
   return getIt;
@@ -297,6 +307,6 @@ class _$NotesModule extends _i161.NotesModule {}
 
 class _$NetworkModule extends _i851.NetworkModule {}
 
-class _$ReferralModule extends _i62.ReferralModule {}
-
 class _$VideosModule extends _i50.VideosModule {}
+
+class _$ReferralModule extends _i62.ReferralModule {}

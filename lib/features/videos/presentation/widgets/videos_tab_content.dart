@@ -28,13 +28,54 @@ class VideosTabContent extends StatelessWidget {
           );
         }
         if (state is VideosLoaded) {
-          if (state.isEmpty) {
-            return _EmptyState(subjectName: subjectName);
-          }
-          return _VideosList(groups: state.groups);
+          final cubit = context.read<VideosCubit>();
+          return Column(
+            children: [
+              if (state.isOffline) const _OfflineNote(),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: cubit.refresh,
+                  child: state.isEmpty
+                      ? _EmptyState(subjectName: subjectName)
+                      : _VideosList(groups: state.groups),
+                ),
+              ),
+            ],
+          );
         }
         return const _LoadingScreen();
       },
+    );
+  }
+}
+
+/// Single-line note shown under the app bar when the last refresh failed and
+/// the list on screen came from cache.
+class _OfflineNote extends StatelessWidget {
+  const _OfflineNote();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.onSurface.withValues(alpha: 0.55);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
+      child: Row(
+        children: [
+          Icon(Icons.cloud_off_outlined, size: 14, color: color),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              'Offline — showing saved list',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(color: color),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -47,6 +88,8 @@ class _VideosList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      // Always scrollable so pull-to-refresh works on short lists too.
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       itemCount: groups.length,
       itemBuilder: (context, index) {
@@ -203,6 +246,19 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Scrollable so the enclosing RefreshIndicator can be pulled.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: _emptyBody(theme),
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyBody(ThemeData theme) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),

@@ -5,6 +5,8 @@ import 'package:exam_app/features/exams/data/models/subject_model.dart';
 import 'package:exam_app/features/exams/data/models/recent_exam_model.dart';
 import 'package:exam_app/features/notes/data/models/note_model.dart';
 import 'package:exam_app/features/quiz/data/models/question_model.dart';
+import 'package:exam_app/features/videos/data/models/video_download_model.dart';
+import 'package:exam_app/features/videos/data/models/video_model.dart';
 import 'package:hive/hive.dart';
 
 class HiveService {
@@ -21,6 +23,8 @@ class HiveService {
     Hive.registerAdapter(NotesListModelAdapter());
     Hive.registerAdapter(NoteModelAdapter());
     Hive.registerAdapter(CacheItemAdapter());
+    Hive.registerAdapter(VideoModelAdapter());
+    Hive.registerAdapter(VideoDownloadModelAdapter());
 
     // Open Boxes
     await Hive.openBox<CacheItem>(HiveBoxNames.httpCache);
@@ -29,6 +33,9 @@ class HiveService {
     await Hive.openBox<QuestionModel>(HiveBoxNames.questions);
     await Hive.openBox<RecentExamModel>(HiveBoxNames.recentExams);
     await Hive.openBox<NotesListModel>(HiveBoxNames.notes);
+    // Untyped on purpose: holds both per-subject metadata lists and
+    // per-video download records (see VideosLocalDataSource).
+    await Hive.openBox<dynamic>(HiveBoxNames.videos);
   }
 
   // Helper methods for box accessw
@@ -42,6 +49,7 @@ class HiveService {
       Hive.box<RecentExamModel>(HiveBoxNames.recentExams);
   Box<NotesListModel> get notesBox =>
       Hive.box<NotesListModel>(HiveBoxNames.notes);
+  Box<dynamic> get videosBox => Hive.box<dynamic>(HiveBoxNames.videos);
   // Clean up method
   Future<void> closeBoxes() async {
     await Hive.close();

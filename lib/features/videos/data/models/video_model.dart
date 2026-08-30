@@ -1,28 +1,54 @@
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 
+import '../../../../core/constants/hive_constants.dart';
 import '../../domain/entities/video.dart';
 
-/// Wire model for one item of `GET /videos/by-subject`.
+part 'video_model.g.dart';
+
+/// Wire model for one item of `GET /videos/by-subject`, also persisted to
+/// Hive as the per-subject cached list.
 ///
 /// Keys are snake_case; `chapter` is a nested object (`{id, name}`) when the
 /// video belongs to a chapter and `null` otherwise.
+///
+/// Hive rules: never renumber a `@HiveField`, only append; new fields must be
+/// nullable or carry `defaultValue:`.
+@HiveType(typeId: HiveTypeIds.video)
 class VideoModel extends Equatable {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String title;
+  @HiveField(2)
   final String? description;
+  @HiveField(3, defaultValue: false)
   final bool locked;
+  @HiveField(4, defaultValue: '')
   final String downloadUrl;
+  @HiveField(5, defaultValue: 0)
   final int fileSizeBytes;
+  @HiveField(6)
   final String? checksum;
+  @HiveField(7)
   final int? durationSeconds;
+  @HiveField(8)
   final String? thumbnailUrl;
+  @HiveField(9)
   final String? mimeType;
+  @HiveField(10)
   final int? grade;
+  @HiveField(11)
   final String? language;
+  @HiveField(12, defaultValue: 0)
   final int sortOrder;
+  @HiveField(13, defaultValue: true)
   final bool isActive;
+  @HiveField(14, defaultValue: '')
   final String subjectId;
+  @HiveField(15)
   final String? chapterId;
+  @HiveField(16)
   final String? chapterName;
 
   const VideoModel({
@@ -85,6 +111,28 @@ class VideoModel extends Equatable {
     if (text == 'true' || text == '1') return true;
     if (text == 'false' || text == '0') return false;
     return fallback;
+  }
+
+  factory VideoModel.fromEntity(Video video) {
+    return VideoModel(
+      id: video.id,
+      title: video.title,
+      description: video.description,
+      locked: video.locked,
+      downloadUrl: video.downloadUrl,
+      fileSizeBytes: video.fileSizeBytes,
+      checksum: video.checksum,
+      durationSeconds: video.durationSeconds,
+      thumbnailUrl: video.thumbnailUrl,
+      mimeType: video.mimeType,
+      grade: video.grade,
+      language: video.language,
+      sortOrder: video.sortOrder,
+      isActive: video.isActive,
+      subjectId: video.subjectId,
+      chapterId: video.chapterId,
+      chapterName: video.chapterName,
+    );
   }
 
   Video toEntity() {

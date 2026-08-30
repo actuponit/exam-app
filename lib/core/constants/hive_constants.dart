@@ -12,6 +12,8 @@ abstract class HiveTypeIds {
   static const noteSubject = 8;
   static const noteChapter = 9;
   static const notes = 10;
+  static const video = 11;
+  static const videoDownload = 12;
 
   // Add more type IDs as needed
 }
@@ -24,5 +26,6 @@ abstract class HiveBoxNames {
   static const questions = 'questions_box';
   static const recentExams = 'recent_exams_box';
   static const notes = 'notes_box';
+  static const videos = 'videos_box';
   // Add more box names as needed
 }

@@ -8,13 +8,13 @@ Adds the one new Hive box `videos_box` and the two new typeIds (11 = video metad
 
 **Blocked by:** 01 — Videos tab lists a subject's videos from the server
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Second open of a subject's Videos tab shows the list with no spinner, even in airplane mode
-- [ ] Background refresh replaces the list when the server responds; new videos appear without user action
-- [ ] Background refresh failure keeps the cached list and shows the subtle offline note; note disappears on next successful refresh
-- [ ] Pull-to-refresh and app-bar refresh icon both call the cubit's `refresh()`; icon animates during the fetch
-- [ ] Refresh icon is absent while the Exam or Note tab is selected
-- [ ] `videos_box` opened at Hive init; typeIds 11 and 12 appended to `HiveTypeIds`; no existing `@HiveField`, typeId or box changed
-- [ ] Cached metadata is keyed by subjectId; switching subjects never shows another subject's list
-- [ ] `flutter analyze` clean; build_runner regenerated
+- [x] Second open of a subject's Videos tab shows the list with no spinner, even in airplane mode
+- [x] Background refresh replaces the list when the server responds; new videos appear without user action
+- [x] Background refresh failure keeps the cached list and shows the subtle offline note; note disappears on next successful refresh
+- [x] Pull-to-refresh and app-bar refresh icon both call the cubit's `refresh()`; icon animates during the fetch
+- [x] Refresh icon is absent while the Exam or Note tab is selected
+- [x] `videos_box` opened at Hive init; typeIds 11 and 12 appended to `HiveTypeIds`; no existing `@HiveField`, typeId or box changed
+- [x] Cached metadata is keyed by subjectId; switching subjects never shows another subject's list
+- [x] `flutter analyze` clean; build_runner regenerated
