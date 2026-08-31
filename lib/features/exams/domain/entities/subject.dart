@@ -11,6 +11,11 @@ class Subject extends Equatable {
   final int attempted;
   final int? duration;
   final bool isSample;
+  /// The subject's real server-assigned numeric id, distinct from [id] (which
+  /// is the subject name and is what quiz/note features key off of). Used
+  /// for endpoints — e.g. videos — that need the actual id. Null for
+  /// subjects saved before this field existed.
+  final String? numericId;
 
   const Subject({
     required this.id,
@@ -21,6 +26,7 @@ class Subject extends Equatable {
     this.region,
     this.duration = 2,
     required this.isSample,
+    this.numericId,
   });
 
   double get progress {
@@ -46,6 +52,7 @@ class Subject extends Equatable {
     String? region,
     int? duration,
     bool? isSample,
+    String? numericId,
   }) {
     return Subject(
       id: id ?? this.id,
@@ -56,6 +63,7 @@ class Subject extends Equatable {
       region: region ?? this.region,
       duration: duration ?? this.duration,
       isSample: isSample ?? this.isSample,
+      numericId: numericId ?? this.numericId,
     );
   }
 
@@ -66,6 +74,7 @@ class Subject extends Equatable {
         region: json['region'] as String?,
         duration: int.tryParse(json['default_duration']) ?? 1,
         isSample: json['is_sample'],
+        numericId: json['id']?.toString(),
       );
 
   @override
@@ -78,5 +87,6 @@ class Subject extends Equatable {
         region,
         duration,
         isSample,
+        numericId,
       ];
 }

@@ -141,6 +141,7 @@ class SubjectCard extends StatelessWidget {
               );
             } else {
               context.push('/years/${subject.id}', extra: {
+                'numericId': subject.numericId,
                 'duration': subject.duration,
                 'region': region,
                 'subjectName': subject.name,

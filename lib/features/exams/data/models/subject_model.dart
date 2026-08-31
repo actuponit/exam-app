@@ -34,6 +34,10 @@ class SubjectModel extends Subject {
   @override
   final bool isSample;
 
+  @HiveField(7)
+  @override
+  final String? numericId;
+
   const SubjectModel({
     required this.id,
     required this.name,
@@ -42,6 +46,7 @@ class SubjectModel extends Subject {
     this.attempted = 0,
     this.duration,
     this.isSample = false,
+    this.numericId,
   }) : super(
           id: id,
           name: name,
@@ -50,6 +55,7 @@ class SubjectModel extends Subject {
           attempted: attempted,
           duration: duration,
           isSample: isSample,
+          numericId: numericId,
         );
 
   factory SubjectModel.fromEntity(Subject subject) {
@@ -61,6 +67,7 @@ class SubjectModel extends Subject {
       attempted: subject.attempted,
       duration: subject.duration,
       isSample: subject.isSample,
+      numericId: subject.numericId,
     );
   }
 }

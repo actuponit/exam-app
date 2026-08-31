@@ -273,6 +273,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
           iconName: subjectName.toLowerCase(),
           duration: questionsMap[subjectName]?.first.subject.duration,
           isSample: questionsMap[subjectName]?.first.subject.isSample ?? false,
+          numericId: questionsMap[subjectName]?.first.subject.numericId,
         ),
       );
     }

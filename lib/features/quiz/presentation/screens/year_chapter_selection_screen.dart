@@ -14,6 +14,10 @@ class YearChapterSelectionScreen extends StatefulWidget {
   final String subjectName;
   final int duration;
   final String? region;
+  /// Real numeric subject id, used only for the videos endpoint — [subjectId]
+  /// is actually the subject name (quiz/note features key off the name).
+  /// Falls back to [subjectId] when unavailable (older cached subjects).
+  final String? videoSubjectId;
 
   const YearChapterSelectionScreen({
     super.key,
@@ -21,6 +25,7 @@ class YearChapterSelectionScreen extends StatefulWidget {
     required this.subjectName,
     required this.duration,
     this.region,
+    this.videoSubjectId,
   });
 
   @override
@@ -42,7 +47,7 @@ class _YearChapterSelectionScreenState extends State<YearChapterSelectionScreen>
     _notesCubit = getIt<NotesCubit>();
     _notesCubit.loadNotes(widget.subjectName);
     _videosCubit = getIt<VideosCubit>();
-    _videosCubit.loadVideos(widget.subjectId);
+    _videosCubit.loadVideos(widget.videoSubjectId ?? widget.subjectId);
   }
 
   static const _videosTabIndex = 2;
@@ -132,7 +137,7 @@ class _YearChapterSelectionScreenState extends State<YearChapterSelectionScreen>
           BlocProvider.value(
             value: _videosCubit,
             child: VideosTabContent(
-              subjectId: widget.subjectId,
+              subjectId: widget.videoSubjectId ?? widget.subjectId,
               subjectName: widget.subjectName,
             ),
           ),

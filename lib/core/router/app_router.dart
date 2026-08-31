@@ -144,11 +144,13 @@ class AppRouter {
           final duration = extra['duration'] as int? ?? 2;
           final region = extra['region'] as String?;
           final subjectName = extra['subjectName'] as String? ?? 'Subject';
+          final videoSubjectId = extra['numericId'] as String?;
           return YearChapterSelectionScreen(
             subjectId: subjectId,
             subjectName: subjectName,
             duration: duration,
             region: region,
+            videoSubjectId: videoSubjectId,
           );
         },
       ),
