@@ -43,6 +43,7 @@ IconData iconFromName(String name) {
   // Biology and Life Sciences
   if (lowerName.contains('biology') ||
       lowerName.contains('bio') ||
+      lowerName.contains('health') ||
       lowerName.contains('life science') ||
       lowerName.contains('anatomy')) {
     return Icons.nature;
