@@ -14,6 +14,11 @@ class VideosRemoteDataSourceImpl implements VideosRemoteDataSource {
 
   VideosRemoteDataSourceImpl({required this.dio});
 
+  /// The videos endpoint lives on a different host than the rest of the API
+  /// (`ethioexamhub.com`, not `dashboard.ethioexamhub.com`), so it is called
+  /// with an absolute URL, overriding the shared `Dio`'s base URL.
+  static const _baseUrl = 'https://ethioexamhub.com/api';
+
   @override
   Future<List<VideoModel>> getVideosBySubject({
     required String subjectId,
@@ -21,7 +26,7 @@ class VideosRemoteDataSourceImpl implements VideosRemoteDataSource {
   }) async {
     try {
       final response = await dio.get(
-        '/videos/by-subject',
+        '$_baseUrl/videos/by-subject',
         queryParameters: {
           'subject_id': subjectId,
           'user_id': userId,
@@ -40,7 +45,11 @@ class VideosRemoteDataSourceImpl implements VideosRemoteDataSource {
     }
   }
 
-  /// Accepts `{status, data: [...]}`, `{data: [...]}` or a bare list.
+  /// Accepts the nested `{status, data: {subject_videos: [...], chapters:
+  /// [{videos: [...]}, ...]}}` envelope, the older `{status, data: [...]}` /
+  /// `{data: [...]}` shapes, and a bare list — flattened to one video list.
+  /// Each video item already carries its own `chapter`/`chapter_id`, so no
+  /// re-tagging is needed when flattening out of `chapters[].videos`.
   static List<dynamic> _extractList(dynamic data) {
     if (data is List) return data;
     if (data is Map<String, dynamic>) {
@@ -50,6 +59,17 @@ class VideosRemoteDataSourceImpl implements VideosRemoteDataSource {
       }
       final inner = data['data'];
       if (inner is List) return inner;
+      if (inner is Map<String, dynamic>) {
+        final subjectVideos = inner['subject_videos'];
+        final chapters = inner['chapters'];
+        return [
+          if (subjectVideos is List) ...subjectVideos,
+          if (chapters is List)
+            for (final chapter in chapters)
+              if (chapter is Map<String, dynamic> && chapter['videos'] is List)
+                ...chapter['videos'] as List,
+        ];
+      }
     }
     throw Exception('Unexpected response format');
   }
