@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:exam_app/core/constants/directory_constant.dart';
+import 'package:exam_app/features/quiz/domain/services/image_download_service.dart';
 import 'package:exam_app/features/videos/data/services/video_download_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -31,4 +32,5 @@ Future<void> configureDependencies() async {
   // Start the download engine and attach the serial video queue exactly once,
   // before any screen exists, so tasks that survived an app kill resume here.
   await getIt<VideoDownloadService>().initialize();
+  await getIt<ImageDownloadService>().initialize();
 }
